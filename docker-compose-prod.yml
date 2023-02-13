@@ -1,0 +1,51 @@
+version: '3.9'
+services:
+  app:
+    container_name: system_payment
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST}
+      - DATABASE_PORT=${DB_PORT}
+      - APPLICATION_PORT=${APP_PORT}
+    tty: true
+    build:
+      context: .
+      dockerfile: doc/prod/Dockerfile
+    ports:
+      - 8000:8000
+    restart: on-failure
+    volumes:
+      - .:/app
+    depends_on:
+      - system_payment_db
+    networks:
+      - system_payment_network
+
+  system_payment_db:
+    image: postgres:latest
+    container_name: system_payment_db
+    stop_signal: SIGINT
+    stop_grace_period: 10s
+    environment:
+      - POSTGRES_USER=${DB_USER}
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_DB=${DB_NAME}
+      - DATABASE_HOST=${DB_HOST}
+    ports:
+      - '1234:5432'
+    volumes:
+      - ./.pg_data:/var/lib/postgresql/data
+    networks:
+      - system_payment_network
+
+volumes:
+  pg_data:
+
+# Networks to be created to facilitate communication between containers
+networks:
+  system_payment_network:
+    driver: bridge
