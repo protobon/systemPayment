@@ -13,16 +13,17 @@ WORKDIR /app
 
 # Copy the source from the current directory to the working Directory inside the container
 COPY . .
-COPY .env .
 
 # Download all the dependencies
-RUN go get -d -v ./...
+RUN go get -d -v ./...  && \
+    go install -v ./...  && \
+    go build -o /api
 
 # Install the package
-RUN go install -v ./...
+# RUN go install -v ./...
 
 # build app and expose port 8000
-RUN go build -o /api
+# RUN go build -o /api
 EXPOSE 8000
 
 # run application

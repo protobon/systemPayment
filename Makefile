@@ -3,12 +3,8 @@
 TEST := test
 PROD := prod
 
-COMPOSE-TEST=sudo docker-compose -f docker-compose-test.yml
-COMPOSE-PROD=sudo docker-compose -f docker-compose-prod.yml
-
-# ------- create network --------------------
-network:
-	docker network create system_payment_network
+COMPOSE-TEST=sudo docker compose -f docker-compose-test.yml
+COMPOSE-PROD=sudo docker compose -f docker-compose-prod.yml
 
 # ------- pull de codigo sobre la rama actual ------------------------
 pull:
@@ -23,32 +19,26 @@ endif
 ifeq ($(stage), $(PROD))
 	$(COMPOSE-PROD) build
 endif
-ifeq ($(stage),)
-	$(COMPOSE) build
-endif
 
 
 # ------- Up ----------------------------------------------------
 up:
 	@echo $(stage)
 ifeq ($(stage), $(TEST))
-	$(COMPOSE-TEST) up
+	$(COMPOSE-TEST) up --remove-orphans
 endif
 ifeq ($(stage), $(PROD))
-	$(COMPOSE-PROD) up
-endif
-ifeq ($(stage),)
-	$(COMPOSE) up
+	$(COMPOSE-PROD) up --remove-orphans
 endif
 
 # ------- Up detached ----------------------------------------------------
 dup:
 	@echo $(stage)
 ifeq ($(stage), $(TEST))
-	$(COMPOSE-TEST) up -d
+	$(COMPOSE-TEST) up -d --remove-orphans
 endif
 ifeq ($(stage), $(PROD))
-	$(COMPOSE-PROD) up -d
+	$(COMPOSE-PROD) up -d --remove-orphans
 endif
 
 # ------- Start ----------------------------------------------------
@@ -56,9 +46,6 @@ start:
 	@echo $(stage)
 ifeq ($(stage), $(TEST))
 	$(COMPOSE-TEST) start
-endif
-ifeq ($(stage), $(DEMO))
-	$(COMPOSE-DEMO) start
 endif
 ifeq ($(stage), $(PROD))
 	$(COMPOSE-PROD) start
@@ -72,14 +59,4 @@ ifeq ($(stage), $(TEST))
 endif
 ifeq ($(stage), $(PROD))
 	$(COMPOSE-PROD) stop
-endif
-
-# ------- Limpieza ----------------------------------------------------
-down:
-	@echo $(stage)
-ifeq ($(stage), $(TEST))
-	$(COMPOSE-TEST) down -v --remove-orphans
-endif
-ifeq ($(stage), $(PROD))
-	$(COMPOSE-PROD) down -v --remove-orphans
 endif

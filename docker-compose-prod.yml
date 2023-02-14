@@ -4,6 +4,8 @@ services:
     container_name: system_payment
     stop_signal: SIGINT
     stop_grace_period: 10s
+    env_file:
+      - .env
     environment:
       - POSTGRES_USER=${DB_USER}
       - POSTGRES_PASSWORD=${DB_PASSWORD}
@@ -23,7 +25,7 @@ services:
     depends_on:
       - system_payment_db
     networks:
-      - system_payment_network
+      - system_payment_network_prod
 
   system_payment_db:
     image: postgres:latest
@@ -40,12 +42,12 @@ services:
     volumes:
       - ./.pg_data:/var/lib/postgresql/data
     networks:
-      - system_payment_network
+      - system_payment_network_prod
 
 volumes:
   pg_data:
 
 # Networks to be created to facilitate communication between containers
 networks:
-  system_payment_network:
+  system_payment_network_prod:
     driver: bridge
