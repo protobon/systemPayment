@@ -8,12 +8,13 @@ import (
 	_ "github.com/lib/pq"
 )
 
-func DBInit(user string, password string, dbname string) *sql.DB {
+func DBInit(user string, password string,
+	dbhost string, dbname string) *sql.DB {
 	connectionString :=
 		fmt.Sprintf("postgres://%v:%v@%v/%v?sslmode=disable",
 			user,
 			password,
-			"system_payment_db_test",
+			dbhost,
 			dbname)
 
 	var err error

@@ -24,10 +24,11 @@ func (a *App) Run(addr string) {
 	}
 }
 
-func (a *App) Initialize(user string, password string, dbname string) {
+func (a *App) Initialize(user string, password string,
+	dbhost string, dbname string) {
 	fmt.Println("Initializing App...")
 	var err error
-	a.DB = database.DBInit(user, password, dbname)
+	a.DB = database.DBInit(user, password, dbhost, dbname)
 	if err != nil {
 		log.Fatal(err)
 	}

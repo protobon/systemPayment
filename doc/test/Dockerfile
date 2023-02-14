@@ -16,17 +16,18 @@ RUN mkdir "/build"
 
 # Copy the source from the current directory to the working Directory inside the container
 COPY . .
-COPY .env .
 
 # Download all the dependencies
-RUN go get -d -v ./...
+RUN go get -d -v ./...  && \
+    go install -v ./...  && \
+    go build -o /api
 
 # Install the package
-RUN go install -v ./...
+# RUN go install -v ./...
 
 #Setup hot-reload for dev stage
-RUN go get github.com/githubnemo/CompileDaemon
-RUN go install github.com/githubnemo/CompileDaemon
-RUN go install golang.org/x/tools/gopls@latest
+RUN go get github.com/githubnemo/CompileDaemon  && \
+    go install github.com/githubnemo/CompileDaemon  && \
+    go install golang.org/x/tools/gopls@latest
 
 ENTRYPOINT CompileDaemon -build="go build -o /build/app -buildvcs=false" -command="/build/app"
