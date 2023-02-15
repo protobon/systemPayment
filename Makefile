@@ -63,6 +63,16 @@ ifeq ($(stage), $(PROD))
 	$(COMPOSE-PROD) stop
 endif
 
+# ------- Restart ----------------------------------------------------
+restart:
+	@echo $(stage)
+ifeq ($(stage), $(TEST))
+	$(COMPOSE-TEST) restart
+endif
+ifeq ($(stage), $(PROD))
+	$(COMPOSE-PROD) restart
+endif
+
 # ------- Logs ----------------------------------------------------
 logs:
 	@echo $(stage)
