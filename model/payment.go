@@ -14,7 +14,6 @@ type PaymentObject struct {
 	OrderID           string      `json:"order_id"`
 	NotificationURL   string      `json:"notification_url"`
 	CreatedAt         time.Time   `json:"created_at"`
-	UpdatedAt         time.Time   `json:"updated_at"`
 }
 
 type DlocalPayment struct {
@@ -29,5 +28,4 @@ type DlocalPayment struct {
 	OrderID           string      `json:"order_id"`
 	NotificationURL   string      `json:"notification_url"`
 	CreatedAt         time.Time   `json:"-"`
-	UpdatedAt         time.Time   `json:"-"`
 }

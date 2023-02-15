@@ -1,7 +1,23 @@
 package common
 
+// import (
+// 	"errors"
+// 	"fmt"
+// )
+
 // type RequestError struct {
-// 	incomplete map[string]string
+// 	Code int
+
+// 	Err error
 // }
 
-// var ReqError = RequestError{}
+// func (r *RequestError) Error() string {
+// 	return fmt.Sprintf("%d: %v", r.Code, r.Err)
+// }
+
+// func EmailTakenError() error {
+// 	return &RequestError{
+// 		Code: 600,
+// 		Err:  errors.New("email already taken"),
+// 	}
+// }
