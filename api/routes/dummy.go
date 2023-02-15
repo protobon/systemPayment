@@ -112,7 +112,7 @@ func (d *DummyRouter) getDummies(ctx *gin.Context, db *sql.DB) {
 	var dummy = model.DummyObject{}
 	dummies, err := dummy.QGetDummies(db, start, count)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 	}
 
 	ctx.JSON(200, dummies)

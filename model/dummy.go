@@ -58,7 +58,7 @@ func (d *DummyObject) QGetDummies(db *sql.DB, start int, count int) ([]DummyObje
 	defer func(rows *sql.Rows) {
 		err = rows.Close()
 		if err != nil {
-			log.Fatal(err)
+			log.Println(err)
 		}
 	}(rows)
 
