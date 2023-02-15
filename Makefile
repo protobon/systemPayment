@@ -5,6 +5,8 @@ PROD := prod
 
 COMPOSE-TEST=sudo docker compose -f docker-compose-test.yml
 COMPOSE-PROD=sudo docker compose -f docker-compose-prod.yml
+LOGS-TEST=sudo docker logs -f system_payment_test
+LOGS-PROD=sudo docker logs -f system_payment
 
 # ------- pull de codigo sobre la rama actual ------------------------
 pull:
@@ -59,4 +61,14 @@ ifeq ($(stage), $(TEST))
 endif
 ifeq ($(stage), $(PROD))
 	$(COMPOSE-PROD) stop
+endif
+
+# ------- Logs ----------------------------------------------------
+logs:
+	@echo $(stage)
+ifeq ($(stage), $(TEST))
+	$(LOGS-TEST)
+endif
+ifeq ($(stage), $(PROD))
+	$(LOGS-PROD)
 endif

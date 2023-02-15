@@ -11,6 +11,7 @@ RUN apk update && apk add --no-cache git && apk add --no-cach bash && apk add bu
 ENV PROJECT_DIR=/app \
     GO111MODULE=on \
     CGO_ENABLED=0
+
 WORKDIR /app
 RUN mkdir "/build"
 
@@ -24,7 +25,6 @@ RUN go get -d -v ./...  && \
 
 #Setup hot-reload for dev stage
 RUN go get github.com/githubnemo/CompileDaemon  && \
-    go install github.com/githubnemo/CompileDaemon  && \
-    go install golang.org/x/tools/gopls@latest
+    go install github.com/githubnemo/CompileDaemon
 
 ENTRYPOINT CompileDaemon -build="go build -o /build/app -buildvcs=false" -command="/build/app"

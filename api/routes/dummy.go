@@ -9,19 +9,19 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-type Dummy struct {
+type DummyRouter struct {
 	Router *gin.Engine
 	DB     *sql.DB
 }
 
-func (d *Dummy) getDummy(ctx *gin.Context, db *sql.DB) {
+func (d *DummyRouter) getDummy(ctx *gin.Context, db *sql.DB) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(400, map[string]string{"error": "Invalid Dummy ID"})
 		return
 	}
 
-	dummy := model.DummySchema{ID: id}
+	dummy := model.DummyObject{ID: id}
 	if err = dummy.QGetDummy(db); err != nil {
 		switch err {
 		case sql.ErrNoRows:
@@ -35,8 +35,8 @@ func (d *Dummy) getDummy(ctx *gin.Context, db *sql.DB) {
 	ctx.JSON(200, dummy)
 }
 
-func (d *Dummy) createDummy(ctx *gin.Context, db *sql.DB) {
-	var dummy model.DummySchema
+func (d *DummyRouter) createDummy(ctx *gin.Context, db *sql.DB) {
+	var dummy model.DummyObject
 	if err := ctx.BindJSON(&dummy); err != nil {
 		ctx.JSON(400, map[string]string{"error": "Invalid request payload"})
 		return
@@ -50,14 +50,14 @@ func (d *Dummy) createDummy(ctx *gin.Context, db *sql.DB) {
 	ctx.JSON(200, dummy)
 }
 
-func (d *Dummy) updateDummy(ctx *gin.Context, db *sql.DB) {
+func (d *DummyRouter) updateDummy(ctx *gin.Context, db *sql.DB) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(400, map[string]string{"error": "Invalid Dummy id"})
 		return
 	}
 
-	var dummy model.DummySchema
+	var dummy model.DummyObject
 	if err = ctx.BindJSON(&dummy); err != nil {
 		ctx.JSON(400, map[string]string{"error": "Invalid request payload"})
 		return
@@ -78,14 +78,14 @@ func (d *Dummy) updateDummy(ctx *gin.Context, db *sql.DB) {
 	ctx.JSON(200, dummy)
 }
 
-func (d *Dummy) deleteDummy(ctx *gin.Context, db *sql.DB) {
+func (d *DummyRouter) deleteDummy(ctx *gin.Context, db *sql.DB) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		ctx.JSON(400, map[string]string{"error": "Invalid Dummy id"})
 		return
 	}
 
-	dummy := model.DummySchema{ID: id}
+	dummy := model.DummyObject{ID: id}
 	if err = dummy.QDeleteDummy(db); err != nil {
 		switch err {
 		case sql.ErrNoRows:
@@ -99,7 +99,7 @@ func (d *Dummy) deleteDummy(ctx *gin.Context, db *sql.DB) {
 	ctx.JSON(200, dummy)
 }
 
-func (d *Dummy) getDummies(ctx *gin.Context, db *sql.DB) {
+func (d *DummyRouter) getDummies(ctx *gin.Context, db *sql.DB) {
 	start, _ := strconv.Atoi(ctx.Query("start"))
 	count, _ := strconv.Atoi(ctx.Query("count"))
 
@@ -109,7 +109,7 @@ func (d *Dummy) getDummies(ctx *gin.Context, db *sql.DB) {
 	if start < 0 {
 		start = 0
 	}
-	var dummy = model.DummySchema{}
+	var dummy = model.DummyObject{}
 	dummies, err := dummy.QGetDummies(db, start, count)
 	if err != nil {
 		log.Fatal(err)
@@ -118,7 +118,7 @@ func (d *Dummy) getDummies(ctx *gin.Context, db *sql.DB) {
 	ctx.JSON(200, dummies)
 }
 
-func (d *Dummy) InitializeRoutes(db *sql.DB) {
+func (d *DummyRouter) InitializeRoutes(db *sql.DB) {
 	d.Router.GET("/dummies", func(ctx *gin.Context) {
 		d.getDummies(ctx, db)
 	})

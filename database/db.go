@@ -25,11 +25,32 @@ func DBInit(user string, password string,
 	}
 
 	CreateTableDummy(db)
+	CreateTablePayer(db)
+	CreateTableAddress(db)
+	CreateTableSecureCard(db)
 	return db
 }
 
 func CreateTableDummy(db *sql.DB) {
 	if _, err := db.Exec(DummyTableCreate); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func CreateTablePayer(db *sql.DB) {
+	if _, err := db.Exec(PayerTableCreate); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func CreateTableAddress(db *sql.DB) {
+	if _, err := db.Exec(AddressTableCreate); err != nil {
+		log.Fatal(err)
+	}
+}
+
+func CreateTableSecureCard(db *sql.DB) {
+	if _, err := db.Exec(SecureCardTableCreate); err != nil {
 		log.Fatal(err)
 	}
 }
