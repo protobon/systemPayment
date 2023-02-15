@@ -18,14 +18,14 @@ type PayerRouter struct {
 func (p *PayerRouter) getPayer(ctx *gin.Context, db *sql.DB) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		ctx.JSON(400, map[string]string{"error": "Invalid Payer ID"})
 		return
 	}
 
 	payer := model.PayerObject{ID: id}
 	if err = payer.QGetPayer(db); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		switch err {
 		case sql.ErrNoRows:
 			ctx.JSON(404, map[string]string{"error": "Payer not found"})
@@ -42,7 +42,7 @@ func (p *PayerRouter) createPayer(ctx *gin.Context, db *sql.DB) {
 	var err error
 	var payer model.PayerObject
 	if err = ctx.BindJSON(&payer); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		ctx.JSON(400, map[string]string{"message": "Invalid request payload.", "error": err.Error()})
 		return
 	}
@@ -52,62 +52,8 @@ func (p *PayerRouter) createPayer(ctx *gin.Context, db *sql.DB) {
 	}
 
 	if err = payer.QCreatePayer(db); err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		ctx.JSON(400, map[string]string{"message": "Could not create new Payer", "error": err.Error()})
-		return
-	}
-
-	ctx.JSON(200, payer)
-}
-
-func (p *PayerRouter) updatePayer(ctx *gin.Context, db *sql.DB) {
-	id, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		log.Fatal(err)
-		ctx.JSON(400, map[string]string{"message": "Invalid Payer id", "error": err.Error()})
-		return
-	}
-
-	var payer model.PayerObject
-	if err = ctx.BindJSON(&payer); err != nil {
-		log.Fatal(err)
-		ctx.JSON(400, map[string]string{"message": "Invalid request payload", "error": err.Error()})
-		return
-	}
-
-	payer.ID = id
-
-	if err = payer.QUpdatePayer(db); err != nil {
-		log.Fatal(err)
-		switch err {
-		case sql.ErrNoRows:
-			ctx.JSON(404, map[string]string{"message": "Payer not found", "error": err.Error()})
-		default:
-			ctx.JSON(500, err.Error())
-		}
-		return
-	}
-
-	ctx.JSON(200, payer)
-}
-
-func (p *PayerRouter) deletePayer(ctx *gin.Context, db *sql.DB) {
-	id, err := strconv.Atoi(ctx.Param("id"))
-	if err != nil {
-		log.Fatal(err)
-		ctx.JSON(400, map[string]string{"message": "Invalid Payer id", "error": err.Error()})
-		return
-	}
-
-	payer := model.PayerObject{ID: id}
-	if err = payer.QDeletePayer(db); err != nil {
-		log.Fatal(err)
-		switch err {
-		case sql.ErrNoRows:
-			ctx.JSON(404, map[string]string{"message": "Payer not found", "error": err.Error()})
-		default:
-			ctx.JSON(500, err.Error())
-		}
 		return
 	}
 
@@ -129,11 +75,65 @@ func (p *PayerRouter) getPayers(ctx *gin.Context, db *sql.DB) {
 	var payer = model.PayerObject{}
 	payers, err = payer.QGetPayers(db, start, count)
 	if err != nil {
-		log.Fatal(err)
+		log.Println(err)
 		ctx.JSON(500, map[string]string{"message": "Error parsing Payers", "error": err.Error()})
 	}
 
 	ctx.JSON(200, payers)
+}
+
+func (p *PayerRouter) updatePayer(ctx *gin.Context, db *sql.DB) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(400, map[string]string{"message": "Invalid Payer id", "error": err.Error()})
+		return
+	}
+
+	var payer model.PayerObject
+	if err = ctx.BindJSON(&payer); err != nil {
+		log.Println(err)
+		ctx.JSON(400, map[string]string{"message": "Invalid request payload", "error": err.Error()})
+		return
+	}
+
+	payer.ID = id
+
+	if err = payer.QUpdatePayer(db); err != nil {
+		log.Println(err)
+		switch err {
+		case sql.ErrNoRows:
+			ctx.JSON(404, map[string]string{"message": "Payer not found", "error": err.Error()})
+		default:
+			ctx.JSON(500, err.Error())
+		}
+		return
+	}
+
+	ctx.JSON(200, payer)
+}
+
+func (p *PayerRouter) deletePayer(ctx *gin.Context, db *sql.DB) {
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		log.Println(err)
+		ctx.JSON(400, map[string]string{"message": "Invalid Payer id", "error": err.Error()})
+		return
+	}
+
+	payer := model.PayerObject{ID: id}
+	if err = payer.QDeletePayer(db); err != nil {
+		log.Println(err)
+		switch err {
+		case sql.ErrNoRows:
+			ctx.JSON(404, map[string]string{"message": "Payer not found", "error": err.Error()})
+		default:
+			ctx.JSON(500, err.Error())
+		}
+		return
+	}
+
+	ctx.JSON(200, payer)
 }
 
 func (p *PayerRouter) InitializeRoutes(db *sql.DB) {
