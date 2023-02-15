@@ -14,9 +14,9 @@ services:
       - DATABASE_PORT=${DB_PORT}
       - APPLICATION_PORT=${APP_PORT}
     tty: true
-    build:
-      context: .
-      dockerfile: doc/prod/Dockerfile
+    build: .
+    expose:
+      - "8000"
     ports:
       - 8000:8000
     restart: on-failure
