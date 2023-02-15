@@ -11,23 +11,19 @@ RUN apk update && apk add --no-cache git && apk add --no-cach bash && apk add bu
 ENV PROJECT_DIR=/app \
     GO111MODULE=on \
     CGO_ENABLED=0
+
 WORKDIR /app
 RUN mkdir "/build"
 
 # Copy the source from the current directory to the working Directory inside the container
 COPY . .
 
-# Download all the dependencies
+# Download and install the dependencies + build binary file
 RUN go get -d -v ./...  && \
     go install -v ./...  && \
     go build -o /api
 
-# Install the package
-# RUN go install -v ./...
+EXPOSE 8081
 
-#Setup hot-reload for dev stage
-RUN go get github.com/githubnemo/CompileDaemon  && \
-    go install github.com/githubnemo/CompileDaemon  && \
-    go install golang.org/x/tools/gopls@latest
-
-ENTRYPOINT CompileDaemon -build="go build -o /build/app -buildvcs=false" -command="/build/app"
+# run application
+CMD [ "/api" ]

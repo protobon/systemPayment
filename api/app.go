@@ -24,10 +24,11 @@ func (a *App) Run(addr string) {
 	}
 }
 
-func (a *App) Initialize(user string, password string,
-	dbhost string, dbname string) {
-	fmt.Println("Initializing App...")
+func (a *App) Initialize(user string, password string, dbhost string, dbname string) {
 	var err error
+
+	fmt.Println("Initializing App...")
+
 	a.DB = database.DBInit(user, password, dbhost, dbname)
 	if err != nil {
 		log.Fatal(err)
@@ -35,9 +36,15 @@ func (a *App) Initialize(user string, password string,
 
 	a.Router = gin.Default()
 
-	var dummy = routes.Dummy{Router: a.Router, DB: a.DB}
+	var dummy = routes.DummyRouter{Router: a.Router, DB: a.DB}
+	var payer = routes.PayerRouter{Router: a.Router, DB: a.DB}
+	var card = routes.CardRouter{Router: a.Router, DB: a.DB}
 
 	dummy.InitializeRoutes(dummy.DB)
+	payer.InitializeRoutes(payer.DB)
+	card.InitializeRoutes(card.DB)
+
 	// schedule.RunCronJobs(a.DB)
-	fmt.Println("***** App Running *****")
+
+	log.Println("*************** App Running ***************")
 }
