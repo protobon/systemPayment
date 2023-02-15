@@ -23,8 +23,7 @@ RUN go get -d -v ./...  && \
     go install -v ./...  && \
     go build -o /api
 
-#Setup hot-reload for dev stage
-RUN go get github.com/githubnemo/CompileDaemon  && \
-    go install github.com/githubnemo/CompileDaemon
+EXPOSE 8081
 
-ENTRYPOINT CompileDaemon -build="go build -o /build/app -buildvcs=false" -command="/build/app"
+# run application
+CMD [ "/api" ]
