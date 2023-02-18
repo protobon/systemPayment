@@ -33,7 +33,8 @@ func DBInit(user string, password string,
 		log.Fatal(err)
 	}
 
-	DB.AutoMigrate(&model.Dummy{}, &model.Payer{}, &model.Address{})
+	DB.AutoMigrate(&model.Dummy{}, &model.Payer{}, &model.Address{},
+		&model.Product{})
 
 	log.Info("Database connected")
 }
