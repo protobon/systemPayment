@@ -174,7 +174,7 @@ paths:
             $ref: '#/definitions/httputil.HTTPError500'
       summary: Select Dummy
       tags:
-      - dummy
+      - Dummy
   /dummy/dummies:
     get:
       consumes:
@@ -204,7 +204,7 @@ paths:
             type: array
       summary: Select all Dummies
       tags:
-      - dummy
+      - Dummy
   /dummy/new:
     post:
       consumes:
@@ -238,7 +238,7 @@ paths:
             $ref: '#/definitions/httputil.HTTPError500'
       summary: Insert Dummy
       tags:
-      - dummy
+      - Dummy
   /dummy/update:
     put:
       consumes:
@@ -272,7 +272,7 @@ paths:
             $ref: '#/definitions/httputil.HTTPError500'
       summary: Updates Dummy
       tags:
-      - dummy
+      - Dummy
   /order/{id}:
     get:
       consumes:
@@ -434,7 +434,7 @@ paths:
             $ref: '#/definitions/httputil.HTTPError500'
       summary: Select Payer
       tags:
-      - payer
+      - Payer
   /payer/new:
     post:
       consumes:
@@ -468,7 +468,7 @@ paths:
             $ref: '#/definitions/httputil.HTTPError500'
       summary: Insert Payer
       tags:
-      - payer
+      - Payer
   /payer/payers:
     get:
       description: Select all Payers
@@ -496,7 +496,7 @@ paths:
             type: array
       summary: Select all Payers
       tags:
-      - payer
+      - Payer
   /payer/update:
     put:
       consumes:
@@ -530,7 +530,7 @@ paths:
             $ref: '#/definitions/httputil.HTTPError500'
       summary: Updates Payer
       tags:
-      - payer
+      - Payer
   /product/{id}:
     get:
       description: Get one Product from ID
@@ -561,7 +561,7 @@ paths:
             $ref: '#/definitions/httputil.HTTPError500'
       summary: Select Product
       tags:
-      - product
+      - Product
   /product/new:
     post:
       consumes:
@@ -595,7 +595,7 @@ paths:
             $ref: '#/definitions/httputil.HTTPError500'
       summary: Insert Product
       tags:
-      - product
+      - Product
   /product/products:
     get:
       description: Select all Products
@@ -623,7 +623,7 @@ paths:
             type: array
       summary: Select all Products
       tags:
-      - product
+      - Product
   /product/update:
     put:
       consumes:
@@ -657,7 +657,7 @@ paths:
             $ref: '#/definitions/httputil.HTTPError500'
       summary: Updates Product
       tags:
-      - product
+      - Product
 securityDefinitions:
   ApiKeyAuth:
     description: Description for what is this security definition being used

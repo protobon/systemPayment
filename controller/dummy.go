@@ -14,7 +14,7 @@ import (
 //
 //	@Summary		Insert Dummy
 //	@Description	save dummy in database
-//	@Tags			dummy
+//	@Tags			Dummy
 //	@Accept			json
 //	 @Param   example     body     model.Dummy     true  "Dummy example"     example(model.Dummy)
 //	@Produce		json
@@ -49,7 +49,7 @@ func (c *Controller) NewDummy(ctx *gin.Context) {
 //
 //	@Summary		Select all Dummies
 //	@Description	Select all Dummies
-//	@Tags			dummy
+//	@Tags			Dummy
 //	@Accept			json
 //
 // @Param   start  query  int  true  "start example"  example(0)
@@ -97,7 +97,7 @@ func (c *Controller) Dummies(ctx *gin.Context) {
 //
 //	@Summary		Select Dummy
 //	@Description	Get one Dummy from ID
-//	@Tags			dummy
+//	@Tags			Dummy
 //	@Accept			json
 //
 // @Param   int  query  int  true  "example: 1"  "Dummy ID"
@@ -133,7 +133,7 @@ func (c *Controller) GetDummy(ctx *gin.Context) {
 //
 //	@Summary		Updates Dummy
 //	@Description	Updates a dummy in database (id req)
-//	@Tags			dummy
+//	@Tags			Dummy
 //	@Accept			json
 //	 @Param   example     body     model.Dummy     true  "Dummy example"     example(model.Dummy)
 //	@Produce		json

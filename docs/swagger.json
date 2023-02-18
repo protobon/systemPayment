@@ -28,7 +28,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "dummy"
+                    "Dummy"
                 ],
                 "summary": "Select all Dummies",
                 "parameters": [
@@ -72,7 +72,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "dummy"
+                    "Dummy"
                 ],
                 "summary": "Insert Dummy",
                 "parameters": [
@@ -124,7 +124,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "dummy"
+                    "Dummy"
                 ],
                 "summary": "Updates Dummy",
                 "parameters": [
@@ -176,7 +176,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "dummy"
+                    "Dummy"
                 ],
                 "summary": "Select Dummy",
                 "parameters": [
@@ -424,7 +424,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "payer"
+                    "Payer"
                 ],
                 "summary": "Insert Payer",
                 "parameters": [
@@ -473,7 +473,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "payer"
+                    "Payer"
                 ],
                 "summary": "Select all Payers",
                 "parameters": [
@@ -517,7 +517,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "payer"
+                    "Payer"
                 ],
                 "summary": "Updates Payer",
                 "parameters": [
@@ -566,7 +566,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "payer"
+                    "Payer"
                 ],
                 "summary": "Select Payer",
                 "parameters": [
@@ -616,7 +616,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "Product"
                 ],
                 "summary": "Insert Product",
                 "parameters": [
@@ -665,7 +665,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "Product"
                 ],
                 "summary": "Select all Products",
                 "parameters": [
@@ -709,7 +709,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "Product"
                 ],
                 "summary": "Updates Product",
                 "parameters": [
@@ -758,7 +758,7 @@
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "Product"
                 ],
                 "summary": "Select Product",
                 "parameters": [

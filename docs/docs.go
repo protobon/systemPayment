@@ -34,7 +34,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "dummy"
+                    "Dummy"
                 ],
                 "summary": "Select all Dummies",
                 "parameters": [
@@ -78,7 +78,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "dummy"
+                    "Dummy"
                 ],
                 "summary": "Insert Dummy",
                 "parameters": [
@@ -130,7 +130,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "dummy"
+                    "Dummy"
                 ],
                 "summary": "Updates Dummy",
                 "parameters": [
@@ -182,7 +182,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "dummy"
+                    "Dummy"
                 ],
                 "summary": "Select Dummy",
                 "parameters": [
@@ -430,7 +430,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "payer"
+                    "Payer"
                 ],
                 "summary": "Insert Payer",
                 "parameters": [
@@ -479,7 +479,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "payer"
+                    "Payer"
                 ],
                 "summary": "Select all Payers",
                 "parameters": [
@@ -523,7 +523,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "payer"
+                    "Payer"
                 ],
                 "summary": "Updates Payer",
                 "parameters": [
@@ -572,7 +572,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "payer"
+                    "Payer"
                 ],
                 "summary": "Select Payer",
                 "parameters": [
@@ -622,7 +622,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "Product"
                 ],
                 "summary": "Insert Product",
                 "parameters": [
@@ -671,7 +671,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "Product"
                 ],
                 "summary": "Select all Products",
                 "parameters": [
@@ -715,7 +715,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "Product"
                 ],
                 "summary": "Updates Product",
                 "parameters": [
@@ -764,7 +764,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "product"
+                    "Product"
                 ],
                 "summary": "Select Product",
                 "parameters": [

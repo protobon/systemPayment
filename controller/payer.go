@@ -14,7 +14,7 @@ import (
 //
 //		@Summary		Insert Payer
 //		@Description	save payer in database
-//		@Tags			payer
+//		@Tags			Payer
 //		@Accept			json
 //	 @Param   example     body     model.Payer     true  "Payer example"     example(model.Payer)
 //		@Produce		json
@@ -49,7 +49,7 @@ func (c *Controller) NewPayer(ctx *gin.Context) {
 //
 //	@Summary		Select all Payers
 //	@Description	Select all Payers
-//	@Tags			payer
+//	@Tags			Payer
 //
 // @Param   start  query  int  true  "start example"  example(0)
 // @Param   count  query  int  true  "count example"  example(10)
@@ -96,7 +96,7 @@ func (c *Controller) Payers(ctx *gin.Context) {
 //
 //	@Summary		Select Payer
 //	@Description	Get one Payer from ID
-//	@Tags			payer
+//	@Tags			Payer
 //
 // @Param   int  query  int  true  "example: 1"  "Payer ID"
 //
@@ -133,7 +133,7 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 //
 //	@Summary		Updates Payer
 //	@Description	Updates a payer in database (id req)
-//	@Tags			payer
+//	@Tags			Payer
 //	@Accept			json
 //	 @Param   example     body     model.Payer     true  "Payer example"     example(model.Payer)
 //	@Produce		json
