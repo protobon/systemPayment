@@ -1,156 +1,139 @@
 package model
 
 import (
-	"database/sql"
-	"errors"
-	"log"
 	"time"
 
 	"gopkg.in/validator.v2"
+	"gorm.io/gorm"
 )
 
-type AddressObject struct {
-	ID        int       `json:"id"`
-	Payer     int       `json:"payer"`
-	State     *string   `json:"state" validate:"nonzero"`
-	City      *string   `json:"city" validate:"nonzero"`
-	ZipCode   *string   `json:"zip_code" validate:"nonzero"`
-	Street    *string   `json:"street" validate:"nonzero"`
-	Number    *string   `json:"number" validate:"nonzero"`
-	CreatedAt time.Time `json:"created_at"`
+// Payer example
+type Payer struct {
+	ID            int            `gorm:"primaryKey" example:"1"`
+	Name          *string        `example:"Jhon Doe" validate:"nonzero,min=6,max=100"`
+	Email         *string        `example:"jhondoe@mail.com" validate:"nonzero,min=6,max=100"`
+	BirthDate     *string        `example:"24/07/1992" validate:"nonzero"`
+	Phone         *string        `example:"+123456789" validate:"nonzero"`
+	Document      *string        `example:"23415162" validate:"nonzero"`
+	UserReference *string        `example:"12345" validate:"nonzero"`
+	Address       Address        `gorm:"foreignKey:PayerID;references:ID" validate:"nonzero"`
+	AddressID     int            `json:"-" swaggerignore:"true"`
+	CreatedAt     time.Time      `json:"-" swaggerignore:"true"`
+	UpdatedAt     time.Time      `json:"-" swaggerignore:"true"`
+	DeletedAt     gorm.DeletedAt `json:"-" swaggerignore:"true"`
 }
 
-type DlocalAddress struct {
-	State   *string `json:"state" validate:"nonzero"`
-	City    *string `json:"city" validate:"nonzero"`
-	ZipCode *string `json:"zip_code" validate:"nonzero"`
-	Street  *string `json:"street" validate:"nonzero"`
-	Number  *string `json:"number" validate:"nonzero"`
+type Address struct {
+	ID        int            `json:"-" gorm:"primaryKey" example:"1" swaggerignore:"true"`
+	PayerID   int            `json:"-" gorm:"column:payer_id" example:"1" swaggerignore:"true"`
+	State     *string        `example:"Rio de Janeiro" validate:"nonzero"`
+	City      *string        `example:"Volta Redonda" validate:"nonzero"`
+	ZipCode   *string        `example:"27275-595" validate:"nonzero"`
+	Street    *string        `example:"Servidão B-1" validate:"nonzero"`
+	Number    *string        `example:"1106" validate:"nonzero"`
+	CreatedAt time.Time      `json:"-" swaggerignore:"true"`
+	DeletedAt gorm.DeletedAt `json:"-" swaggerignore:"true"`
 }
 
-type PayerObject struct {
-	ID            int           `json:"id"`
-	Name          *string       `json:"name" validate:"nonzero"`
-	Email         *string       `json:"email" validate:"nonzero"`
-	BirthDate     *string       `json:"birth_date" validate:"nonzero"`
-	Phone         *string       `json:"phone" validate:"nonzero"`
-	Document      *string       `json:"document" validate:"nonzero"`
-	UserReference *string       `json:"user_reference" validate:"nonzero"`
-	Address       AddressObject `json:"address" validate:"nonzero"`
-	CreatedAt     time.Time     `json:"created_at"`
-	UpdatedAt     time.Time     `json:"updated_at"`
+func (Payer) TableName() string {
+	return "payer"
 }
 
-type DlocalPayer struct {
-	Name          string        `json:"name" validate:"nonzero"`
-	Email         string        `json:"email" validate:"nonzero"`
-	Document      string        `json:"document" validate:"nonzero"`
-	UserReference string        `json:"user_reference" validate:"nonzero"`
-	Address       AddressObject `json:"address" validate:"nonzero"`
-	IP            string        `json:"ip" validate:"nonzero"`
-	DeviceID      string        `json:"device_id" validate:"nonzero"`
+func (Address) TableName() string {
+	return "address"
 }
 
-func (p *PayerObject) QGetPayerFromID(db *sql.DB) error {
-	return db.QueryRow("SELECT id FROM payer WHERE id=$1",
-		p.ID).Scan(&p.ID)
+// QGetPayerFromEmail - Get payer from email
+//
+// Filter by Payer.Email, returns Payer{} or ErrRecordNotFound
+func (p *Payer) QGetPayerFromEmail(db *gorm.DB) error {
+	err := db.Where("email = ?", p.Email).First(&p).Error
+	return err
 }
 
-func (p *PayerObject) QGetPayerFromEmail(db *sql.DB) error {
-	return db.QueryRow("SELECT id FROM payer WHERE email=$1",
-		p.Email).Scan(&p.ID)
-}
-
-func (p *PayerObject) QCreatePayer(db *sql.DB) error {
-	if err := p.QGetPayerFromEmail(db); err == nil {
-		// Found Payer from Email
-		return errors.New("email already taken")
+// QCreatePayer - Insert into payer
+//
+// Inserts new Payer + Address
+func (p *Payer) QCreatePayer(db *gorm.DB) (error, int) {
+	var err error
+	if err = validator.Validate(p); err != nil {
+		return err, 400
+	}
+	if err = validator.Validate(p.Address); err != nil {
+		return err, 400
 	}
 
 	p.CreatedAt = time.Now()
-	p.UpdatedAt = p.CreatedAt
-	err := db.QueryRow(
-		`INSERT INTO payer(name, email, birth_date, phone, document, user_reference, created_at, updated_at) 
-		VALUES($1, $2, $3, $4, $5, $6, $7, $8) RETURNING id`, p.Name, p.Email, p.BirthDate, p.Phone,
-		p.Document, p.UserReference, p.CreatedAt, p.UpdatedAt).Scan(&p.ID)
-
-	if err != nil {
-		return err
+	// Create Payer
+	if err = db.Raw(`INSERT INTO payer(name, email, birth_date, phone, document, user_reference, created_at) 
+	VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING id`, p.Name, p.Email, p.BirthDate, p.Phone,
+		p.Document, p.UserReference, p.CreatedAt).Scan(&p.ID).Error; err != nil {
+		return err, 500
 	}
 
-	if err = validator.Validate(p.Address); err != nil {
-		return err
-	}
-
-	p.Address.Payer = p.ID
-	if err = p.Address.QCreateAddress(db); err != nil {
-		return err
-	}
-	return nil
+	// Insert Payer's address
+	err, code := p.Address.QCreateAddress(db, p)
+	return err, code
 }
 
-func (a *AddressObject) QCreateAddress(db *sql.DB) error {
+// QCreateAddress - Insert into address
+//
+// Inserts new Address linked to Payer as Address.PayerID = Payer.ID
+func (a *Address) QCreateAddress(db *gorm.DB, p *Payer) (error, int) {
 	var err error
+	a.PayerID = p.ID
 	a.CreatedAt = time.Now()
-	err = db.QueryRow(
-		`INSERT INTO address(payer, state, city, zip_code, street, number, created_at) 
-		VALUES($1, $2, $3, $4, $5, $6, $7) RETURNING id`,
-		a.Payer, a.State, a.City, a.ZipCode, a.Street, a.Number, a.CreatedAt).Scan(&a.ID)
-
-	if err != nil {
-		return err
+	// err = db.Create(a).Error
+	if err = db.Raw(`INSERT INTO address(payer_id, state, city, zip_code, street, number, created_at) 
+	VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING id`,
+		a.PayerID, a.State, a.City, a.ZipCode, a.Street, a.Number, a.CreatedAt).Scan(&a.ID).Error; err != nil {
+		return err, 500
 	}
-
-	return nil
+	p.AddressID = a.ID
+	err, code := p.QUpdatePayer(db)
+	return err, code
 }
 
-func (p *PayerObject) QGetPayer(db *sql.DB) error {
-	return db.QueryRow(`SELECT payer.id, payer.name, payer.email, payer.birth_date, payer.phone, payer.document, 
-		payer.user_reference, payer.created_at, address.state, address.city, address.zip_code, address.street, 
-		address.number FROM payer JOIN address ON address.payer=payer.id WHERE payer.id=$1`, p.ID).Scan(
-		&p.Name, &p.Email, &p.BirthDate, &p.Phone, &p.Document, &p.UserReference, &p.CreatedAt,
-		&p.Address.State, &p.Address.City, &p.Address.ZipCode, &p.Address.Street, &p.Address.Number)
-}
-
-func (p *PayerObject) QGetPayers(db *sql.DB, start int, count int) ([]PayerObject, error) {
-	rows, err := db.Query(
-		`SELECT payer.id, payer.name, payer.email, payer.birth_date, payer.phone, payer.document, 
-		payer.user_reference, payer.created_at, address.state, address.city, address.zip_code, address.street, 
-		address.number FROM payer LEFT JOIN address ON address.payer=payer.id LIMIT $1 OFFSET $2`,
-		count, start)
-
+func (p *Payer) QGetPayers(db *gorm.DB, start int, count int) ([]Payer, error, int) {
+	var payers []Payer
+	rows, err := db.Raw(`SELECT payer.id, payer.name, payer.email, payer.birth_date, payer.phone, payer.document, 
+	payer.user_reference, payer.created_at, address.state, address.city, address.zip_code, address.street, 
+	address.number FROM payer LEFT JOIN address ON address.id=payer.address_id LIMIT ? OFFSET ?`,
+		count, start).Rows()
 	if err != nil {
-		return nil, err
+		return payers, err, 500
 	}
-
-	defer func(rows *sql.Rows) {
-		err = rows.Close()
-		if err != nil {
-			log.Println(err)
-		}
-	}(rows)
-
-	var payers []PayerObject
-
+	defer rows.Close()
 	for rows.Next() {
-		var payer PayerObject
+		payer := Payer{}
 		if err = rows.Scan(&payer.ID, &payer.Name, &payer.Email, &payer.BirthDate, &payer.Phone,
 			&payer.Document, &payer.UserReference, &payer.CreatedAt, &payer.Address.State,
 			&payer.Address.City, &payer.Address.ZipCode, &payer.Address.Street, &payer.Address.Number); err != nil {
-			return nil, err
+			return payers, err, 500
 		}
 		payers = append(payers, payer)
 	}
-
-	return payers, nil
+	return payers, nil, 200
 }
 
-func (p *PayerObject) QUpdatePayer(db *sql.DB) error {
-	return db.QueryRow("SELECT id FROM payer WHERE id=$1",
-		p.ID).Scan(&p.ID)
+func (p *Payer) QGetPayer(db *gorm.DB) error {
+	err := db.Preload("Address").Where("id = ? AND address.id = ?", p.ID, p.AddressID).First(&p).Error
+	return err
 }
 
-func (p *PayerObject) QDeletePayer(db *sql.DB) error {
-	return db.QueryRow("SELECT id FROM payer WHERE id=$1",
-		p.ID).Scan(&p.ID)
+func (p *Payer) QUpdatePayer(db *gorm.DB) (error, int) {
+	var err error
+	if err = validator.Validate(p); err != nil {
+		return err, 400
+	}
+
+	if err = validator.Validate(p.Address); err != nil {
+		return err, 400
+	}
+
+	p.UpdatedAt = time.Now()
+	if err = db.Model(&p).Updates(p).Error; err != nil {
+		return err, 500
+	}
+	return nil, 200
 }
