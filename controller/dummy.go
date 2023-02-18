@@ -16,6 +16,7 @@ import (
 //	@Description	save dummy in database
 //	@Tags			dummy
 //	@Accept			json
+//	 @Param   example     body     model.Dummy     true  "Dummy example"     example(model.Dummy)
 //	@Produce		json
 //	@Success		200	{object}	model.Dummy
 //	@Failure		400	{object}	httputil.HTTPError400
@@ -98,6 +99,9 @@ func (c *Controller) Dummies(ctx *gin.Context) {
 //	@Description	Get one Dummy from ID
 //	@Tags			dummy
 //	@Accept			json
+//
+// @Param   int  query  int  true  "example: 1"  "Dummy ID"
+//
 //	@Produce		json
 //	@Success		200	{object}	model.Dummy
 //	@Failure		400	{object}	httputil.HTTPError400
@@ -131,6 +135,7 @@ func (c *Controller) GetDummy(ctx *gin.Context) {
 //	@Description	Updates a dummy in database (id req)
 //	@Tags			dummy
 //	@Accept			json
+//	 @Param   example     body     model.Dummy     true  "Dummy example"     example(model.Dummy)
 //	@Produce		json
 //	@Success		200	{object}	model.Dummy
 //	@Failure		400	{object}	httputil.HTTPError400

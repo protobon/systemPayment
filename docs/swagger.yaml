@@ -57,6 +57,23 @@ definitions:
         example: 299.99
         type: number
     type: object
+  model.Order:
+    properties:
+      finished:
+        type: boolean
+      id:
+        example: 1
+        type: integer
+      payerID:
+        example: 1
+        type: integer
+      productID:
+        example: 1
+        type: integer
+      totalFees:
+        example: 3
+        type: integer
+    type: object
   model.Payer:
     properties:
       address:
@@ -117,12 +134,12 @@ info:
     email: support@swagger.io
     name: API Support
     url: http://www.swagger.io/support
-  description: This is a sample server celler server.
+  description: API implementation.
   license:
     name: Apache 2.0
     url: http://www.apache.org/licenses/LICENSE-2.0.html
   termsOfService: http://swagger.io/terms/
-  title: Swagger Example API
+  title: Swagger System Payment
   version: "1.0"
 paths:
   /dummy/{id}:
@@ -130,6 +147,12 @@ paths:
       consumes:
       - application/json
       description: Get one Dummy from ID
+      parameters:
+      - description: 'example: 1'
+        in: query
+        name: int
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -187,6 +210,13 @@ paths:
       consumes:
       - application/json
       description: save dummy in database
+      parameters:
+      - description: Dummy example
+        in: body
+        name: example
+        required: true
+        schema:
+          $ref: '#/definitions/model.Dummy'
       produces:
       - application/json
       responses:
@@ -214,6 +244,13 @@ paths:
       consumes:
       - application/json
       description: Updates a dummy in database (id req)
+      parameters:
+      - description: Dummy example
+        in: body
+        name: example
+        required: true
+        schema:
+          $ref: '#/definitions/model.Dummy'
       produces:
       - application/json
       responses:
@@ -236,6 +273,137 @@ paths:
       summary: Updates Dummy
       tags:
       - dummy
+  /order/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one Order from ID
+      parameters:
+      - description: 'example: 1'
+        in: query
+        name: int
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Order'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError400'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError404'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError500'
+      summary: Select Order
+      tags:
+      - Order
+  /order/new:
+    post:
+      consumes:
+      - application/json
+      description: save Order in database
+      parameters:
+      - description: Order example
+        in: body
+        name: example
+        required: true
+        schema:
+          $ref: '#/definitions/model.Order'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Order'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError400'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError404'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError500'
+      summary: Insert Order
+      tags:
+      - Order
+  /order/orders:
+    get:
+      consumes:
+      - application/json
+      description: Select all Orders
+      parameters:
+      - description: start example
+        example: 0
+        in: query
+        name: start
+        required: true
+        type: integer
+      - description: count example
+        example: 10
+        in: query
+        name: count
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Order'
+            type: array
+      summary: Select all Orders
+      tags:
+      - Order
+  /order/update:
+    put:
+      consumes:
+      - application/json
+      description: Updates a Order in database (id req)
+      parameters:
+      - description: Order example
+        in: body
+        name: example
+        required: true
+        schema:
+          $ref: '#/definitions/model.Order'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Order'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError400'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError404'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError500'
+      summary: Updates Order
+      tags:
+      - Order
   /payer/{id}:
     get:
       description: Get one Payer from ID
@@ -273,7 +441,7 @@ paths:
       - application/json
       description: save payer in database
       parameters:
-      - description: model.Payer example
+      - description: Payer example
         in: body
         name: example
         required: true
@@ -335,7 +503,7 @@ paths:
       - application/json
       description: Updates a payer in database (id req)
       parameters:
-      - description: model.Payer example
+      - description: Payer example
         in: body
         name: example
         required: true

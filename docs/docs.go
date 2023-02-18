@@ -81,6 +81,17 @@ const docTemplate = `{
                     "dummy"
                 ],
                 "summary": "Insert Dummy",
+                "parameters": [
+                    {
+                        "description": "Dummy example",
+                        "name": "example",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Dummy"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -122,6 +133,17 @@ const docTemplate = `{
                     "dummy"
                 ],
                 "summary": "Updates Dummy",
+                "parameters": [
+                    {
+                        "description": "Dummy example",
+                        "name": "example",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Dummy"
+                        }
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -163,11 +185,218 @@ const docTemplate = `{
                     "dummy"
                 ],
                 "summary": "Select Dummy",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "example: 1",
+                        "name": "int",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/model.Dummy"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError400"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError404"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError500"
+                        }
+                    }
+                }
+            }
+        },
+        "/order/new": {
+            "post": {
+                "description": "save Order in database",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Insert Order",
+                "parameters": [
+                    {
+                        "description": "Order example",
+                        "name": "example",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Order"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Order"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError400"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError404"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError500"
+                        }
+                    }
+                }
+            }
+        },
+        "/order/orders": {
+            "get": {
+                "description": "Select all Orders",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Select all Orders",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 0,
+                        "description": "start example",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 10,
+                        "description": "count example",
+                        "name": "count",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.Order"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/order/update": {
+            "put": {
+                "description": "Updates a Order in database (id req)",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Updates Order",
+                "parameters": [
+                    {
+                        "description": "Order example",
+                        "name": "example",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Order"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Order"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError400"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError404"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError500"
+                        }
+                    }
+                }
+            }
+        },
+        "/order/{id}": {
+            "get": {
+                "description": "Get one Order from ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Order"
+                ],
+                "summary": "Select Order",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "example: 1",
+                        "name": "int",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.Order"
                         }
                     },
                     "400": {
@@ -206,7 +435,7 @@ const docTemplate = `{
                 "summary": "Insert Payer",
                 "parameters": [
                     {
-                        "description": "model.Payer example",
+                        "description": "Payer example",
                         "name": "example",
                         "in": "body",
                         "required": true,
@@ -299,7 +528,7 @@ const docTemplate = `{
                 "summary": "Updates Payer",
                 "parameters": [
                     {
-                        "description": "model.Payer example",
+                        "description": "Payer example",
                         "name": "example",
                         "in": "body",
                         "required": true,
@@ -658,6 +887,30 @@ const docTemplate = `{
                 }
             }
         },
+        "model.Order": {
+            "type": "object",
+            "properties": {
+                "finished": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "payerID": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "productID": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "totalFees": {
+                    "type": "integer",
+                    "example": 3
+                }
+            }
+        },
         "model.Payer": {
             "type": "object",
             "properties": {
@@ -786,8 +1039,8 @@ var SwaggerInfo = &swag.Spec{
 	Host:             "localhost:8080",
 	BasePath:         "/api/v1",
 	Schemes:          []string{},
-	Title:            "Swagger Example API",
-	Description:      "This is a sample server celler server.",
+	Title:            "Swagger System Payment",
+	Description:      "API implementation.",
 	InfoInstanceName: "swagger",
 	SwaggerTemplate:  docTemplate,
 }
