@@ -157,6 +157,19 @@ paths:
       consumes:
       - application/json
       description: Select all Dummies
+      parameters:
+      - description: start example
+        example: 0
+        in: query
+        name: start
+        required: true
+        type: integer
+      - description: count example
+        example: 10
+        in: query
+        name: count
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -225,8 +238,6 @@ paths:
       - dummy
   /payer/{id}:
     get:
-      consumes:
-      - application/json
       description: Get one Payer from ID
       parameters:
       - description: 'example: 1'
@@ -292,9 +303,20 @@ paths:
       - payer
   /payer/payers:
     get:
-      consumes:
-      - application/json
       description: Select all Payers
+      parameters:
+      - description: start example
+        example: 0
+        in: query
+        name: start
+        required: true
+        type: integer
+      - description: count example
+        example: 10
+        in: query
+        name: count
+        required: true
+        type: integer
       produces:
       - application/json
       responses:
@@ -343,8 +365,6 @@ paths:
       - payer
   /product/{id}:
     get:
-      consumes:
-      - application/json
       description: Get one Product from ID
       parameters:
       - description: 'example: 1'
@@ -410,9 +430,20 @@ paths:
       - product
   /product/products:
     get:
-      consumes:
-      - application/json
       description: Select all Products
+      parameters:
+      - description: start example
+        example: 0
+        in: query
+        name: start
+        required: true
+        type: integer
+      - description: count example
+        example: 10
+        in: query
+        name: count
+        required: true
+        type: integer
       produces:
       - application/json
       responses:

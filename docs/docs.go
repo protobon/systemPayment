@@ -37,6 +37,24 @@ const docTemplate = `{
                     "dummy"
                 ],
                 "summary": "Select all Dummies",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 0,
+                        "description": "start example",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 10,
+                        "description": "count example",
+                        "name": "count",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -228,9 +246,6 @@ const docTemplate = `{
         "/payer/payers": {
             "get": {
                 "description": "Select all Payers",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -238,6 +253,24 @@ const docTemplate = `{
                     "payer"
                 ],
                 "summary": "Select all Payers",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 0,
+                        "description": "start example",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 10,
+                        "description": "count example",
+                        "name": "count",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -306,9 +339,6 @@ const docTemplate = `{
         "/payer/{id}": {
             "get": {
                 "description": "Get one Payer from ID",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -408,9 +438,6 @@ const docTemplate = `{
         "/product/products": {
             "get": {
                 "description": "Select all Products",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],
@@ -418,6 +445,24 @@ const docTemplate = `{
                     "product"
                 ],
                 "summary": "Select all Products",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 0,
+                        "description": "start example",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 10,
+                        "description": "count example",
+                        "name": "count",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
                 "responses": {
                     "200": {
                         "description": "OK",
@@ -486,9 +531,6 @@ const docTemplate = `{
         "/product/{id}": {
             "get": {
                 "description": "Get one Product from ID",
-                "consumes": [
-                    "application/json"
-                ],
                 "produces": [
                     "application/json"
                 ],

@@ -51,7 +51,10 @@ func (c *Controller) NewProduct(ctx *gin.Context) {
 //	@Summary		Select all Products
 //	@Description	Select all Products
 //	@Tags			product
-//	@Accept			json
+//
+// @Param   start  query  int  true  "start example"  example(0)
+// @Param   count  query  int  true  "count example"  example(10)
+//
 //	@Produce		json
 //	@Success		200	{array}		model.Product
 //	@Router			/product/products [get]
@@ -95,7 +98,6 @@ func (c *Controller) Products(ctx *gin.Context) {
 //	@Summary		Select Product
 //	@Description	Get one Product from ID
 //	@Tags			product
-//	@Accept			json
 //
 // @Param   int  query  int  true  "example: 1"  "Product ID"
 //

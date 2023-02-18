@@ -51,7 +51,10 @@ func (c *Controller) NewPayer(ctx *gin.Context) {
 //	@Summary		Select all Payers
 //	@Description	Select all Payers
 //	@Tags			payer
-//	@Accept			json
+//
+// @Param   start  query  int  true  "start example"  example(0)
+// @Param   count  query  int  true  "count example"  example(10)
+//
 //	@Produce		json
 //	@Success		200	{array}		model.Payer
 //	@Router			/payer/payers [get]
@@ -95,7 +98,6 @@ func (c *Controller) Payers(ctx *gin.Context) {
 //	@Summary		Select Payer
 //	@Description	Get one Payer from ID
 //	@Tags			payer
-//	@Accept			json
 //
 // @Param   int  query  int  true  "example: 1"  "Payer ID"
 //
