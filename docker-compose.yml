@@ -21,7 +21,7 @@ services:
       - 8080:8080
     restart: on-failure
     volumes:
-      - .:/app_test
+      - .:/app
     depends_on:
       - system_payment_db_test
     networks:
@@ -38,14 +38,15 @@ services:
       - POSTGRES_DB=${TEST_DB_NAME}
       - DATABASE_HOST=${TEST_DB_HOST}
     ports:
-      - '4568:5432'
+      - '2345:5432'
     volumes:
-      - ./.pg_data_test:/var/lib/postgresql/data
+      - data_test:/var/lib/postgresql/data
     networks:
       - system_payment_network_test
 
 volumes:
-  pg_data_test:
+  data_test:
+  app:
 
 # Networks to be created to facilitate communication between containers
 networks:

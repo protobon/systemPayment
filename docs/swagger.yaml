@@ -1,0 +1,357 @@
+basePath: /api/v1
+definitions:
+  httputil.HTTPError400:
+    properties:
+      code:
+        example: 400
+        type: integer
+      error:
+        example: Invalid request payload or query parameters
+        type: string
+    type: object
+  httputil.HTTPError404:
+    properties:
+      code:
+        example: 404
+        type: integer
+      error:
+        example: Page not found
+        type: string
+    type: object
+  httputil.HTTPError500:
+    properties:
+      code:
+        example: 500
+        type: integer
+      error:
+        example: Internal Server Error
+        type: string
+    type: object
+  model.Address:
+    properties:
+      city:
+        example: Volta Redonda
+        type: string
+      number:
+        example: "1106"
+        type: string
+      state:
+        example: Rio de Janeiro
+        type: string
+      street:
+        example: Servidão B-1
+        type: string
+      zipCode:
+        example: 27275-595
+        type: string
+    type: object
+  model.Dummy:
+    properties:
+      id:
+        example: 1
+        type: integer
+      name:
+        example: desktop chair
+        type: string
+      price:
+        example: 299.99
+        type: number
+    type: object
+  model.Payer:
+    properties:
+      address:
+        $ref: '#/definitions/model.Address'
+      birthDate:
+        example: 24/07/1992
+        type: string
+      document:
+        example: "23415162"
+        type: string
+      email:
+        example: jhondoe@mail.com
+        maxLength: 100
+        minLength: 6
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Jhon Doe
+        maxLength: 100
+        minLength: 6
+        type: string
+      phone:
+        example: "+123456789"
+        type: string
+      userReference:
+        example: "12345"
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact:
+    email: support@swagger.io
+    name: API Support
+    url: http://www.swagger.io/support
+  description: This is a sample server celler server.
+  license:
+    name: Apache 2.0
+    url: http://www.apache.org/licenses/LICENSE-2.0.html
+  termsOfService: http://swagger.io/terms/
+  title: Swagger Example API
+  version: "1.0"
+paths:
+  /dummy/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one Dummy from ID
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Dummy'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError400'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError404'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError500'
+      summary: Select Dummy
+      tags:
+      - dummy
+  /dummy/dummies:
+    get:
+      consumes:
+      - application/json
+      description: Select all Dummies
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Dummy'
+            type: array
+      summary: Select all Dummies
+      tags:
+      - dummy
+  /dummy/new:
+    post:
+      consumes:
+      - application/json
+      description: save dummy in database
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Dummy'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError400'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError404'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError500'
+      summary: Insert Dummy
+      tags:
+      - dummy
+  /dummy/update:
+    put:
+      consumes:
+      - application/json
+      description: Updates a dummy in database (id req)
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Dummy'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError400'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError404'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError500'
+      summary: Updates Dummy
+      tags:
+      - dummy
+  /payer/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one Payer from ID
+      parameters:
+      - description: 'example: 1'
+        in: query
+        name: int
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Payer'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError400'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError404'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError500'
+      summary: Select Payer
+      tags:
+      - payer
+  /payer/new:
+    post:
+      consumes:
+      - application/json
+      description: save payer in database
+      parameters:
+      - description: model.Payer example
+        in: body
+        name: example
+        required: true
+        schema:
+          $ref: '#/definitions/model.Payer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Payer'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError400'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError404'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError500'
+      summary: Insert Payer
+      tags:
+      - payer
+  /payer/payers:
+    get:
+      consumes:
+      - application/json
+      description: Select all Payers
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.Payer'
+            type: array
+      summary: Select all Payers
+      tags:
+      - payer
+  /payer/update:
+    put:
+      consumes:
+      - application/json
+      description: Updates a payer in database (id req)
+      parameters:
+      - description: model.Payer example
+        in: body
+        name: example
+        required: true
+        schema:
+          $ref: '#/definitions/model.Payer'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.Payer'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError400'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError404'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError500'
+      summary: Updates Payer
+      tags:
+      - payer
+securityDefinitions:
+  ApiKeyAuth:
+    description: Description for what is this security definition being used
+    in: header
+    name: Authorization
+    type: apiKey
+  BasicAuth:
+    type: basic
+  OAuth2AccessCode:
+    authorizationUrl: https://example.com/oauth/authorize
+    flow: accessCode
+    scopes:
+      admin: "\t\t\t\t\t\t\tGrants read and write access to administrative information"
+    tokenUrl: https://example.com/oauth/token
+    type: oauth2
+  OAuth2Application:
+    flow: application
+    scopes:
+      admin: "\t\t\t\t\t\t\tGrants read and write access to administrative information"
+      write: "\t\t\t\t\t\t\tGrants write access"
+    tokenUrl: https://example.com/oauth/token
+    type: oauth2
+  OAuth2Implicit:
+    authorizationUrl: https://example.com/oauth/authorize
+    flow: implicit
+    scopes:
+      admin: "\t\t\t\t\t\t\tGrants read and write access to administrative information"
+      write: "\t\t\t\t\t\t\tGrants write access"
+    type: oauth2
+  OAuth2Password:
+    flow: password
+    scopes:
+      admin: "\t\t\t\t\t\t\tGrants read and write access to administrative information"
+      read: "\t\t\t\t\t\t\t\tGrants read access"
+      write: "\t\t\t\t\t\t\tGrants write access"
+    tokenUrl: https://example.com/oauth/token
+    type: oauth2
+swagger: "2.0"

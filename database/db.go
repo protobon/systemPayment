@@ -1,15 +1,21 @@
 package database
 
 import (
-	"database/sql"
 	"fmt"
-	"log"
+	"systempayment/model"
+
+	log "github.com/sirupsen/logrus"
+
+	"gorm.io/driver/postgres"
+	"gorm.io/gorm"
 
 	_ "github.com/lib/pq"
 )
 
+var DB *gorm.DB
+
 func DBInit(user string, password string,
-	dbhost string, dbname string) *sql.DB {
+	dbhost string, dbname string) {
 	connectionString :=
 		fmt.Sprintf("postgres://%v:%v@%v/%v?sslmode=disable",
 			user,
@@ -17,40 +23,17 @@ func DBInit(user string, password string,
 			dbhost,
 			dbname)
 
+	fmt.Println(connectionString)
+
+	log.Info("Connecting to database...")
+
 	var err error
-	var db *sql.DB
-	db, err = sql.Open("postgres", connectionString)
+	DB, err = gorm.Open(postgres.Open(connectionString), &gorm.Config{})
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	CreateTableDummy(db)
-	CreateTablePayer(db)
-	CreateTableAddress(db)
-	CreateTableSecureCard(db)
-	return db
-}
+	DB.AutoMigrate(&model.Dummy{}, &model.Payer{}, &model.Address{})
 
-func CreateTableDummy(db *sql.DB) {
-	if _, err := db.Exec(DummyTableCreate); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func CreateTablePayer(db *sql.DB) {
-	if _, err := db.Exec(PayerTableCreate); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func CreateTableAddress(db *sql.DB) {
-	if _, err := db.Exec(AddressTableCreate); err != nil {
-		log.Fatal(err)
-	}
-}
-
-func CreateTableSecureCard(db *sql.DB) {
-	if _, err := db.Exec(SecureCardTableCreate); err != nil {
-		log.Fatal(err)
-	}
+	log.Info("Database connected")
 }

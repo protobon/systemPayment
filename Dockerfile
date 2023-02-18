@@ -14,7 +14,7 @@ WORKDIR /app
 # Copy the source from the current directory to the working Directory inside the container
 COPY . .
 
-# Download and install the dependencies + build binary file
+# Download and install dependencies + build binary file
 RUN go get -d -v ./...  && \
     go install -v ./...  && \
     go build -o /api

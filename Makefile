@@ -2,17 +2,35 @@
 
 TEST := test
 PROD := prod
+LOCAL := local
 
-COMPOSE=sudo docker compose -f docker-compose.yml
+# ------- Test (server) ------- 
 COMPOSE-TEST=docker compose -f docker-compose-test.yml
-COMPOSE-PROD=docker compose -f docker-compose-prod.yml
-LOGS=sudo docker logs -f system_payment_test
 LOGS-TEST=docker logs -f system_payment_test
+
+# ------- Prod (server) ------- 
+COMPOSE-PROD=docker compose -f docker-compose-prod.yml
 LOGS-PROD=docker logs -f system_payment
 
-# ------- pull de codigo sobre la rama actual ------------------------
+# ------- LOCAL (postgres instance + run app locally) -------
+COMPOSE-DB-LOCAL=sudo docker run --name system_payment_db_local -v systempayment_data_test:/var/lib/postgresql/data \
+					-p 5432:5432 -e POSTGRES_USER=spuser -e POSTGRES_PASSWORD=SPuser96 -e POSTGRES_DB=system_payment_test -d postgres
+START-LOCAL=sudo docker start system_payment_db_local
+RESTART-LOCAL=sudo docker restart system_payment_db_local
+STOP-LOCAL=sudo docker stop system_payment_db_local
+REMOVE-LOCAL=sudo docker rm -f system_payment_db_local
+
+# ------- Local Compose -------
+COMPOSE=sudo docker compose -f docker-compose.yml
+LOGS=sudo docker logs -f system_payment_test
+
+# ------- pull from current branch -------
 pull:
 	git pull
+
+# ------- levanta la aplicacion en maquina local --------------------
+run:
+	POSTGRES_USER=spuser POSTGRES_PASSWORD=SPuser96 POSTGRES_DB=system_payment_test APPLICATION_PORT=:8080 DATABASE_HOST=localhost:5432 go run main.go
 
 # ------- Build ----------------------------------------------------
 build:
@@ -22,6 +40,9 @@ ifeq ($(stage), $(TEST))
 endif
 ifeq ($(stage), $(PROD))
 	$(COMPOSE-PROD) build
+endif
+ifeq ($(stage), $(LOCAL))
+	$(COMPOSE-DB-LOCAL)
 endif
 ifeq ($(stage),)
 	$(COMPOSE) build
@@ -65,6 +86,9 @@ endif
 ifeq ($(stage), $(PROD))
 	$(COMPOSE-PROD) start
 endif
+ifeq ($(stage), $(LOCAL))
+	$(START-LOCAL)
+endif
 ifeq ($(stage),)
 	$(COMPOSE) start
 endif
@@ -78,6 +102,9 @@ ifeq ($(stage), $(TEST))
 endif
 ifeq ($(stage), $(PROD))
 	$(COMPOSE-PROD) stop
+endif
+ifeq ($(stage), $(LOCAL))
+	$(STOP-LOCAL)
 endif
 ifeq ($(stage),)
 	$(COMPOSE) stop
@@ -93,6 +120,26 @@ endif
 ifeq ($(stage), $(PROD))
 	$(COMPOSE-PROD) restart
 endif
+ifeq ($(stage), $(LOCAL))
+	$(RESTART-LOCAL)
+endif
+ifeq ($(stage),)
+	$(COMPOSE) restart
+endif
+
+
+# ------- Restart ----------------------------------------------------
+remove:
+	@echo $(stage)
+ifeq ($(stage), $(TEST))
+	$(COMPOSE-TEST) restart
+endif
+ifeq ($(stage), $(PROD))
+	$(COMPOSE-PROD) restart
+endif
+ifeq ($(stage), $(LOCAL))
+	$(REMOVE-LOCAL)
+endif
 ifeq ($(stage),)
 	$(COMPOSE) restart
 endif
@@ -106,6 +153,9 @@ ifeq ($(stage), $(TEST))
 endif
 ifeq ($(stage), $(PROD))
 	$(LOGS-PROD)
+endif
+ifeq ($(stage), $(LOCAL))
+	$(LOGS-LOCAL)
 endif
 ifeq ($(stage),)
 	$(LOGS)
