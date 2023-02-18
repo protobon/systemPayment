@@ -8,7 +8,6 @@ import (
 	"systempayment/model"
 
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 // NewPayer godoc
@@ -32,7 +31,7 @@ func (c *Controller) NewPayer(ctx *gin.Context) {
 		return
 	}
 
-	if err, code := payer.QCreatePayer(database.DB); err != nil {
+	if code, err := payer.QCreatePayer(database.DB); err != nil {
 		switch code {
 		case 400:
 			httputil.NewError400(ctx, http.StatusBadRequest, err)
@@ -75,7 +74,7 @@ func (c *Controller) Payers(ctx *gin.Context) {
 		start = 0
 	}
 	var payer = model.Payer{}
-	payers, err, code := payer.QGetPayers(database.DB, start, count)
+	payers, code, err := payer.QGetPayers(database.DB, start, count)
 	if err != nil {
 		switch code {
 		case 400:
@@ -114,10 +113,12 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 	}
 
 	payer := model.Payer{ID: id}
-	if err = payer.QGetPayer(database.DB); err != nil {
-		switch err {
-		case gorm.ErrRecordNotFound:
+	if code, err := payer.QGetPayer(database.DB); err != nil {
+		switch code {
+		case 404:
 			httputil.NewError404(ctx, http.StatusNotFound, err)
+		case 500:
+			httputil.NewError500(ctx, http.StatusInternalServerError, err)
 		default:
 			httputil.NewError500(ctx, http.StatusInternalServerError, err)
 		}
@@ -147,7 +148,7 @@ func (c *Controller) UpdatePayer(ctx *gin.Context) {
 		return
 	}
 
-	if err, code := payer.QUpdatePayer(database.DB); err != nil {
+	if code, err := payer.QUpdatePayer(database.DB); err != nil {
 		switch code {
 		case 400:
 			httputil.NewError400(ctx, http.StatusBadRequest, err)
