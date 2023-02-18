@@ -13,9 +13,9 @@ import (
 	ginSwagger "github.com/swaggo/gin-swagger"
 )
 
-//	@title			Swagger Example API
+//	@title			Swagger System Payment
 //	@version		1.0
-//	@description	This is a sample server celler server.
+//	@description	API implementation.
 //	@termsOfService	http://swagger.io/terms/
 
 //	@contact.name	API Support
@@ -102,6 +102,13 @@ func main() {
 			product.GET("/products", c.Products)
 			product.GET(":id", c.GetProduct)
 			product.PUT("/update", c.UpdateProduct)
+		}
+		order := v1.Group("/order")
+		{
+			order.POST("/new", c.NewOrder)
+			order.GET("/orders", c.Orders)
+			order.GET(":id", c.GetOrder)
+			order.PUT("/update", c.UpdateOrder)
 		}
 	}
 
