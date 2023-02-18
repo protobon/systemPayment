@@ -21,34 +21,55 @@ func (Dummy) TableName() string {
 	return "dummy"
 }
 
-func (d *Dummy) QCreateDummy(db *gorm.DB) error {
+func (d *Dummy) QCreateDummy(db *gorm.DB) (int, error) {
 	var err error
 	if err = validator.Validate(d); err != nil {
-		return err
+		return 400, err
 	}
 	d.CreatedAt = time.Now()
 	d.UpdatedAt = d.CreatedAt
-	err = db.Create(d).Error
-	return err
+	if err = db.Create(d).Error; err != nil {
+		return 500, err
+	}
+	return 200, nil
 }
 
-func (d *Dummy) QGetDummies(db *gorm.DB, start int, count int) ([]Dummy, error) {
+func (d *Dummy) QGetDummies(db *gorm.DB, start int, count int) ([]Dummy, int, error) {
 	var dummies []Dummy
 	if err := db.Table("dummy").Select("*").Scan(&dummies).Error; err != nil {
-		return nil, err
+		switch err {
+		case gorm.ErrRecordNotFound:
+			return dummies, 404, err
+		default:
+			return dummies, 500, err
+		}
 	}
 
-	return dummies, nil
+	return dummies, 200, nil
 }
 
-func (d *Dummy) QGetDummy(db *gorm.DB) error {
-	err := db.Where("id = ?", d.ID).First(&d).Error
-	return err
+func (d *Dummy) QGetDummy(db *gorm.DB) (int, error) {
+	if err := db.Where("id = ?", d.ID).First(&d).Error; err != nil {
+		switch err {
+		case gorm.ErrRecordNotFound:
+			return 404, err
+		default:
+			return 500, err
+		}
+	}
+	return 200, nil
 }
 
-func (d *Dummy) QUpdateDummy(db *gorm.DB) error {
+func (d *Dummy) QUpdateDummy(db *gorm.DB) (int, error) {
 	var err error
 	d.UpdatedAt = time.Now()
-	err = db.Model(&d).Updates(d).Error
-	return err
+	if err = db.Model(&d).Updates(d).Error; err != nil {
+		switch err {
+		case gorm.ErrRecordNotFound:
+			return 404, err
+		default:
+			return 500, err
+		}
+	}
+	return 200, nil
 }

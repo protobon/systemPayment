@@ -54,13 +54,13 @@ func (p *Payer) QGetPayerFromEmail(db *gorm.DB) error {
 // QCreatePayer - Insert into payer
 //
 // Inserts new Payer + Address
-func (p *Payer) QCreatePayer(db *gorm.DB) (error, int) {
+func (p *Payer) QCreatePayer(db *gorm.DB) (int, error) {
 	var err error
 	if err = validator.Validate(p); err != nil {
-		return err, 400
+		return 400, err
 	}
 	if err = validator.Validate(p.Address); err != nil {
-		return err, 400
+		return 400, err
 	}
 
 	p.CreatedAt = time.Now()
@@ -68,18 +68,18 @@ func (p *Payer) QCreatePayer(db *gorm.DB) (error, int) {
 	if err = db.Raw(`INSERT INTO payer(name, email, birth_date, phone, document, user_reference, created_at) 
 	VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING id`, p.Name, p.Email, p.BirthDate, p.Phone,
 		p.Document, p.UserReference, p.CreatedAt).Scan(&p.ID).Error; err != nil {
-		return err, 500
+		return 500, err
 	}
 
 	// Insert Payer's address
-	err, code := p.Address.QCreateAddress(db, p)
-	return err, code
+	code, err := p.Address.QCreateAddress(db, p)
+	return code, err
 }
 
 // QCreateAddress - Insert into address
 //
 // Inserts new Address linked to Payer as Address.PayerID = Payer.ID
-func (a *Address) QCreateAddress(db *gorm.DB, p *Payer) (error, int) {
+func (a *Address) QCreateAddress(db *gorm.DB, p *Payer) (int, error) {
 	var err error
 	a.PayerID = p.ID
 	a.CreatedAt = time.Now()
@@ -87,21 +87,21 @@ func (a *Address) QCreateAddress(db *gorm.DB, p *Payer) (error, int) {
 	if err = db.Raw(`INSERT INTO address(payer_id, state, city, zip_code, street, number, created_at) 
 	VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING id`,
 		a.PayerID, a.State, a.City, a.ZipCode, a.Street, a.Number, a.CreatedAt).Scan(&a.ID).Error; err != nil {
-		return err, 500
+		return 500, err
 	}
 	p.AddressID = a.ID
-	err, code := p.QUpdatePayer(db)
-	return err, code
+	code, err := p.QUpdatePayer(db)
+	return code, err
 }
 
-func (p *Payer) QGetPayers(db *gorm.DB, start int, count int) ([]Payer, error, int) {
+func (p *Payer) QGetPayers(db *gorm.DB, start int, count int) ([]Payer, int, error) {
 	var payers []Payer
 	rows, err := db.Raw(`SELECT payer.id, payer.name, payer.email, payer.birth_date, payer.phone, payer.document, 
 	payer.user_reference, payer.created_at, address.state, address.city, address.zip_code, address.street, 
 	address.number FROM payer LEFT JOIN address ON address.id=payer.address_id LIMIT ? OFFSET ?`,
 		count, start).Rows()
 	if err != nil {
-		return payers, err, 500
+		return payers, 500, err
 	}
 	defer rows.Close()
 	for rows.Next() {
@@ -109,31 +109,43 @@ func (p *Payer) QGetPayers(db *gorm.DB, start int, count int) ([]Payer, error, i
 		if err = rows.Scan(&payer.ID, &payer.Name, &payer.Email, &payer.BirthDate, &payer.Phone,
 			&payer.Document, &payer.UserReference, &payer.CreatedAt, &payer.Address.State,
 			&payer.Address.City, &payer.Address.ZipCode, &payer.Address.Street, &payer.Address.Number); err != nil {
-			return payers, err, 500
+			return payers, 500, err
 		}
 		payers = append(payers, payer)
 	}
-	return payers, nil, 200
+	return payers, 200, nil
 }
 
-func (p *Payer) QGetPayer(db *gorm.DB) error {
-	err := db.Preload("Address").Where("id = ? AND address.id = ?", p.ID, p.AddressID).First(&p).Error
-	return err
+func (p *Payer) QGetPayer(db *gorm.DB) (int, error) {
+	if err := db.Preload("Address").Where("id = ? AND address.id = ?", p.ID, p.AddressID).First(&p).Error; err != nil {
+		switch err {
+		case gorm.ErrRecordNotFound:
+			return 404, err
+		default:
+			return 500, err
+		}
+	}
+	return 200, nil
 }
 
-func (p *Payer) QUpdatePayer(db *gorm.DB) (error, int) {
+func (p *Payer) QUpdatePayer(db *gorm.DB) (int, error) {
 	var err error
 	if err = validator.Validate(p); err != nil {
-		return err, 400
+		return 400, err
 	}
 
 	if err = validator.Validate(p.Address); err != nil {
-		return err, 400
+		return 400, err
 	}
 
 	p.UpdatedAt = time.Now()
 	if err = db.Model(&p).Updates(p).Error; err != nil {
-		return err, 500
+		switch err {
+		case gorm.ErrRecordNotFound:
+			return 404, err
+		default:
+			return 500, err
+		}
 	}
-	return nil, 200
+	return 200, nil
 }

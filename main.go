@@ -96,6 +96,13 @@ func main() {
 			payer.GET(":id", c.GetPayer)
 			payer.PUT("/update", c.UpdatePayer)
 		}
+		product := v1.Group("/product")
+		{
+			product.POST("/new", c.NewProduct)
+			product.GET("/products", c.Products)
+			product.GET(":id", c.GetProduct)
+			product.PUT("/update", c.UpdateProduct)
+		}
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))

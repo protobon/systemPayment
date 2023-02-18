@@ -7,10 +7,7 @@ import (
 	"systempayment/httputil"
 	"systempayment/model"
 
-	log "github.com/sirupsen/logrus"
-
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
 )
 
 // NewDummy godoc
@@ -32,8 +29,15 @@ func (c *Controller) NewDummy(ctx *gin.Context) {
 		return
 	}
 
-	if err := dummy.QCreateDummy(database.DB); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+	if code, err := dummy.QCreateDummy(database.DB); err != nil {
+		switch code {
+		case 400:
+			httputil.NewError400(ctx, http.StatusBadRequest, err)
+		case 404:
+			httputil.NewError404(ctx, http.StatusNotFound, err)
+		default:
+			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+		}
 		return
 	}
 
@@ -46,6 +50,10 @@ func (c *Controller) NewDummy(ctx *gin.Context) {
 //	@Description	Select all Dummies
 //	@Tags			dummy
 //	@Accept			json
+//
+// @Param   start  query  int  true  "start example"  example(0)
+// @Param   count  query  int  true  "count example"  example(10)
+//
 //	@Produce		json
 //	@Success		200	{array}		model.Dummy
 //	@Router			/dummy/dummies [get]
@@ -68,9 +76,17 @@ func (c *Controller) Dummies(ctx *gin.Context) {
 		start = 0
 	}
 	var dummy = model.Dummy{}
-	dummies, err := dummy.QGetDummies(database.DB, start, count)
+	dummies, code, err := dummy.QGetDummies(database.DB, start, count)
 	if err != nil {
-		log.Fatal(err)
+		switch code {
+		case 400:
+			httputil.NewError400(ctx, http.StatusBadRequest, err)
+		case 404:
+			httputil.NewError404(ctx, http.StatusNotFound, err)
+		default:
+			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+		}
+		return
 	}
 
 	ctx.JSON(200, dummies)
@@ -96,9 +112,9 @@ func (c *Controller) GetDummy(ctx *gin.Context) {
 	}
 
 	dummy := model.Dummy{ID: id}
-	if err = dummy.QGetDummy(database.DB); err != nil {
-		switch err {
-		case gorm.ErrRecordNotFound:
+	if code, err := dummy.QGetDummy(database.DB); err != nil {
+		switch code {
+		case 404:
 			httputil.NewError404(ctx, http.StatusNotFound, err)
 		default:
 			httputil.NewError500(ctx, http.StatusInternalServerError, err)
@@ -128,9 +144,9 @@ func (c *Controller) UpdateDummy(ctx *gin.Context) {
 		return
 	}
 
-	if err := dummy.QUpdateDummy(database.DB); err != nil {
-		switch err {
-		case gorm.ErrRecordNotFound:
+	if code, err := dummy.QUpdateDummy(database.DB); err != nil {
+		switch code {
+		case 404:
 			httputil.NewError404(ctx, http.StatusNotFound, err)
 		default:
 			httputil.NewError500(ctx, http.StatusInternalServerError, err)

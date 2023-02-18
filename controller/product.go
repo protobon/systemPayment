@@ -10,28 +10,28 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// NewPayer godoc
+// NewProduct godoc
 //
-//		@Summary		Insert Payer
-//		@Description	save payer in database
-//		@Tags			payer
+//		@Summary		Insert Product
+//		@Description	save Product in database
+//		@Tags			product
 //		@Accept			json
-//	 @Param   example     body     model.Payer     true  "model.Payer example"     example(model.Payer)
+//	 @Param   example     body     model.Product     true  "Product example"     example(model.Product)
 //		@in body
 //		@Produce		json
-//		@Success		200	{object}	model.Payer
+//		@Success		200	{object}	model.Product
 //		@Failure		400	{object}	httputil.HTTPError400
 //		@Failure		404	{object}	httputil.HTTPError404
 //		@Failure		500	{object}	httputil.HTTPError500
-//		@Router			/payer/new [post]
-func (c *Controller) NewPayer(ctx *gin.Context) {
-	var payer model.Payer
-	if err := ctx.BindJSON(&payer); err != nil {
+//		@Router			/product/new [post]
+func (c *Controller) NewProduct(ctx *gin.Context) {
+	var product model.Product
+	if err := ctx.BindJSON(&product); err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if code, err := payer.QCreatePayer(database.DB); err != nil {
+	if code, err := product.QCreateProduct(database.DB); err != nil {
 		switch code {
 		case 400:
 			httputil.NewError400(ctx, http.StatusBadRequest, err)
@@ -43,22 +43,22 @@ func (c *Controller) NewPayer(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, payer)
+	ctx.JSON(200, product)
 }
 
-// Payers godoc
+// Products godoc
 //
-//	@Summary		Select all Payers
-//	@Description	Select all Payers
-//	@Tags			payer
+//	@Summary		Select all Products
+//	@Description	Select all Products
+//	@Tags			product
 //
 // @Param   start  query  int  true  "start example"  example(0)
 // @Param   count  query  int  true  "count example"  example(10)
 //
 //	@Produce		json
-//	@Success		200	{array}		model.Payer
-//	@Router			/payer/payers [get]
-func (c *Controller) Payers(ctx *gin.Context) {
+//	@Success		200	{array}		model.Product
+//	@Router			/product/products [get]
+func (c *Controller) Products(ctx *gin.Context) {
 	start, err := strconv.Atoi(ctx.Query("start"))
 	if err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
@@ -76,8 +76,8 @@ func (c *Controller) Payers(ctx *gin.Context) {
 	if start < 0 {
 		start = 0
 	}
-	var payer = model.Payer{}
-	payers, code, err := payer.QGetPayers(database.DB, start, count)
+	var product = model.Product{}
+	products, code, err := product.QGetProducts(database.DB, start, count)
 	if err != nil {
 		switch code {
 		case 400:
@@ -90,32 +90,32 @@ func (c *Controller) Payers(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, payers)
+	ctx.JSON(200, products)
 }
 
-// GetPayer godoc
+// GetProduct godoc
 //
-//	@Summary		Select Payer
-//	@Description	Get one Payer from ID
-//	@Tags			payer
+//	@Summary		Select Product
+//	@Description	Get one Product from ID
+//	@Tags			product
 //
-// @Param   int  query  int  true  "example: 1"  "Payer ID"
+// @Param   int  query  int  true  "example: 1"  "Product ID"
 //
 //	@Produce		json
-//	@Success		200	{object}	model.Payer
+//	@Success		200	{object}	model.Product
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
-//	@Router			/payer/{id} [get]
-func (c *Controller) GetPayer(ctx *gin.Context) {
+//	@Router			/product/{id} [get]
+func (c *Controller) GetProduct(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	payer := model.Payer{ID: id}
-	if code, err := payer.QGetPayer(database.DB); err != nil {
+	product := model.Product{ID: id}
+	if code, err := product.QGetProduct(database.DB); err != nil {
 		switch code {
 		case 404:
 			httputil.NewError404(ctx, http.StatusNotFound, err)
@@ -127,30 +127,30 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, payer)
+	ctx.JSON(200, product)
 }
 
-// UpdatePayer godoc
+// UpdateProduct godoc
 //
-//	@Summary		Updates Payer
-//	@Description	Updates a payer in database (id req)
-//	@Tags			payer
+//	@Summary		Updates Product
+//	@Description	Updates a Product in database (id req)
+//	@Tags			product
 //	@Accept			json
-//	 @Param   example     body     model.Payer     true  "model.Payer example"     example(model.Payer)
+//	 @Param   example     body     model.Product     true  "Product example"     example(model.Product)
 //	@Produce		json
-//	@Success		200	{object}	model.Payer
+//	@Success		200	{object}	model.Product
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
-//	@Router			/payer/update [put]
-func (c *Controller) UpdatePayer(ctx *gin.Context) {
-	var payer model.Payer
-	if err := ctx.BindJSON(&payer); err != nil {
+//	@Router			/product/update [put]
+func (c *Controller) UpdateProduct(ctx *gin.Context) {
+	var product model.Product
+	if err := ctx.BindJSON(&product); err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
 		return
 	}
 
-	if code, err := payer.QUpdatePayer(database.DB); err != nil {
+	if code, err := product.QUpdateProduct(database.DB); err != nil {
 		switch code {
 		case 400:
 			httputil.NewError400(ctx, http.StatusBadRequest, err)
@@ -162,5 +162,5 @@ func (c *Controller) UpdatePayer(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, payer)
+	ctx.JSON(200, product)
 }
