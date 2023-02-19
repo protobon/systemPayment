@@ -13,6 +13,10 @@ services:
       - DATABASE_HOST=${TEST_DB_HOST}
       - DATABASE_PORT=${TEST_DB_PORT}
       - APPLICATION_PORT=${TEST_APP_PORT}
+      - DLOCAL_URL=${DLOCAL_URL_TEST}
+      - DLOCAL_X_LOGIN=${DLOCAL_X_LOGIN}
+      - DLOCAL_X_TRANS_KEY=${DLOCAL_X_TRANS_KEY}
+      - DLOCAL_SECRET=${DLOCAL_SECRET}
     tty: true
     build: .
     expose:
