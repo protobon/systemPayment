@@ -180,204 +180,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/dummy/dummies": {
-            "get": {
-                "description": "Select all Dummies",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Dummy"
-                ],
-                "summary": "Select all Dummies",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "example": 0,
-                        "description": "start example",
-                        "name": "start",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "example": 10,
-                        "description": "count example",
-                        "name": "count",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.Dummy"
-                            }
-                        }
-                    }
-                }
-            }
-        },
-        "/dummy/new": {
-            "post": {
-                "description": "save dummy in database",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Dummy"
-                ],
-                "summary": "Insert Dummy",
-                "parameters": [
-                    {
-                        "description": "Dummy example",
-                        "name": "example",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Dummy"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Dummy"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError400"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError500"
-                        }
-                    }
-                }
-            }
-        },
-        "/dummy/update": {
-            "put": {
-                "description": "Updates a dummy in database (id req)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Dummy"
-                ],
-                "summary": "Updates Dummy",
-                "parameters": [
-                    {
-                        "description": "Dummy example",
-                        "name": "example",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Dummy"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Dummy"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError400"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError500"
-                        }
-                    }
-                }
-            }
-        },
-        "/dummy/{id}": {
-            "get": {
-                "description": "Get one Dummy from ID",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Dummy"
-                ],
-                "summary": "Select Dummy",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "description": "example: 1",
-                        "name": "int",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.Dummy"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError400"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError500"
-                        }
-                    }
-                }
-            }
-        },
         "/order/new": {
             "post": {
                 "description": "save Order in database",
@@ -406,7 +208,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.OrderResponse"
+                            "$ref": "#/definitions/model.Order"
                         }
                     },
                     "400": {
@@ -469,58 +271,6 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.OrderResponse"
                             }
-                        }
-                    }
-                }
-            }
-        },
-        "/order/update": {
-            "put": {
-                "description": "Updates a Order in database (id req)",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Order"
-                ],
-                "summary": "Updates Order",
-                "parameters": [
-                    {
-                        "description": "Order example",
-                        "name": "example",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Order"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.OrderResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError400"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError500"
                         }
                     }
                 }
@@ -669,7 +419,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/payer/update": {
+        "/payer/update/{id}": {
             "put": {
                 "description": "Updates a payer in database (id req)",
                 "consumes": [
@@ -683,6 +433,13 @@ const docTemplate = `{
                 ],
                 "summary": "Updates Payer",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "example: 1",
+                        "name": "int",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "description": "Payer example",
                         "name": "example",
@@ -796,7 +553,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Product"
+                            "$ref": "#/definitions/model.ProductResponse"
                         }
                     },
                     "400": {
@@ -854,14 +611,14 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Product"
+                                "$ref": "#/definitions/model.ProductResponse"
                             }
                         }
                     }
                 }
             }
         },
-        "/product/update": {
+        "/product/update/{id}": {
             "put": {
                 "description": "Updates a Product in database (id req)",
                 "consumes": [
@@ -876,6 +633,13 @@ const docTemplate = `{
                 "summary": "Updates Product",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "description": "example: 1",
+                        "name": "int",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "description": "Product example",
                         "name": "example",
                         "in": "body",
@@ -889,7 +653,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Product"
+                            "$ref": "#/definitions/model.ProductResponse"
                         }
                     },
                     "400": {
@@ -936,7 +700,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Product"
+                            "$ref": "#/definitions/model.ProductResponse"
                         }
                     },
                     "400": {
@@ -977,7 +741,7 @@ const docTemplate = `{
                 "street": {
                     "type": "string"
                 },
-                "zipCode": {
+                "zip_code": {
                     "type": "string"
                 }
             }
@@ -1040,7 +804,7 @@ const docTemplate = `{
                 "address": {
                     "$ref": "#/definitions/dlocal.Address"
                 },
-                "birthDate": {
+                "birth_date": {
                     "type": "string"
                 },
                 "device_id": {
@@ -1065,7 +829,7 @@ const docTemplate = `{
                 "phone": {
                     "type": "string"
                 },
-                "userReference": {
+                "user_reference": {
                     "type": "string"
                 }
             }
@@ -1250,7 +1014,7 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Servidão B-1"
                 },
-                "zipCode": {
+                "zip_code": {
                     "type": "string",
                     "example": "27275-595"
                 }
@@ -1310,23 +1074,6 @@ const docTemplate = `{
                 },
                 "token": {
                     "type": "string"
-                }
-            }
-        },
-        "model.Dummy": {
-            "type": "object",
-            "properties": {
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "name": {
-                    "type": "string",
-                    "example": "desktop chair"
-                },
-                "price": {
-                    "type": "number",
-                    "example": 299.99
                 }
             }
         },
@@ -1391,7 +1138,7 @@ const docTemplate = `{
                 "address": {
                     "$ref": "#/definitions/model.Address"
                 },
-                "birthDate": {
+                "birth_date": {
                     "type": "string",
                     "example": "24/07/1992"
                 },
@@ -1405,10 +1152,6 @@ const docTemplate = `{
                     "minLength": 6,
                     "example": "jhondoe@mail.com"
                 },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
                 "name": {
                     "type": "string",
                     "maxLength": 100,
@@ -1419,7 +1162,7 @@ const docTemplate = `{
                     "type": "string",
                     "example": "+123456789"
                 },
-                "userReference": {
+                "user_reference": {
                     "type": "string",
                     "example": "12345"
                 }
@@ -1470,33 +1213,36 @@ const docTemplate = `{
             "type": "object",
             "properties": {
                 "amount": {
-                    "type": "number"
+                    "type": "number",
+                    "example": 125
                 },
                 "card": {
                     "$ref": "#/definitions/model.Card"
                 },
                 "country": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "UY"
                 },
-                "createdAt": {
+                "created_at": {
                     "type": "string"
                 },
                 "currency": {
-                    "type": "string"
+                    "type": "string",
+                    "example": "USD"
                 },
                 "id": {
-                    "description": "Dlocal payment.id",
+                    "type": "string",
+                    "example": "PAY2323243343543"
+                },
+                "order_number": {
                     "type": "string"
                 },
-                "orderNumber": {
-                    "description": "Dlocal order_id",
+                "payment_method_flow": {
                     "type": "string"
                 },
-                "paymentMethodFlow": {
-                    "type": "string"
-                },
-                "paymentMethodID": {
-                    "type": "string"
+                "payment_method_id": {
+                    "type": "string",
+                    "example": "CARD"
                 }
             }
         },
@@ -1519,6 +1265,36 @@ const docTemplate = `{
                     "minLength": 6,
                     "example": "Curso de Programacion"
                 },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 6,
+                    "example": "programacion en C"
+                }
+            }
+        },
+        "model.ProductResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "example": 5000
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string",
+                    "maxLength": 3,
+                    "minLength": 3,
+                    "example": "USD"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 6,
+                    "example": "Curso de Programacion"
+                },
                 "id": {
                     "type": "integer",
                     "example": 1
@@ -1528,6 +1304,9 @@ const docTemplate = `{
                     "maxLength": 100,
                     "minLength": 6,
                     "example": "programacion en C"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         }

@@ -135,15 +135,25 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 //	@Description	Updates a payer in database (id req)
 //	@Tags			Payer
 //	@Accept			json
-//	 @Param   example     body     model.Payer     true  "Payer example"     example(model.Payer)
+//
+// @Param   int  query  int  true  "example: 1"  "Payer ID"
+//
+// @Param   example     body     model.Payer     true  "Payer example"     example(model.Payer)
+//
 //	@Produce		json
 //	@Success		200	{object}	model.PayerResponse
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
-//	@Router			/payer/update [put]
+//	@Router			/payer/update/{id} [put]
 func (c *Controller) UpdatePayer(ctx *gin.Context) {
-	var payer model.Payer
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	payer := model.Payer{ID: id}
 	if err := ctx.BindJSON(&payer); err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
 		return

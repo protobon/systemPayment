@@ -10,7 +10,7 @@ definitions:
         type: string
       street:
         type: string
-      zipCode:
+      zip_code:
         type: string
     type: object
   dlocal.Card:
@@ -54,7 +54,7 @@ definitions:
     properties:
       address:
         $ref: '#/definitions/dlocal.Address'
-      birthDate:
+      birth_date:
         type: string
       device_id:
         type: string
@@ -72,7 +72,7 @@ definitions:
         type: string
       phone:
         type: string
-      userReference:
+      user_reference:
         type: string
     type: object
   dlocal.PaymentRequestBody:
@@ -196,7 +196,7 @@ definitions:
       street:
         example: Servidão B-1
         type: string
-      zipCode:
+      zip_code:
         example: 27275-595
         type: string
     type: object
@@ -241,18 +241,6 @@ definitions:
       token:
         type: string
     type: object
-  model.Dummy:
-    properties:
-      id:
-        example: 1
-        type: integer
-      name:
-        example: desktop chair
-        type: string
-      price:
-        example: 299.99
-        type: number
-    type: object
   model.Order:
     properties:
       id:
@@ -295,7 +283,7 @@ definitions:
     properties:
       address:
         $ref: '#/definitions/model.Address'
-      birthDate:
+      birth_date:
         example: 24/07/1992
         type: string
       document:
@@ -306,9 +294,6 @@ definitions:
         maxLength: 100
         minLength: 6
         type: string
-      id:
-        example: 1
-        type: integer
       name:
         example: Jhon Doe
         maxLength: 100
@@ -317,7 +302,7 @@ definitions:
       phone:
         example: "+123456789"
         type: string
-      userReference:
+      user_reference:
         example: "12345"
         type: string
     type: object
@@ -353,24 +338,27 @@ definitions:
   model.PaymentResponse:
     properties:
       amount:
+        example: 125
         type: number
       card:
         $ref: '#/definitions/model.Card'
       country:
+        example: UY
         type: string
-      createdAt:
+      created_at:
         type: string
       currency:
+        example: USD
         type: string
       id:
-        description: Dlocal payment.id
+        example: PAY2323243343543
         type: string
-      orderNumber:
-        description: Dlocal order_id
+      order_number:
         type: string
-      paymentMethodFlow:
+      payment_method_flow:
         type: string
-      paymentMethodID:
+      payment_method_id:
+        example: CARD
         type: string
     type: object
   model.Product:
@@ -388,6 +376,29 @@ definitions:
         maxLength: 100
         minLength: 6
         type: string
+      name:
+        example: programacion en C
+        maxLength: 100
+        minLength: 6
+        type: string
+    type: object
+  model.ProductResponse:
+    properties:
+      amount:
+        example: 5000
+        type: number
+      created_at:
+        type: string
+      currency:
+        example: USD
+        maxLength: 3
+        minLength: 3
+        type: string
+      description:
+        example: Curso de Programacion
+        maxLength: 100
+        minLength: 6
+        type: string
       id:
         example: 1
         type: integer
@@ -395,6 +406,8 @@ definitions:
         example: programacion en C
         maxLength: 100
         minLength: 6
+        type: string
+      updated_at:
         type: string
     type: object
 host: localhost:8080
@@ -513,137 +526,6 @@ paths:
       summary: Make Secure Payment with Dlocal
       tags:
       - Dlocal
-  /dummy/{id}:
-    get:
-      consumes:
-      - application/json
-      description: Get one Dummy from ID
-      parameters:
-      - description: 'example: 1'
-        in: query
-        name: int
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Dummy'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httputil.HTTPError400'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/httputil.HTTPError404'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/httputil.HTTPError500'
-      summary: Select Dummy
-      tags:
-      - Dummy
-  /dummy/dummies:
-    get:
-      consumes:
-      - application/json
-      description: Select all Dummies
-      parameters:
-      - description: start example
-        example: 0
-        in: query
-        name: start
-        required: true
-        type: integer
-      - description: count example
-        example: 10
-        in: query
-        name: count
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.Dummy'
-            type: array
-      summary: Select all Dummies
-      tags:
-      - Dummy
-  /dummy/new:
-    post:
-      consumes:
-      - application/json
-      description: save dummy in database
-      parameters:
-      - description: Dummy example
-        in: body
-        name: example
-        required: true
-        schema:
-          $ref: '#/definitions/model.Dummy'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Dummy'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httputil.HTTPError400'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/httputil.HTTPError404'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/httputil.HTTPError500'
-      summary: Insert Dummy
-      tags:
-      - Dummy
-  /dummy/update:
-    put:
-      consumes:
-      - application/json
-      description: Updates a dummy in database (id req)
-      parameters:
-      - description: Dummy example
-        in: body
-        name: example
-        required: true
-        schema:
-          $ref: '#/definitions/model.Dummy'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.Dummy'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httputil.HTTPError400'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/httputil.HTTPError404'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/httputil.HTTPError500'
-      summary: Updates Dummy
-      tags:
-      - Dummy
   /order/{id}:
     get:
       consumes:
@@ -695,7 +577,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.OrderResponse'
+            $ref: '#/definitions/model.Order'
         "400":
           description: Bad Request
           schema:
@@ -739,40 +621,6 @@ paths:
               $ref: '#/definitions/model.OrderResponse'
             type: array
       summary: Select all Orders
-      tags:
-      - Order
-  /order/update:
-    put:
-      consumes:
-      - application/json
-      description: Updates a Order in database (id req)
-      parameters:
-      - description: Order example
-        in: body
-        name: example
-        required: true
-        schema:
-          $ref: '#/definitions/model.Order'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.OrderResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httputil.HTTPError400'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/httputil.HTTPError404'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/httputil.HTTPError500'
-      summary: Updates Order
       tags:
       - Order
   /payer/{id}:
@@ -868,12 +716,17 @@ paths:
       summary: Select all Payers
       tags:
       - Payer
-  /payer/update:
+  /payer/update/{id}:
     put:
       consumes:
       - application/json
       description: Updates a payer in database (id req)
       parameters:
+      - description: 'example: 1'
+        in: query
+        name: int
+        required: true
+        type: integer
       - description: Payer example
         in: body
         name: example
@@ -917,7 +770,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Product'
+            $ref: '#/definitions/model.ProductResponse'
         "400":
           description: Bad Request
           schema:
@@ -951,7 +804,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Product'
+            $ref: '#/definitions/model.ProductResponse'
         "400":
           description: Bad Request
           schema:
@@ -990,17 +843,22 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Product'
+              $ref: '#/definitions/model.ProductResponse'
             type: array
       summary: Select all Products
       tags:
       - Product
-  /product/update:
+  /product/update/{id}:
     put:
       consumes:
       - application/json
       description: Updates a Product in database (id req)
       parameters:
+      - description: 'example: 1'
+        in: query
+        name: int
+        required: true
+        type: integer
       - description: Product example
         in: body
         name: example
@@ -1013,7 +871,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Product'
+            $ref: '#/definitions/model.ProductResponse'
         "400":
           description: Bad Request
           schema:

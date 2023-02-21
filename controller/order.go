@@ -18,7 +18,7 @@ import (
 //	@Accept			json
 //	 @Param   example     body     model.Order     true  "Order example"     example(model.Order)
 //	@Produce		json
-//	@Success		200	{object}	model.OrderResponse
+//	@Success		200	{object}	model.Order
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
@@ -142,22 +142,22 @@ func (o *Controller) GetOrder(ctx *gin.Context) {
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
 //	@Router			/order/update [put]
-func (o *Controller) UpdateOrder(ctx *gin.Context) {
-	var order model.Order
-	if err := ctx.BindJSON(&order); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
-		return
-	}
+// func (o *Controller) UpdateOrder(ctx *gin.Context) {
+// 	var order model.Order
+// 	if err := ctx.BindJSON(&order); err != nil {
+// 		httputil.NewError400(ctx, http.StatusBadRequest, err)
+// 		return
+// 	}
 
-	if code, err := order.QUpdateOrder(database.DB); err != nil {
-		switch code {
-		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
-		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
-		}
-		return
-	}
+// 	if code, err := order.QUpdateOrder(database.DB); err != nil {
+// 		switch code {
+// 		case 404:
+// 			httputil.NewError404(ctx, http.StatusNotFound, err)
+// 		default:
+// 			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+// 		}
+// 		return
+// 	}
 
-	ctx.JSON(200, order)
-}
+// 	ctx.JSON(200, order)
+// }

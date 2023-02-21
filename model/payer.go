@@ -9,31 +9,31 @@ import (
 
 // Payer example
 type Payer struct {
-	ID            int            `gorm:"primaryKey" example:"1"`
-	Name          *string        `example:"Jhon Doe" validate:"nonzero,min=6,max=100"`
-	Email         *string        `example:"jhondoe@mail.com" validate:"nonzero,min=6,max=100"`
-	BirthDate     *string        `example:"24/07/1992" validate:"nonzero"`
-	Phone         *string        `example:"+123456789" validate:"nonzero"`
-	Document      *string        `example:"23415162" validate:"nonzero"`
-	UserReference *string        `example:"12345" validate:"nonzero"`
-	Address       Address        `gorm:"foreignKey:PayerID;references:ID" validate:"nonzero"`
-	AddressID     int            `json:"-" swaggerignore:"true"`
-	CardID        int            `json:"-" swaggerignore:"true"`
-	CreatedAt     time.Time      `json:"-" swaggerignore:"true"`
-	UpdatedAt     time.Time      `json:"-" swaggerignore:"true"`
-	DeletedAt     gorm.DeletedAt `json:"-" swaggerignore:"true"`
+	ID            int            `json:"id" gorm:"primaryKey" example:"1" swaggerignore:"true"`
+	Name          *string        `json:"name" example:"Jhon Doe" validate:"nonzero,min=6,max=100"`
+	Email         *string        `json:"email" example:"jhondoe@mail.com" validate:"nonzero,min=6,max=100"`
+	BirthDate     *string        `json:"birth_date" example:"24/07/1992" validate:"nonzero"`
+	Phone         *string        `json:"phone" example:"+123456789" validate:"nonzero"`
+	Document      *string        `json:"document" example:"23415162" validate:"nonzero"`
+	UserReference *string        `json:"user_reference" example:"12345" validate:"nonzero"`
+	Address       Address        `json:"address" gorm:"foreignKey:PayerID;references:ID" validate:"nonzero"`
+	AddressID     int            `json:"address_id" swaggerignore:"true"`
+	CardID        int            `json:"card_id" swaggerignore:"true"`
+	CreatedAt     time.Time      `json:"created_at" swaggerignore:"true"`
+	UpdatedAt     time.Time      `json:"updated_at" swaggerignore:"true"`
+	DeletedAt     gorm.DeletedAt `json:"deleted_at" swaggerignore:"true"`
 }
 
 type Address struct {
-	ID        int            `json:"-" gorm:"primaryKey" example:"1" swaggerignore:"true"`
-	PayerID   int            `json:"-" gorm:"column:payer_id" example:"1" swaggerignore:"true"`
-	State     *string        `example:"Rio de Janeiro" validate:"nonzero"`
-	City      *string        `example:"Volta Redonda" validate:"nonzero"`
-	ZipCode   *string        `example:"27275-595" validate:"nonzero"`
-	Street    *string        `example:"Servidão B-1" validate:"nonzero"`
-	Number    *string        `example:"1106" validate:"nonzero"`
-	CreatedAt time.Time      `json:"-" swaggerignore:"true"`
-	DeletedAt gorm.DeletedAt `json:"-" swaggerignore:"true"`
+	ID        int            `json:"id" gorm:"primaryKey" example:"1" swaggerignore:"true"`
+	PayerID   int            `json:"payer_id" gorm:"column:payer_id" example:"1" swaggerignore:"true"`
+	State     *string        `json:"state" example:"Rio de Janeiro" validate:"nonzero"`
+	City      *string        `json:"city" example:"Volta Redonda" validate:"nonzero"`
+	ZipCode   *string        `json:"zip_code" example:"27275-595" validate:"nonzero"`
+	Street    *string        `json:"street" example:"Servidão B-1" validate:"nonzero"`
+	Number    *string        `json:"number" example:"1106" validate:"nonzero"`
+	CreatedAt time.Time      `json:"created_at" swaggerignore:"true"`
+	DeletedAt gorm.DeletedAt `json:"deleted_at" swaggerignore:"true"`
 }
 
 func (Payer) TableName() string {

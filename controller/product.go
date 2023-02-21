@@ -19,7 +19,7 @@ import (
 //	 @Param   example     body     model.Product     true  "Product example"     example(model.Product)
 //		@in body
 //		@Produce		json
-//		@Success		200	{object}	model.Product
+//		@Success		200	{object}	model.ProductResponse
 //		@Failure		400	{object}	httputil.HTTPError400
 //		@Failure		404	{object}	httputil.HTTPError404
 //		@Failure		500	{object}	httputil.HTTPError500
@@ -56,7 +56,7 @@ func (c *Controller) NewProduct(ctx *gin.Context) {
 // @Param   count  query  int  true  "count example"  example(10)
 //
 //	@Produce		json
-//	@Success		200	{array}		model.Product
+//	@Success		200	{array}		model.ProductResponse
 //	@Router			/product/products [get]
 func (c *Controller) Products(ctx *gin.Context) {
 	start, err := strconv.Atoi(ctx.Query("start"))
@@ -102,7 +102,7 @@ func (c *Controller) Products(ctx *gin.Context) {
 // @Param   int  query  int  true  "example: 1"  "Product ID"
 //
 //	@Produce		json
-//	@Success		200	{object}	model.Product
+//	@Success		200	{object}	model.ProductResponse
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
@@ -136,15 +136,25 @@ func (c *Controller) GetProduct(ctx *gin.Context) {
 //	@Description	Updates a Product in database (id req)
 //	@Tags			Product
 //	@Accept			json
-//	 @Param   example     body     model.Product     true  "Product example"     example(model.Product)
+//
+// @Param   int  query  int  true  "example: 1"  "Payer ID"
+//
+// @Param   example     body     model.Product     true  "Product example"     example(model.Product)
+//
 //	@Produce		json
-//	@Success		200	{object}	model.Product
+//	@Success		200	{object}	model.ProductResponse
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
-//	@Router			/product/update [put]
+//	@Router			/product/update/{id} [put]
 func (c *Controller) UpdateProduct(ctx *gin.Context) {
-	var product model.Product
+	id, err := strconv.Atoi(ctx.Param("id"))
+	if err != nil {
+		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		return
+	}
+
+	product := model.Product{ID: id}
 	if err := ctx.BindJSON(&product); err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
 		return
