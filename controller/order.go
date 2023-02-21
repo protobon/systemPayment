@@ -18,7 +18,7 @@ import (
 //	@Accept			json
 //	 @Param   example     body     model.Order     true  "Order example"     example(model.Order)
 //	@Produce		json
-//	@Success		200	{object}	model.Order
+//	@Success		200	{object}	model.OrderResponse
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
@@ -56,7 +56,7 @@ func (o *Controller) NewOrder(ctx *gin.Context) {
 // @Param   count  query  int  true  "count example"  example(10)
 //
 //	@Produce		json
-//	@Success		200	{array}		model.Order
+//	@Success		200	{array}		model.OrderResponse
 //	@Router			/order/orders [get]
 func (o *Controller) Orders(ctx *gin.Context) {
 	start, err := strconv.Atoi(ctx.Query("start"))
@@ -103,7 +103,7 @@ func (o *Controller) Orders(ctx *gin.Context) {
 // @Param   int  query  int  true  "example: 1"  "Order ID"
 //
 //	@Produce		json
-//	@Success		200	{object}	model.Order
+//	@Success		200	{object}	model.OrderResponse
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
@@ -137,7 +137,7 @@ func (o *Controller) GetOrder(ctx *gin.Context) {
 //	@Accept			json
 //	 @Param   example     body     model.Order     true  "Order example"     example(model.Order)
 //	@Produce		json
-//	@Success		200	{object}	model.Order
+//	@Success		200	{object}	model.OrderResponse
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500

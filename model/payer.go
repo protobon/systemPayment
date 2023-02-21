@@ -18,6 +18,7 @@ type Payer struct {
 	UserReference *string        `example:"12345" validate:"nonzero"`
 	Address       Address        `gorm:"foreignKey:PayerID;references:ID" validate:"nonzero"`
 	AddressID     int            `json:"-" swaggerignore:"true"`
+	CardID        int            `json:"-" swaggerignore:"true"`
 	CreatedAt     time.Time      `json:"-" swaggerignore:"true"`
 	UpdatedAt     time.Time      `json:"-" swaggerignore:"true"`
 	DeletedAt     gorm.DeletedAt `json:"-" swaggerignore:"true"`
@@ -94,6 +95,7 @@ func (a *Address) QCreateAddress(db *gorm.DB, p *Payer) (int, error) {
 	return code, err
 }
 
+// QGetPayers - Get all Payers
 func (p *Payer) QGetPayers(db *gorm.DB, start int, count int) ([]Payer, int, error) {
 	var payers []Payer
 	rows, err := db.Raw(`SELECT payer.id, payer.name, payer.email, payer.birth_date, payer.phone, payer.document, 
@@ -116,6 +118,7 @@ func (p *Payer) QGetPayers(db *gorm.DB, start int, count int) ([]Payer, int, err
 	return payers, 200, nil
 }
 
+// QGetPayers - Get Payer by ID
 func (p *Payer) QGetPayer(db *gorm.DB) (int, error) {
 	if err := db.Preload("Address").Where("id = ? AND address.id = ?", p.ID, p.AddressID).First(&p).Error; err != nil {
 		switch err {

@@ -14,7 +14,7 @@ import (
 //
 //		@Summary		Insert Product
 //		@Description	save Product in database
-//		@Tags			product
+//		@Tags			Product
 //		@Accept			json
 //	 @Param   example     body     model.Product     true  "Product example"     example(model.Product)
 //		@in body
@@ -50,7 +50,7 @@ func (c *Controller) NewProduct(ctx *gin.Context) {
 //
 //	@Summary		Select all Products
 //	@Description	Select all Products
-//	@Tags			product
+//	@Tags			Product
 //
 // @Param   start  query  int  true  "start example"  example(0)
 // @Param   count  query  int  true  "count example"  example(10)
@@ -97,7 +97,7 @@ func (c *Controller) Products(ctx *gin.Context) {
 //
 //	@Summary		Select Product
 //	@Description	Get one Product from ID
-//	@Tags			product
+//	@Tags			Product
 //
 // @Param   int  query  int  true  "example: 1"  "Product ID"
 //
@@ -134,7 +134,7 @@ func (c *Controller) GetProduct(ctx *gin.Context) {
 //
 //	@Summary		Updates Product
 //	@Description	Updates a Product in database (id req)
-//	@Tags			product
+//	@Tags			Product
 //	@Accept			json
 //	 @Param   example     body     model.Product     true  "Product example"     example(model.Product)
 //	@Produce		json

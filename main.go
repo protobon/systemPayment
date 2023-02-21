@@ -82,13 +82,13 @@ func main() {
 
 	v1 := r.Group("/api/v1")
 	{
-		dummy := v1.Group("/dummy")
-		{
-			dummy.POST("/new", c.NewDummy)
-			dummy.GET("/dummies", c.Dummies)
-			dummy.GET(":id", c.GetDummy)
-			dummy.PUT("/update", c.UpdateDummy)
-		}
+		// dummy := v1.Group("/dummy")
+		// {
+		// 	dummy.POST("/new", c.NewDummy)
+		// 	dummy.GET("/dummies", c.Dummies)
+		// 	dummy.GET(":id", c.GetDummy)
+		// 	dummy.PUT("/update", c.UpdateDummy)
+		// }
 		payer := v1.Group("/payer")
 		{
 			payer.POST("/new", c.NewPayer)
@@ -109,6 +109,12 @@ func main() {
 			order.GET("/orders", c.Orders)
 			order.GET(":id", c.GetOrder)
 			order.PUT("/update", c.UpdateOrder)
+		}
+		dlocal := v1.Group("/dlocal")
+		{
+			dlocal.POST("/card", c.CreateCard)
+			dlocal.POST("/secure-payment", c.MakeSecurePayment)
+			dlocal.POST("/payment", c.MakePayment)
 		}
 	}
 
