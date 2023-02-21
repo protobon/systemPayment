@@ -7,7 +7,6 @@ import (
 	"systempayment/database"
 	_ "systempayment/docs"
 
-	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	swaggerFiles "github.com/swaggo/files"
@@ -77,23 +76,11 @@ func main() {
 	port = os.Getenv("APPLICATION_PORT")
 
 	r := gin.Default()
-	// CORS for https://foo.com and https://github.com origins, allowing:
-	// - PUT and PATCH methods
-	// - Origin header
-	// - Credentials share
-	// - Preflight requests cached for 12 hours
-	r.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"*"},
-		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowHeaders:     []string{"Origin"},
-		ExposeHeaders:    []string{"Content-Length"},
-		AllowCredentials: false,
-	}))
 	database.DBInit(user, password, dbhost, dbname)
 
 	c := controller.NewController()
 
-	v1 := r.Group("/api/v1")
+	v1 := r.Group("/api/v1", CORSMiddleware())
 	{
 		payer := v1.Group("/payer")
 		{
@@ -125,6 +112,22 @@ func main() {
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
 	r.Run(port)
+}
+
+func CORSMiddleware() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+		c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT")
+
+		if c.Request.Method == "OPTIONS" {
+			c.AbortWithStatus(204)
+			return
+		}
+
+		c.Next()
+	}
 }
 
 // func auth() gin.HandlerFunc {
