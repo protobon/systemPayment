@@ -82,33 +82,25 @@ func main() {
 
 	v1 := r.Group("/api/v1")
 	{
-		// dummy := v1.Group("/dummy")
-		// {
-		// 	dummy.POST("/new", c.NewDummy)
-		// 	dummy.GET("/dummies", c.Dummies)
-		// 	dummy.GET(":id", c.GetDummy)
-		// 	dummy.PUT("/update", c.UpdateDummy)
-		// }
 		payer := v1.Group("/payer")
 		{
 			payer.POST("/new", c.NewPayer)
 			payer.GET("/payers", c.Payers)
 			payer.GET(":id", c.GetPayer)
-			payer.PUT("/update", c.UpdatePayer)
+			payer.PUT("/update/:id", c.UpdatePayer)
 		}
 		product := v1.Group("/product")
 		{
 			product.POST("/new", c.NewProduct)
 			product.GET("/products", c.Products)
 			product.GET(":id", c.GetProduct)
-			product.PUT("/update", c.UpdateProduct)
+			product.PUT("/update/:id", c.UpdateProduct)
 		}
 		order := v1.Group("/order")
 		{
 			order.POST("/new", c.NewOrder)
 			order.GET("/orders", c.Orders)
 			order.GET(":id", c.GetOrder)
-			order.PUT("/update", c.UpdateOrder)
 		}
 		dlocal := v1.Group("/dlocal")
 		{

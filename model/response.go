@@ -26,15 +26,15 @@ type AddressResponse struct {
 }
 
 type PaymentResponse struct {
-	ID                *string // Dlocal payment.id
-	Amount            float64
-	Currency          *string
-	Country           *string
-	PaymentMethodID   *string
-	PaymentMethodFlow *string
-	OrderNumber       *string // Dlocal order_id
-	Card              Card
-	CreatedAt         time.Time
+	ID                *string   `json:"id" example:"PAY2323243343543"`
+	Amount            float64   `json:"amount" example:"125"`
+	Currency          *string   `json:"currency" example:"USD"`
+	Country           *string   `json:"country" example:"UY"`
+	PaymentMethodID   *string   `json:"payment_method_id" example:"CARD"`
+	PaymentMethodFlow *string   `json:"payment_method_flow"`
+	OrderNumber       *string   `json:"order_number"`
+	Card              Card      `json:"card"`
+	CreatedAt         time.Time `json:"created_at"`
 }
 
 type OrderResponse struct {
@@ -46,4 +46,14 @@ type OrderResponse struct {
 	Finished  bool              `json:"finished"`
 	CreatedAt time.Time         `json:"created_at"`
 	UpdatedAt time.Time         `json:"updated_at"`
+}
+
+type ProductResponse struct {
+	ID          int       `json:"id" example:"1"`
+	Name        *string   `json:"name" example:"programacion en C" validate:"nonzero,min=6,max=100"`
+	Description *string   `json:"description" example:"Curso de Programacion" validate:"nonzero,min=6,max=100"`
+	Amount      float64   `json:"amount" example:"5000.00" validate:"nonzero"`
+	Currency    *string   `json:"currency" example:"USD" validate:"nonzero,min=3,max=3"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

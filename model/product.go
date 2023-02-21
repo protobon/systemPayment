@@ -9,7 +9,7 @@ import (
 
 // Product example
 type Product struct {
-	ID          int            `gorm:"primaryKey" example:"1"`
+	ID          int            `json:"-" gorm:"primaryKey" example:"1" swaggerignore:"true"`
 	Name        *string        `example:"programacion en C" validate:"nonzero,min=6,max=100"`
 	Description *string        `example:"Curso de Programacion" validate:"nonzero,min=6,max=100"`
 	Amount      float64        `example:"5000.00" validate:"nonzero"`
