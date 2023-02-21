@@ -19,7 +19,7 @@ import (
 //	@Accept			json
 //	 @Param   example     body     dlocal.Card     true  "Card example"     example(dlocal.Card)
 //	@Produce		json
-//	@Success		200	{object}	dlocal.Card
+//	@Success		200	{object}	dlocal.CardResponse
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
@@ -27,7 +27,7 @@ import (
 func (c *Controller) CreateCard(ctx *gin.Context) {
 	var req *http.Request
 	var err error
-	var Body dlocal.CreateCardRequestBody
+	var Body dlocal.CardRequestBody
 	if err := ctx.BindJSON(&Body); err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
 		return
@@ -37,7 +37,7 @@ func (c *Controller) CreateCard(ctx *gin.Context) {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
 		return
 	}
-	if req, err = dlocal.PrepareRequest(body_json, "/secure_cards"); err != nil {
+	if req, err = dlocal.PostRequest(body_json, "/secure_cards"); err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
 		return
 	}
@@ -64,9 +64,9 @@ func (c *Controller) CreateCard(ctx *gin.Context) {
 //	@Description	Makes a new Payment with the Dlocal API
 //	@Tags			Dlocal
 //	@Accept			json
-//	 @Param   example     body     dlocal.Payment     true  "Payment example"     example(dlocal.Payment)
+//	 @Param   example     body     dlocal.PaymentRequestBody     true  "Payment with Dlocal example"     example(dlocal.PaymentRequestBody)
 //	@Produce		json
-//	@Success		200	{object}	dlocal.Payment
+//	@Success		200	{object}	dlocal.PaymentResponseBody
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
@@ -74,7 +74,7 @@ func (c *Controller) CreateCard(ctx *gin.Context) {
 func (c *Controller) MakePayment(ctx *gin.Context) {
 	var req *http.Request
 	var err error
-	var Body dlocal.Payment
+	var Body dlocal.PaymentRequestBody
 	if err := ctx.BindJSON(&Body); err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
 		return
@@ -84,7 +84,7 @@ func (c *Controller) MakePayment(ctx *gin.Context) {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
 		return
 	}
-	if req, err = dlocal.PrepareRequest(body_json, "/secure_payments"); err != nil {
+	if req, err = dlocal.PostRequest(body_json, "/payments"); err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
 		return
 	}
@@ -111,9 +111,9 @@ func (c *Controller) MakePayment(ctx *gin.Context) {
 //	@Description	Makes a new Secure Payment with the Dlocal API
 //	@Tags			Dlocal
 //	@Accept			json
-//	 @Param   example     body     dlocal.SecurePayment     true  "SecurePayment example"     example(dlocal.SecurePayment)
+//	 @Param   example     body     dlocal.SecurePaymentRequestBody     true  "Secure Payment with Dlocal example"     example(dlocal.SecurePaymentRequestBody)
 //	@Produce		json
-//	@Success		200	{object}	dlocal.SecurePayment
+//	@Success		200	{object}	dlocal.SecurePaymentRequestBody
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
@@ -121,7 +121,7 @@ func (c *Controller) MakePayment(ctx *gin.Context) {
 func (c *Controller) MakeSecurePayment(ctx *gin.Context) {
 	var req *http.Request
 	var err error
-	var Body dlocal.SecurePayment
+	var Body dlocal.SecurePaymentRequestBody
 	if err := ctx.BindJSON(&Body); err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
 		return
@@ -131,7 +131,7 @@ func (c *Controller) MakeSecurePayment(ctx *gin.Context) {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
 		return
 	}
-	if req, err = dlocal.PrepareRequest(body_json, "/payments"); err != nil {
+	if req, err = dlocal.PostRequest(body_json, "/secure_payments"); err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
 		return
 	}

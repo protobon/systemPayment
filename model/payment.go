@@ -7,7 +7,7 @@ import (
 	"gorm.io/gorm"
 )
 
-// Payment example
+// Payment object
 type Payment struct {
 	ID                int            `gorm:"primaryKey" example:"1"`
 	Amount            float64        `example:"5000.00" validate:"nonzero"`
@@ -15,11 +15,9 @@ type Payment struct {
 	Country           *string        `example:"UY" validate:"nonzero,min=2,max=2"`
 	PaymentMethodID   *string        `example:"CARD" validate:"nonzero,min=2,max=4"`
 	PaymentMethodFlow *string        `example:"DIRECT" validate:"nonzero,min=2,max=10"`
-	PayerID           int            `gorm:"column:payer_id" example:"1"  validate:"nonzero"`
 	OrderID           int            `gorm:"column:order_id" example:"1"  validate:"nonzero"`
 	OrderNumber       *string        `example:"657434343"  validate:"nonzero"`
 	CardID            int            `gorm:"column:card_id" example:"1"  validate:"nonzero"`
-	NotificationURL   *string        `example:"http://merchant.com/notifications"`
 	CreatedAt         time.Time      `json:"-" swaggerignore:"true"`
 	UpdatedAt         time.Time      `json:"-" swaggerignore:"true"`
 	DeletedAt         gorm.DeletedAt `json:"-" swaggerignore:"true"`

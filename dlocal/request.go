@@ -9,7 +9,7 @@ import (
 	"time"
 )
 
-func PrepareRequest(body []byte, endpoint string) (*http.Request, error) {
+func PostRequest(body []byte, endpoint string) (*http.Request, error) {
 	host := os.Getenv("DLOCAL_URL")
 	x_login := os.Getenv("DLOCAL_X_LOGIN")
 	x_trans_key := os.Getenv("DLOCAL_X_TRANS_KEY")

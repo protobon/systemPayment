@@ -18,7 +18,7 @@ import (
 //		@Accept			json
 //	 @Param   example     body     model.Payer     true  "Payer example"     example(model.Payer)
 //		@Produce		json
-//		@Success		200	{object}	model.Payer
+//		@Success		200	{object}	model.PayerResponse
 //		@Failure		400	{object}	httputil.HTTPError400
 //		@Failure		404	{object}	httputil.HTTPError404
 //		@Failure		500	{object}	httputil.HTTPError500
@@ -55,7 +55,7 @@ func (c *Controller) NewPayer(ctx *gin.Context) {
 // @Param   count  query  int  true  "count example"  example(10)
 //
 //	@Produce		json
-//	@Success		200	{array}		model.Payer
+//	@Success		200	{array}		model.PayerResponse
 //	@Router			/payer/payers [get]
 func (c *Controller) Payers(ctx *gin.Context) {
 	start, err := strconv.Atoi(ctx.Query("start"))
@@ -101,7 +101,7 @@ func (c *Controller) Payers(ctx *gin.Context) {
 // @Param   int  query  int  true  "example: 1"  "Payer ID"
 //
 //	@Produce		json
-//	@Success		200	{object}	model.Payer
+//	@Success		200	{object}	model.PayerResponse
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
@@ -137,7 +137,7 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 //	@Accept			json
 //	 @Param   example     body     model.Payer     true  "Payer example"     example(model.Payer)
 //	@Produce		json
-//	@Success		200	{object}	model.Payer
+//	@Success		200	{object}	model.PayerResponse
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500

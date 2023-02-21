@@ -52,7 +52,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dlocal.Card"
+                            "$ref": "#/definitions/dlocal.CardResponse"
                         }
                     },
                     "400": {
@@ -91,12 +91,12 @@ const docTemplate = `{
                 "summary": "Make Payment with Dlocal",
                 "parameters": [
                     {
-                        "description": "Payment example",
+                        "description": "Payment with Dlocal example",
                         "name": "example",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dlocal.Payment"
+                            "$ref": "#/definitions/dlocal.PaymentRequestBody"
                         }
                     }
                 ],
@@ -104,7 +104,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dlocal.Payment"
+                            "$ref": "#/definitions/dlocal.PaymentResponseBody"
                         }
                     },
                     "400": {
@@ -143,12 +143,12 @@ const docTemplate = `{
                 "summary": "Make Secure Payment with Dlocal",
                 "parameters": [
                     {
-                        "description": "SecurePayment example",
+                        "description": "Secure Payment with Dlocal example",
                         "name": "example",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/dlocal.SecurePayment"
+                            "$ref": "#/definitions/dlocal.SecurePaymentRequestBody"
                         }
                     }
                 ],
@@ -156,7 +156,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/dlocal.SecurePayment"
+                            "$ref": "#/definitions/dlocal.SecurePaymentRequestBody"
                         }
                     },
                     "400": {
@@ -406,7 +406,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Order"
+                            "$ref": "#/definitions/model.OrderResponse"
                         }
                     },
                     "400": {
@@ -467,7 +467,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Order"
+                                "$ref": "#/definitions/model.OrderResponse"
                             }
                         }
                     }
@@ -502,7 +502,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Order"
+                            "$ref": "#/definitions/model.OrderResponse"
                         }
                     },
                     "400": {
@@ -552,7 +552,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Order"
+                            "$ref": "#/definitions/model.OrderResponse"
                         }
                     },
                     "400": {
@@ -604,7 +604,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Payer"
+                            "$ref": "#/definitions/model.PayerResponse"
                         }
                     },
                     "400": {
@@ -662,7 +662,7 @@ const docTemplate = `{
                         "schema": {
                             "type": "array",
                             "items": {
-                                "$ref": "#/definitions/model.Payer"
+                                "$ref": "#/definitions/model.PayerResponse"
                             }
                         }
                     }
@@ -697,7 +697,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Payer"
+                            "$ref": "#/definitions/model.PayerResponse"
                         }
                     },
                     "400": {
@@ -744,7 +744,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Payer"
+                            "$ref": "#/definitions/model.PayerResponse"
                         }
                     },
                     "400": {
@@ -1011,6 +1011,29 @@ const docTemplate = `{
                 }
             }
         },
+        "dlocal.CardResponse": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string"
+                },
+                "card_id": {
+                    "type": "string"
+                },
+                "expiration_month": {
+                    "type": "string"
+                },
+                "expiration_year": {
+                    "type": "string"
+                },
+                "holder_name": {
+                    "type": "string"
+                },
+                "last4": {
+                    "type": "string"
+                }
+            }
+        },
         "dlocal.Payer": {
             "type": "object",
             "properties": {
@@ -1047,14 +1070,14 @@ const docTemplate = `{
                 }
             }
         },
-        "dlocal.Payment": {
+        "dlocal.PaymentRequestBody": {
             "type": "object",
             "properties": {
                 "amount": {
                     "type": "number"
                 },
                 "card": {
-                    "$ref": "#/definitions/dlocal.Card"
+                    "$ref": "#/definitions/dlocal.SecureCard"
                 },
                 "country": {
                     "type": "string"
@@ -1079,6 +1102,56 @@ const docTemplate = `{
                 }
             }
         },
+        "dlocal.PaymentResponseBody": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "approved_date": {
+                    "type": "string"
+                },
+                "card": {
+                    "$ref": "#/definitions/dlocal.CardResponse"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "created_date": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "string"
+                },
+                "notification_url": {
+                    "type": "string"
+                },
+                "order_id": {
+                    "type": "string"
+                },
+                "payment_method_flow": {
+                    "type": "string"
+                },
+                "payment_method_id": {
+                    "type": "string"
+                },
+                "payment_method_type": {
+                    "type": "string"
+                },
+                "status": {
+                    "type": "string"
+                },
+                "status_code": {
+                    "type": "string"
+                },
+                "status_detail": {
+                    "type": "string"
+                }
+            }
+        },
         "dlocal.SecureCard": {
             "type": "object",
             "properties": {
@@ -1087,14 +1160,14 @@ const docTemplate = `{
                 }
             }
         },
-        "dlocal.SecurePayment": {
+        "dlocal.SecurePaymentRequestBody": {
             "type": "object",
             "properties": {
                 "amount": {
                     "type": "number"
                 },
                 "card": {
-                    "$ref": "#/definitions/dlocal.SecureCard"
+                    "$ref": "#/definitions/dlocal.Card"
                 },
                 "country": {
                     "type": "string"
@@ -1183,6 +1256,63 @@ const docTemplate = `{
                 }
             }
         },
+        "model.AddressResponse": {
+            "type": "object",
+            "properties": {
+                "city": {
+                    "type": "string",
+                    "example": "Volta Redonda"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "number": {
+                    "type": "string",
+                    "example": "1106"
+                },
+                "state": {
+                    "type": "string",
+                    "example": "Rio de Janeiro"
+                },
+                "street": {
+                    "type": "string",
+                    "example": "Servidão B-1"
+                },
+                "zip_code": {
+                    "type": "string",
+                    "example": "27275-595"
+                }
+            }
+        },
+        "model.Card": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string",
+                    "example": "Visa"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "last4": {
+                    "type": "string",
+                    "example": "1234"
+                },
+                "payerID": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 1
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
         "model.Dummy": {
             "type": "object",
             "properties": {
@@ -1203,9 +1333,6 @@ const docTemplate = `{
         "model.Order": {
             "type": "object",
             "properties": {
-                "finished": {
-                    "type": "boolean"
-                },
                 "id": {
                     "type": "integer",
                     "example": 1
@@ -1220,7 +1347,41 @@ const docTemplate = `{
                 },
                 "totalFees": {
                     "type": "integer",
+                    "maximum": 24,
+                    "minimum": 1,
                     "example": 3
+                }
+            }
+        },
+        "model.OrderResponse": {
+            "type": "object",
+            "properties": {
+                "created_at": {
+                    "type": "string"
+                },
+                "finished": {
+                    "type": "boolean"
+                },
+                "id": {
+                    "type": "integer"
+                },
+                "payer": {
+                    "$ref": "#/definitions/model.PayerResponse"
+                },
+                "payments": {
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/model.PaymentResponse"
+                    }
+                },
+                "product": {
+                    "$ref": "#/definitions/model.Product"
+                },
+                "total_fees": {
+                    "type": "integer"
+                },
+                "updated_at": {
+                    "type": "string"
                 }
             }
         },
@@ -1261,6 +1422,81 @@ const docTemplate = `{
                 "userReference": {
                     "type": "string",
                     "example": "12345"
+                }
+            }
+        },
+        "model.PayerResponse": {
+            "type": "object",
+            "properties": {
+                "address": {
+                    "$ref": "#/definitions/model.AddressResponse"
+                },
+                "birth_date": {
+                    "type": "string",
+                    "example": "24/07/1992"
+                },
+                "created_at": {
+                    "type": "string"
+                },
+                "document": {
+                    "type": "string"
+                },
+                "email": {
+                    "type": "string",
+                    "example": "jhondoe@mail.com"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "example": "Jhon Doe"
+                },
+                "phone": {
+                    "type": "string",
+                    "example": "+123456789"
+                },
+                "updated_at": {
+                    "type": "string"
+                },
+                "user_reference": {
+                    "type": "string",
+                    "example": "12345"
+                }
+            }
+        },
+        "model.PaymentResponse": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number"
+                },
+                "card": {
+                    "$ref": "#/definitions/model.Card"
+                },
+                "country": {
+                    "type": "string"
+                },
+                "createdAt": {
+                    "type": "string"
+                },
+                "currency": {
+                    "type": "string"
+                },
+                "id": {
+                    "description": "Dlocal payment.id",
+                    "type": "string"
+                },
+                "orderNumber": {
+                    "description": "Dlocal order_id",
+                    "type": "string"
+                },
+                "paymentMethodFlow": {
+                    "type": "string"
+                },
+                "paymentMethodID": {
+                    "type": "string"
                 }
             }
         },

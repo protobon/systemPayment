@@ -7,17 +7,16 @@ import (
 	"gorm.io/gorm"
 )
 
-// Order example
+// Order object
 type Order struct {
-	ID         int            `gorm:"primaryKey" example:"1" validate:"nonzero"`
-	PayerID    int            `gorm:"column:payer_id" example:"1"  validate:"nonzero"`
-	ProductID  int            `gorm:"column:product_id" example:"1"  validate:"nonzero"`
-	TotalFees  uint           `example:"3"  validate:"nonzero"`
-	CreatedAt  time.Time      `json:"-" swaggerignore:"true"`
-	UpdatedAt  time.Time      `json:"-" swaggerignore:"true"`
-	DeletedAt  gorm.DeletedAt `json:"-" swaggerignore:"true"`
-	FinishedAt time.Time      `json:"-" swaggerignore:"true"`
-	Finished   bool           `gorm:"default:false"`
+	ID        int            `gorm:"primaryKey" example:"1" validate:"nonzero"`
+	PayerID   int            `gorm:"column:payer_id" example:"1"  validate:"nonzero"`
+	ProductID int            `gorm:"column:product_id" example:"1"  validate:"nonzero"`
+	TotalFees int            `example:"3"  validate:"nonzero,min=1,max=24"`
+	Finished  bool           `json:"-" gorm:"default:false" swaggerignore:"true"`
+	CreatedAt time.Time      `json:"-" swaggerignore:"true"`
+	UpdatedAt time.Time      `json:"-" swaggerignore:"true"`
+	DeletedAt gorm.DeletedAt `json:"-" swaggerignore:"true"`
 }
 
 func (Order) TableName() string {

@@ -5,6 +5,8 @@ type SecureCard struct {
 }
 
 // Create Card with Dlocal
+
+// Card object
 type Card struct {
 	HolderName      *string `json:"holder_name" example:"Jhon Doe" validate:"nonzero"`
 	Number          *string `json:"number" example:"4111111111111111" validate:"nonzero"`
@@ -13,12 +15,14 @@ type Card struct {
 	ExpirationYear  int     `json:"expiration_year" example:"2033" validate:"nonzero"`
 }
 
-type CreateCardRequestBody struct {
+// Request
+type CardRequestBody struct {
 	Country *string `json:"country" validate:"nonzero,min=2,max=2"`
 	Card    Card    `json:"card" validate:"nonzero"`
 	Payer   Payer   `json:"payer" validate:"nonzero"`
 }
 
+// Response
 type CardResponse struct {
 	CardID          string `json:"card_id"`
 	HolderName      string `json:"holder_name"`

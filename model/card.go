@@ -9,12 +9,12 @@ import (
 
 // Card example
 type Card struct {
-	ID             int       `gorm:"primaryKey" example:"1"`
-	PayerID        int       `gorm:"column:payer_id" example:"1"  validate:"nonzero,min=1"`
-	Token          *string   `json:"token" validate:"nonzero"`
-	LastFourDigits *string   `example:"1234"`
-	Brand          *string   `example:"Visa" validate:"nonzero"`
-	CreatedAt      time.Time `json:"-" swaggerignore:"true"`
+	ID        int       `gorm:"primaryKey" example:"1"`
+	PayerID   int       `gorm:"column:payer_id" example:"1"  validate:"nonzero,min=1"`
+	Token     *string   `json:"token" validate:"nonzero"`
+	Last4     *string   `example:"1234"`
+	Brand     *string   `example:"Visa" validate:"nonzero"`
+	CreatedAt time.Time `json:"-" swaggerignore:"true"`
 }
 
 func (Card) TableName() string {

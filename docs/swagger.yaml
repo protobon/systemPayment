@@ -35,6 +35,21 @@ definitions:
         example: "4111111111111111"
         type: string
     type: object
+  dlocal.CardResponse:
+    properties:
+      brand:
+        type: string
+      card_id:
+        type: string
+      expiration_month:
+        type: string
+      expiration_year:
+        type: string
+      holder_name:
+        type: string
+      last4:
+        type: string
+    type: object
   dlocal.Payer:
     properties:
       address:
@@ -60,12 +75,12 @@ definitions:
       userReference:
         type: string
     type: object
-  dlocal.Payment:
+  dlocal.PaymentRequestBody:
     properties:
       amount:
         type: number
       card:
-        $ref: '#/definitions/dlocal.Card'
+        $ref: '#/definitions/dlocal.SecureCard'
       country:
         type: string
       currency:
@@ -81,17 +96,50 @@ definitions:
       payment_method_id:
         type: string
     type: object
+  dlocal.PaymentResponseBody:
+    properties:
+      amount:
+        type: number
+      approved_date:
+        type: string
+      card:
+        $ref: '#/definitions/dlocal.CardResponse'
+      country:
+        type: string
+      created_date:
+        type: string
+      currency:
+        type: string
+      id:
+        type: string
+      notification_url:
+        type: string
+      order_id:
+        type: string
+      payment_method_flow:
+        type: string
+      payment_method_id:
+        type: string
+      payment_method_type:
+        type: string
+      status:
+        type: string
+      status_code:
+        type: string
+      status_detail:
+        type: string
+    type: object
   dlocal.SecureCard:
     properties:
       token:
         type: string
     type: object
-  dlocal.SecurePayment:
+  dlocal.SecurePaymentRequestBody:
     properties:
       amount:
         type: number
       card:
-        $ref: '#/definitions/dlocal.SecureCard'
+        $ref: '#/definitions/dlocal.Card'
       country:
         type: string
       currency:
@@ -152,6 +200,47 @@ definitions:
         example: 27275-595
         type: string
     type: object
+  model.AddressResponse:
+    properties:
+      city:
+        example: Volta Redonda
+        type: string
+      created_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      number:
+        example: "1106"
+        type: string
+      state:
+        example: Rio de Janeiro
+        type: string
+      street:
+        example: Servidão B-1
+        type: string
+      zip_code:
+        example: 27275-595
+        type: string
+    type: object
+  model.Card:
+    properties:
+      brand:
+        example: Visa
+        type: string
+      id:
+        example: 1
+        type: integer
+      last4:
+        example: "1234"
+        type: string
+      payerID:
+        example: 1
+        minimum: 1
+        type: integer
+      token:
+        type: string
+    type: object
   model.Dummy:
     properties:
       id:
@@ -166,8 +255,6 @@ definitions:
     type: object
   model.Order:
     properties:
-      finished:
-        type: boolean
       id:
         example: 1
         type: integer
@@ -179,7 +266,30 @@ definitions:
         type: integer
       totalFees:
         example: 3
+        maximum: 24
+        minimum: 1
         type: integer
+    type: object
+  model.OrderResponse:
+    properties:
+      created_at:
+        type: string
+      finished:
+        type: boolean
+      id:
+        type: integer
+      payer:
+        $ref: '#/definitions/model.PayerResponse'
+      payments:
+        items:
+          $ref: '#/definitions/model.PaymentResponse'
+        type: array
+      product:
+        $ref: '#/definitions/model.Product'
+      total_fees:
+        type: integer
+      updated_at:
+        type: string
     type: object
   model.Payer:
     properties:
@@ -209,6 +319,58 @@ definitions:
         type: string
       userReference:
         example: "12345"
+        type: string
+    type: object
+  model.PayerResponse:
+    properties:
+      address:
+        $ref: '#/definitions/model.AddressResponse'
+      birth_date:
+        example: 24/07/1992
+        type: string
+      created_at:
+        type: string
+      document:
+        type: string
+      email:
+        example: jhondoe@mail.com
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: Jhon Doe
+        type: string
+      phone:
+        example: "+123456789"
+        type: string
+      updated_at:
+        type: string
+      user_reference:
+        example: "12345"
+        type: string
+    type: object
+  model.PaymentResponse:
+    properties:
+      amount:
+        type: number
+      card:
+        $ref: '#/definitions/model.Card'
+      country:
+        type: string
+      createdAt:
+        type: string
+      currency:
+        type: string
+      id:
+        description: Dlocal payment.id
+        type: string
+      orderNumber:
+        description: Dlocal order_id
+        type: string
+      paymentMethodFlow:
+        type: string
+      paymentMethodID:
         type: string
     type: object
   model.Product:
@@ -267,7 +429,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dlocal.Card'
+            $ref: '#/definitions/dlocal.CardResponse'
         "400":
           description: Bad Request
           schema:
@@ -289,19 +451,19 @@ paths:
       - application/json
       description: Makes a new Payment with the Dlocal API
       parameters:
-      - description: Payment example
+      - description: Payment with Dlocal example
         in: body
         name: example
         required: true
         schema:
-          $ref: '#/definitions/dlocal.Payment'
+          $ref: '#/definitions/dlocal.PaymentRequestBody'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dlocal.Payment'
+            $ref: '#/definitions/dlocal.PaymentResponseBody'
         "400":
           description: Bad Request
           schema:
@@ -323,19 +485,19 @@ paths:
       - application/json
       description: Makes a new Secure Payment with the Dlocal API
       parameters:
-      - description: SecurePayment example
+      - description: Secure Payment with Dlocal example
         in: body
         name: example
         required: true
         schema:
-          $ref: '#/definitions/dlocal.SecurePayment'
+          $ref: '#/definitions/dlocal.SecurePaymentRequestBody'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/dlocal.SecurePayment'
+            $ref: '#/definitions/dlocal.SecurePaymentRequestBody'
         "400":
           description: Bad Request
           schema:
@@ -499,7 +661,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Order'
+            $ref: '#/definitions/model.OrderResponse'
         "400":
           description: Bad Request
           schema:
@@ -533,7 +695,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Order'
+            $ref: '#/definitions/model.OrderResponse'
         "400":
           description: Bad Request
           schema:
@@ -574,7 +736,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Order'
+              $ref: '#/definitions/model.OrderResponse'
             type: array
       summary: Select all Orders
       tags:
@@ -597,7 +759,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Order'
+            $ref: '#/definitions/model.OrderResponse'
         "400":
           description: Bad Request
           schema:
@@ -628,7 +790,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Payer'
+            $ref: '#/definitions/model.PayerResponse'
         "400":
           description: Bad Request
           schema:
@@ -662,7 +824,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Payer'
+            $ref: '#/definitions/model.PayerResponse'
         "400":
           description: Bad Request
           schema:
@@ -701,7 +863,7 @@ paths:
           description: OK
           schema:
             items:
-              $ref: '#/definitions/model.Payer'
+              $ref: '#/definitions/model.PayerResponse'
             type: array
       summary: Select all Payers
       tags:
@@ -724,7 +886,7 @@ paths:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Payer'
+            $ref: '#/definitions/model.PayerResponse'
         "400":
           description: Bad Request
           schema:
