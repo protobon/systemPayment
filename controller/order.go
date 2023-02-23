@@ -57,8 +57,13 @@ func (o *Controller) NewOrder(ctx *gin.Context) {
 //
 //	@Produce		json
 //	@Success		200	{array}		model.OrderResponse
-//	@Router			/order/orders [get]
+//	@Router			/order/orders/{payer_id} [get]
 func (o *Controller) Orders(ctx *gin.Context) {
+	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
+	if err != nil {
+		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		return
+	}
 	start, err := strconv.Atoi(ctx.Query("start"))
 	if err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
@@ -76,7 +81,7 @@ func (o *Controller) Orders(ctx *gin.Context) {
 	if start < 0 {
 		start = 0
 	}
-	var order = model.Order{}
+	var order = model.Order{PayerID: payer_id}
 	orders, code, err := order.QGetOrders(database.DB, start, count)
 	if err != nil {
 		switch code {
@@ -109,6 +114,7 @@ func (o *Controller) Orders(ctx *gin.Context) {
 //	@Failure		500	{object}	httputil.HTTPError500
 //	@Router			/order/{id} [get]
 func (o *Controller) GetOrder(ctx *gin.Context) {
+	// var out model.OrderResponse
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, err)
@@ -116,7 +122,8 @@ func (o *Controller) GetOrder(ctx *gin.Context) {
 	}
 
 	order := model.Order{ID: id}
-	if code, err := order.QGetOrder(database.DB); err != nil {
+	code, err := order.QGetOrder(database.DB)
+	if err != nil {
 		switch code {
 		case 404:
 			httputil.NewError404(ctx, http.StatusNotFound, err)

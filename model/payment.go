@@ -47,7 +47,7 @@ func (p *Payment) QCreatePayment(db *gorm.DB) (int, error) {
 
 func (p *Payment) QGetPayments(db *gorm.DB, start int, count int) ([]Payment, int, error) {
 	var payments []Payment
-	if err := db.Table("payment").Select("*").Scan(&payments).Error; err != nil {
+	if err := db.Table("payment").Select("*").Where("order_id=?", p.OrderID).Scan(&payments).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return payments, 404, err

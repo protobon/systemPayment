@@ -108,6 +108,10 @@ func main() {
 			dlocal.POST("/secure-payment", c.MakeSecurePayment)
 			dlocal.POST("/payment", c.MakePayment)
 		}
+		payment := v1.Group("/payment")
+		{
+			payment.POST("/new", c.MockPayment)
+		}
 	}
 
 	r.GET("/swagger/*any", ginSwagger.WrapHandler(swaggerFiles.Handler))
