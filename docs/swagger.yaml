@@ -200,44 +200,14 @@ definitions:
         example: 27275-595
         type: string
     type: object
-  model.AddressResponse:
-    properties:
-      city:
-        example: Volta Redonda
-        type: string
-      created_at:
-        type: string
-      id:
-        example: 1
-        type: integer
-      number:
-        example: "1106"
-        type: string
-      state:
-        example: Rio de Janeiro
-        type: string
-      street:
-        example: Servidão B-1
-        type: string
-      zip_code:
-        example: 27275-595
-        type: string
-    type: object
   model.Card:
     properties:
       brand:
         example: Visa
         type: string
-      id:
-        example: 1
-        type: integer
       last4:
         example: "1234"
         type: string
-      payerID:
-        example: 1
-        minimum: 1
-        type: integer
       token:
         type: string
     type: object
@@ -246,13 +216,15 @@ definitions:
       id:
         example: 1
         type: integer
-      payerID:
-        example: 1
-        type: integer
-      productID:
-        example: 1
-        type: integer
-      totalFees:
+      payer:
+        $ref: '#/definitions/model.Payer'
+      payments:
+        items:
+          $ref: '#/definitions/model.Payment'
+        type: array
+      product:
+        $ref: '#/definitions/model.Product'
+      total_fees:
         example: 3
         maximum: 24
         minimum: 1
@@ -276,8 +248,6 @@ definitions:
         $ref: '#/definitions/model.Product'
       total_fees:
         type: integer
-      updated_at:
-        type: string
     type: object
   model.Payer:
     properties:
@@ -286,6 +256,8 @@ definitions:
       birth_date:
         example: 24/07/1992
         type: string
+      card:
+        $ref: '#/definitions/model.Card'
       document:
         example: "23415162"
         type: string
@@ -309,7 +281,7 @@ definitions:
   model.PayerResponse:
     properties:
       address:
-        $ref: '#/definitions/model.AddressResponse'
+        $ref: '#/definitions/model.Address'
       birth_date:
         example: 24/07/1992
         type: string
@@ -333,6 +305,44 @@ definitions:
         type: string
       user_reference:
         example: "12345"
+        type: string
+    type: object
+  model.Payment:
+    properties:
+      amount:
+        example: 5000
+        type: number
+      cardID:
+        example: 1
+        type: integer
+      country:
+        example: UY
+        maxLength: 2
+        minLength: 2
+        type: string
+      currency:
+        example: USD
+        maxLength: 3
+        minLength: 3
+        type: string
+      id:
+        example: 1
+        type: integer
+      orderID:
+        example: 1
+        type: integer
+      orderNumber:
+        example: "657434343"
+        type: string
+      paymentMethodFlow:
+        example: DIRECT
+        maxLength: 10
+        minLength: 2
+        type: string
+      paymentMethodID:
+        example: CARD
+        maxLength: 4
+        minLength: 2
         type: string
     type: object
   model.PaymentResponse:
@@ -593,7 +603,7 @@ paths:
       summary: Insert Order
       tags:
       - Order
-  /order/orders:
+  /order/orders/{payer_id}:
     get:
       consumes:
       - application/json
@@ -755,6 +765,40 @@ paths:
       summary: Updates Payer
       tags:
       - Payer
+  /payment/new:
+    post:
+      consumes:
+      - application/json
+      description: Mocks a new Payment (for testing purposes)
+      parameters:
+      - description: Payment example
+        in: body
+        name: example
+        required: true
+        schema:
+          $ref: '#/definitions/model.Payment'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PaymentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError400'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError404'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError500'
+      summary: Mock Payment
+      tags:
+      - Payment
   /product/{id}:
     get:
       description: Get one Product from ID

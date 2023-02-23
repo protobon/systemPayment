@@ -114,7 +114,10 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 	}
 
 	payer := model.Payer{ID: id}
-	if code, err := payer.QGetPayer(database.DB); err != nil {
+	// var payer_out model.PayerResponse
+	var code int
+	code, err = payer.QGetPayer(database.DB)
+	if err != nil {
 		switch code {
 		case 404:
 			httputil.NewError404(ctx, http.StatusNotFound, err)

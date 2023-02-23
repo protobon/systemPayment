@@ -3,16 +3,16 @@ package model
 import "time"
 
 type PayerResponse struct {
-	ID            int             `json:"id" example:"1"`
-	Name          *string         `json:"name" example:"Jhon Doe"`
-	Email         *string         `json:"email" example:"jhondoe@mail.com"`
-	BirthDate     *string         `json:"birth_date" example:"24/07/1992"`
-	Phone         *string         `json:"phone" example:"+123456789"`
-	Document      *string         `json:"document" xample:"23415162"`
-	UserReference *string         `json:"user_reference" example:"12345"`
-	Address       AddressResponse `json:"address"`
-	CreatedAt     time.Time       `json:"created_at"`
-	UpdatedAt     time.Time       `json:"updated_at"`
+	ID            int       `json:"id" example:"1"`
+	Name          *string   `json:"name" example:"Jhon Doe"`
+	Email         *string   `json:"email" example:"jhondoe@mail.com"`
+	BirthDate     *string   `json:"birth_date" example:"24/07/1992"`
+	Phone         *string   `json:"phone" example:"+123456789"`
+	Document      *string   `json:"document" xample:"23415162"`
+	UserReference *string   `json:"user_reference" example:"12345"`
+	Address       Address   `json:"address" gorm:"foreignKey:AddressID;references:ID"`
+	CreatedAt     time.Time `json:"created_at"`
+	UpdatedAt     time.Time `json:"updated_at"`
 }
 
 type AddressResponse struct {
@@ -45,7 +45,6 @@ type OrderResponse struct {
 	Payments  []PaymentResponse `json:"payments"`
 	Finished  bool              `json:"finished"`
 	CreatedAt time.Time         `json:"created_at"`
-	UpdatedAt time.Time         `json:"updated_at"`
 }
 
 type ProductResponse struct {

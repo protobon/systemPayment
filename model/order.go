@@ -9,10 +9,13 @@ import (
 
 // Order object
 type Order struct {
-	ID        int            `gorm:"primaryKey" example:"1" validate:"nonzero"`
-	PayerID   int            `gorm:"column:payer_id" example:"1"  validate:"nonzero"`
-	ProductID int            `gorm:"column:product_id" example:"1"  validate:"nonzero"`
-	TotalFees int            `example:"3"  validate:"nonzero,min=1,max=24"`
+	ID        int            `json:"id" gorm:"primaryKey" example:"1"`
+	PayerID   int            `json:"-" gorm:"column:payer_id" example:"1"  validate:"nonzero"`
+	Payer     Payer          `json:"payer"`
+	ProductID int            `json:"-" gorm:"column:product_id" example:"1"  validate:"nonzero"`
+	Product   Product        `json:"product"`
+	TotalFees int            `json:"total_fees" example:"3"  validate:"nonzero,min=1,max=24"`
+	Payments  []Payment      `json:"payments"`
 	Finished  bool           `json:"-" gorm:"default:false" swaggerignore:"true"`
 	CreatedAt time.Time      `json:"-" swaggerignore:"true"`
 	UpdatedAt time.Time      `json:"-" swaggerignore:"true"`
@@ -43,7 +46,7 @@ func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 
 func (o *Order) QGetOrders(db *gorm.DB, start int, count int) ([]Order, int, error) {
 	var orders []Order
-	if err := db.Table("order").Select("*").Scan(&orders).Error; err != nil {
+	if err := db.Preload("Product").Where("payer_id=?", o.PayerID).Find(&orders).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return orders, 404, err
@@ -51,12 +54,24 @@ func (o *Order) QGetOrders(db *gorm.DB, start int, count int) ([]Order, int, err
 			return orders, 500, err
 		}
 	}
-
+	for idx, order := range orders {
+		order.Payer.ID = order.PayerID
+		if code, err := order.Payer.QGetPayer(db); err != nil {
+			return orders, code, err
+		}
+		p := Payment{OrderID: order.ID}
+		payments, code, err := p.QGetPayments(db, 0, 10)
+		if err != nil {
+			return orders, code, err
+		}
+		order.Payments = payments
+		orders[idx] = order
+	}
 	return orders, 200, nil
 }
 
 func (o *Order) QGetOrder(db *gorm.DB) (int, error) {
-	if err := db.Where("id = ?", o.ID).First(&o).Error; err != nil {
+	if err := db.Preload("Product").Where("id=?", o.ID).First(&o).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return 404, err
@@ -64,6 +79,16 @@ func (o *Order) QGetOrder(db *gorm.DB) (int, error) {
 			return 500, err
 		}
 	}
+	o.Payer.ID = o.PayerID
+	if code, err := o.Payer.QGetPayer(db); err != nil {
+		return code, err
+	}
+	p := Payment{OrderID: o.ID}
+	payments, code, err := p.QGetPayments(db, 0, 10)
+	if err != nil {
+		return code, err
+	}
+	o.Payments = payments
 	return 200, nil
 }
 
