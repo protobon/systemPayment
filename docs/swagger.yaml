@@ -187,6 +187,8 @@ definitions:
       city:
         example: Volta Redonda
         type: string
+      created_at:
+        type: string
       number:
         example: "1106"
         type: string
@@ -205,29 +207,57 @@ definitions:
       brand:
         example: Visa
         type: string
-      last4:
+      created_at:
+        type: string
+      id:
+        example: 1
+        type: integer
+      last_4:
+        example: "1234"
+        maxLength: 4
+        minLength: 4
+        type: string
+      payer_id:
+        example: 1
+        minimum: 1
+        type: integer
+      token:
+        type: string
+    type: object
+  model.CardRequest:
+    properties:
+      brand:
+        example: Visa
+        type: string
+      last_4:
         example: "1234"
         type: string
       token:
         type: string
     type: object
-  model.Order:
+  model.CardResponse:
     properties:
+      brand:
+        example: Visa
+        type: string
+      created_at:
+        type: string
       id:
         example: 1
         type: integer
-      payer:
-        $ref: '#/definitions/model.Payer'
-      payments:
-        items:
-          $ref: '#/definitions/model.Payment'
-        type: array
-      product:
-        $ref: '#/definitions/model.Product'
+      last_4:
+        example: "1234"
+        type: string
+      token:
+        type: string
+    type: object
+  model.OrderRequest:
+    properties:
+      product_id:
+        example: 1
+        type: integer
       total_fees:
         example: 3
-        maximum: 24
-        minimum: 1
         type: integer
     type: object
   model.OrderResponse:
@@ -238,8 +268,6 @@ definitions:
         type: boolean
       id:
         type: integer
-      payer:
-        $ref: '#/definitions/model.PayerResponse'
       payments:
         items:
           $ref: '#/definitions/model.PaymentResponse'
@@ -256,8 +284,10 @@ definitions:
       birth_date:
         example: 24/07/1992
         type: string
-      card:
-        $ref: '#/definitions/model.Card'
+      card_id:
+        type: integer
+      created_at:
+        type: string
       document:
         example: "23415162"
         type: string
@@ -266,6 +296,9 @@ definitions:
         maxLength: 100
         minLength: 6
         type: string
+      id:
+        example: 1
+        type: integer
       name:
         example: Jhon Doe
         maxLength: 100
@@ -273,6 +306,8 @@ definitions:
         type: string
       phone:
         example: "+123456789"
+        type: string
+      updated_at:
         type: string
       user_reference:
         example: "12345"
@@ -285,6 +320,9 @@ definitions:
       birth_date:
         example: 24/07/1992
         type: string
+      card_id:
+        example: 1
+        type: integer
       created_at:
         type: string
       document:
@@ -307,42 +345,25 @@ definitions:
         example: "12345"
         type: string
     type: object
-  model.Payment:
+  model.PaymentRequest:
     properties:
       amount:
-        example: 5000
+        example: 125
         type: number
-      cardID:
-        example: 1
-        type: integer
       country:
         example: UY
-        maxLength: 2
-        minLength: 2
         type: string
       currency:
         example: USD
-        maxLength: 3
-        minLength: 3
         type: string
-      id:
-        example: 1
-        type: integer
-      orderID:
-        example: 1
-        type: integer
-      orderNumber:
+      order_number:
         example: "657434343"
         type: string
-      paymentMethodFlow:
+      payment_method_flow:
         example: DIRECT
-        maxLength: 10
-        minLength: 2
         type: string
-      paymentMethodID:
+      payment_method_id:
         example: CARD
-        maxLength: 4
-        minLength: 2
         type: string
     type: object
   model.PaymentResponse:
@@ -372,6 +393,30 @@ definitions:
         type: string
     type: object
   model.Product:
+    properties:
+      amount:
+        example: 5000
+        type: number
+      currency:
+        example: USD
+        maxLength: 3
+        minLength: 3
+        type: string
+      description:
+        example: Curso de Programacion
+        maxLength: 100
+        minLength: 6
+        type: string
+      id:
+        example: 1
+        type: integer
+      name:
+        example: programacion en C
+        maxLength: 100
+        minLength: 6
+        type: string
+    type: object
+  model.ProductRequest:
     properties:
       amount:
         example: 5000
@@ -434,6 +479,113 @@ info:
   title: Swagger System Payment
   version: "1.0"
 paths:
+  /card/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get one Card from ID
+      parameters:
+      - description: 'example: 1'
+        in: query
+        name: int
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.CardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError400'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError404'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError500'
+      summary: Select Card
+      tags:
+      - Card
+  /card/cards:
+    get:
+      description: Select all cards
+      parameters:
+      - description: count example
+        example: 1
+        in: query
+        name: payer_id
+        required: true
+        type: integer
+      - description: start example
+        example: 0
+        in: query
+        name: start
+        required: true
+        type: integer
+      - description: count example
+        example: 10
+        in: query
+        name: count
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.CardResponse'
+            type: array
+      summary: Select all cards
+      tags:
+      - Card
+  /card/new:
+    post:
+      consumes:
+      - application/json
+      description: Inserts a new Card
+      parameters:
+      - description: count example
+        example: 1
+        in: query
+        name: payer_id
+        required: true
+        type: integer
+      - description: Card example
+        in: body
+        name: example
+        required: true
+        schema:
+          $ref: '#/definitions/model.CardRequest'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.CardResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError400'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError404'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError500'
+      summary: Insert Card
+      tags:
+      - Card
   /dlocal/card:
     post:
       consumes:
@@ -575,19 +727,25 @@ paths:
       - application/json
       description: save Order in database
       parameters:
+      - description: start example
+        example: 1
+        in: query
+        name: payer_id
+        required: true
+        type: integer
       - description: Order example
         in: body
         name: example
         required: true
         schema:
-          $ref: '#/definitions/model.Order'
+          $ref: '#/definitions/model.OrderRequest'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.Order'
+            $ref: '#/definitions/model.OrderResponse'
         "400":
           description: Bad Request
           schema:
@@ -603,12 +761,18 @@ paths:
       summary: Insert Order
       tags:
       - Order
-  /order/orders/{payer_id}:
+  /order/orders:
     get:
       consumes:
       - application/json
       description: Select all Orders
       parameters:
+      - description: start example
+        example: 1
+        in: query
+        name: payer_id
+        required: true
+        type: integer
       - description: start example
         example: 0
         in: query
@@ -776,7 +940,7 @@ paths:
         name: example
         required: true
         schema:
-          $ref: '#/definitions/model.Payment'
+          $ref: '#/definitions/model.PaymentRequest'
       produces:
       - application/json
       responses:
@@ -841,7 +1005,7 @@ paths:
         name: example
         required: true
         schema:
-          $ref: '#/definitions/model.Product'
+          $ref: '#/definitions/model.ProductRequest'
       produces:
       - application/json
       responses:
@@ -908,7 +1072,7 @@ paths:
         name: example
         required: true
         schema:
-          $ref: '#/definitions/model.Product'
+          $ref: '#/definitions/model.ProductRequest'
       produces:
       - application/json
       responses:

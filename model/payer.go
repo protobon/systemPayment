@@ -9,7 +9,7 @@ import (
 
 // Payer example
 type Payer struct {
-	ID            int            `json:"id" gorm:"primaryKey" example:"1" swaggerignore:"true"`
+	ID            int            `json:"id" gorm:"primaryKey" example:"1"`
 	Name          *string        `json:"name" example:"Jhon Doe" validate:"nonzero,min=6,max=100"`
 	Email         *string        `json:"email" example:"jhondoe@mail.com" validate:"nonzero,min=6,max=100"`
 	BirthDate     *string        `json:"birth_date" example:"24/07/1992" validate:"nonzero"`
@@ -17,24 +17,23 @@ type Payer struct {
 	Document      *string        `json:"document" example:"23415162" validate:"nonzero"`
 	UserReference *string        `json:"user_reference" example:"12345" validate:"nonzero"`
 	Address       Address        `json:"address" gorm:"foreignKey:PayerID;references:ID" validate:"nonzero"`
-	AddressID     int            `json:"-" swaggerignore:"true"`
-	CardID        int            `json:"-" swaggerignore:"true"`
-	Card          Card           `json:"card" gorm:"foreignKey:PayerID;references:ID" validate:"nonzero"`
-	CreatedAt     time.Time      `json:"created_at" swaggerignore:"true"`
-	UpdatedAt     time.Time      `json:"updated_at" swaggerignore:"true"`
-	DeletedAt     gorm.DeletedAt `json:"-" swaggerignore:"true"`
+	AddressID     int            `json:"-"`
+	CardID        int            `json:"card_id"`
+	CreatedAt     time.Time      `json:"created_at"`
+	UpdatedAt     time.Time      `json:"updated_at"`
+	DeletedAt     gorm.DeletedAt `json:"-"`
 }
 
 type Address struct {
-	ID        int            `json:"-" gorm:"primaryKey" example:"1" swaggerignore:"true"`
-	PayerID   int            `json:"-" gorm:"column:payer_id" example:"1" swaggerignore:"true"`
+	ID        int            `json:"-" gorm:"primaryKey" example:"1"`
+	PayerID   int            `json:"-" gorm:"column:payer_id" example:"1"`
 	State     *string        `json:"state" example:"Rio de Janeiro" validate:"nonzero"`
 	City      *string        `json:"city" example:"Volta Redonda" validate:"nonzero"`
 	ZipCode   *string        `json:"zip_code" example:"27275-595" validate:"nonzero"`
 	Street    *string        `json:"street" example:"Servidão B-1" validate:"nonzero"`
 	Number    *string        `json:"number" example:"1106" validate:"nonzero"`
-	CreatedAt time.Time      `json:"created_at" swaggerignore:"true"`
-	DeletedAt gorm.DeletedAt `json:"-" swaggerignore:"true"`
+	CreatedAt time.Time      `json:"created_at"`
+	DeletedAt gorm.DeletedAt `json:"-"`
 }
 
 func (Payer) TableName() string {
@@ -43,6 +42,22 @@ func (Payer) TableName() string {
 
 func (Address) TableName() string {
 	return "address"
+}
+
+func PayerExists(db *gorm.DB, id int) (bool, error) {
+	var p Payer
+	if err := db.Table("payer").Select("id").Where("id=?", id).First(&p).Error; err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func PreloadPayer(db *gorm.DB, id int) (*Payer, error) {
+	var p *Payer
+	if err := db.Table("payer").Select("id, card_id").Where("id=?", id).First(&p).Error; err != nil {
+		return nil, err
+	}
+	return p, nil
 }
 
 // QGetPayerFromEmail - Get payer from email
@@ -99,22 +114,13 @@ func (a *Address) QCreateAddress(db *gorm.DB, p *Payer) (int, error) {
 // QGetPayers - Get all Payers
 func (p *Payer) QGetPayers(db *gorm.DB, start int, count int) ([]Payer, int, error) {
 	var payers []Payer
-	rows, err := db.Raw(`SELECT payer.id, payer.name, payer.email, payer.birth_date, payer.phone, payer.document, 
-	payer.user_reference, payer.created_at, address.state, address.city, address.zip_code, address.street, 
-	address.number, address.created_at FROM payer LEFT JOIN address ON address.id=payer.address_id LIMIT ? OFFSET ?`,
-		count, start).Rows()
-	if err != nil {
-		return payers, 500, err
-	}
-	defer rows.Close()
-	for rows.Next() {
-		payer := Payer{}
-		if err = rows.Scan(&payer.ID, &payer.Name, &payer.Email, &payer.BirthDate, &payer.Phone,
-			&payer.Document, &payer.UserReference, &payer.CreatedAt, &payer.Address.State, &payer.Address.City,
-			&payer.Address.ZipCode, &payer.Address.Street, &payer.Address.Number, &payer.Address.CreatedAt); err != nil {
+	if err := db.Model(&Payer{}).Preload("Address").Find(&payers).Error; err != nil {
+		switch err {
+		case gorm.ErrRecordNotFound:
+			return payers, 404, err
+		default:
 			return payers, 500, err
 		}
-		payers = append(payers, payer)
 	}
 	return payers, 200, nil
 }

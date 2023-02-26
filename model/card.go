@@ -9,12 +9,13 @@ import (
 
 // Card example
 type Card struct {
-	ID        int       `json:"-" gorm:"primaryKey" example:"1"`
-	PayerID   int       `json:"-" gorm:"column:payer_id" example:"1"  validate:"nonzero,min=1"`
-	Token     *string   `json:"token" validate:"nonzero"`
-	Last4     *string   `example:"1234"`
-	Brand     *string   `example:"Visa" validate:"nonzero"`
-	CreatedAt time.Time `json:"-" swaggerignore:"true"`
+	ID        int            `json:"id" gorm:"primaryKey" example:"1"`
+	PayerID   int            `json:"payer_id" gorm:"column:payer_id" example:"1"  validate:"nonzero,min=1"`
+	Token     *string        `json:"token" validate:"nonzero"`
+	Last4     *string        `json:"last_4" gorm:"column:last_4" example:"1234" validate:"nonzero,min=4,max=4"`
+	Brand     *string        `json:"brand" example:"Visa" validate:"nonzero"`
+	CreatedAt time.Time      `json:"created_at"`
+	DeletedAt gorm.DeletedAt `json:"-"`
 }
 
 func (Card) TableName() string {
@@ -24,9 +25,8 @@ func (Card) TableName() string {
 // QCreateCard
 //
 // Inserts new Card
-func (c *Card) QCreateCard(db *gorm.DB, payer_id int) (int, error) {
+func (c *Card) QCreateCard(db *gorm.DB) (int, error) {
 	var err error
-	c.PayerID = payer_id
 	if err = validator.Validate(c); err != nil {
 		return 400, err
 	}
@@ -41,7 +41,7 @@ func (c *Card) QCreateCard(db *gorm.DB, payer_id int) (int, error) {
 // QGetCards
 //
 // Get Payer's Secured Cards (match Card.PayerID)
-func (c *Card) QGetCards(db *gorm.DB, payer_id string) ([]Card, int, error) {
+func (c *Card) QGetCards(db *gorm.DB, payer_id int) ([]Card, int, error) {
 	var cards []Card
 	if err := db.Table("card").Where("payer_id=?", c.PayerID).Select("*").Scan(&cards).Error; err != nil {
 		switch err {

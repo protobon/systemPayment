@@ -24,6 +24,165 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
+        "/card/cards": {
+            "get": {
+                "description": "Select all cards",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Card"
+                ],
+                "summary": "Select all cards",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "count example",
+                        "name": "payer_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 0,
+                        "description": "start example",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 10,
+                        "description": "count example",
+                        "name": "count",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CardResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
+        "/card/new": {
+            "post": {
+                "description": "Inserts a new Card",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Card"
+                ],
+                "summary": "Insert Card",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "count example",
+                        "name": "payer_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "description": "Card example",
+                        "name": "example",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.CardRequest"
+                        }
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.CardResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError400"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError404"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError500"
+                        }
+                    }
+                }
+            }
+        },
+        "/card/{id}": {
+            "get": {
+                "description": "Get one Card from ID",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Card"
+                ],
+                "summary": "Select Card",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "example: 1",
+                        "name": "int",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.CardResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError400"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError404"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError500"
+                        }
+                    }
+                }
+            }
+        },
         "/dlocal/card": {
             "post": {
                 "description": "Creates card and saves card token in database",
@@ -195,12 +354,20 @@ const docTemplate = `{
                 "summary": "Insert Order",
                 "parameters": [
                     {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "start example",
+                        "name": "payer_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
                         "description": "Order example",
                         "name": "example",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Order"
+                            "$ref": "#/definitions/model.OrderRequest"
                         }
                     }
                 ],
@@ -208,7 +375,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.Order"
+                            "$ref": "#/definitions/model.OrderResponse"
                         }
                     },
                     "400": {
@@ -232,7 +399,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/order/orders/{payer_id}": {
+        "/order/orders": {
             "get": {
                 "description": "Select all Orders",
                 "consumes": [
@@ -246,6 +413,14 @@ const docTemplate = `{
                 ],
                 "summary": "Select all Orders",
                 "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "start example",
+                        "name": "payer_id",
+                        "in": "query",
+                        "required": true
+                    },
                     {
                         "type": "integer",
                         "example": 0,
@@ -545,7 +720,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Payment"
+                            "$ref": "#/definitions/model.PaymentRequest"
                         }
                     }
                 ],
@@ -597,7 +772,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Product"
+                            "$ref": "#/definitions/model.ProductRequest"
                         }
                     }
                 ],
@@ -697,7 +872,7 @@ const docTemplate = `{
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.Product"
+                            "$ref": "#/definitions/model.ProductRequest"
                         }
                     }
                 ],
@@ -1054,6 +1229,9 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Volta Redonda"
                 },
+                "created_at": {
+                    "type": "string"
+                },
                 "number": {
                     "type": "string",
                     "example": "1106"
@@ -1079,7 +1257,37 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Visa"
                 },
-                "last4": {
+                "created_at": {
+                    "type": "string"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "last_4": {
+                    "type": "string",
+                    "maxLength": 4,
+                    "minLength": 4,
+                    "example": "1234"
+                },
+                "payer_id": {
+                    "type": "integer",
+                    "minimum": 1,
+                    "example": 1
+                },
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.CardRequest": {
+            "type": "object",
+            "properties": {
+                "brand": {
+                    "type": "string",
+                    "example": "Visa"
+                },
+                "last_4": {
                     "type": "string",
                     "example": "1234"
                 },
@@ -1088,29 +1296,38 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Order": {
+        "model.CardResponse": {
             "type": "object",
             "properties": {
+                "brand": {
+                    "type": "string",
+                    "example": "Visa"
+                },
+                "created_at": {
+                    "type": "string"
+                },
                 "id": {
                     "type": "integer",
                     "example": 1
                 },
-                "payer": {
-                    "$ref": "#/definitions/model.Payer"
+                "last_4": {
+                    "type": "string",
+                    "example": "1234"
                 },
-                "payments": {
-                    "type": "array",
-                    "items": {
-                        "$ref": "#/definitions/model.Payment"
-                    }
-                },
-                "product": {
-                    "$ref": "#/definitions/model.Product"
+                "token": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.OrderRequest": {
+            "type": "object",
+            "properties": {
+                "product_id": {
+                    "type": "integer",
+                    "example": 1
                 },
                 "total_fees": {
                     "type": "integer",
-                    "maximum": 24,
-                    "minimum": 1,
                     "example": 3
                 }
             }
@@ -1126,9 +1343,6 @@ const docTemplate = `{
                 },
                 "id": {
                     "type": "integer"
-                },
-                "payer": {
-                    "$ref": "#/definitions/model.PayerResponse"
                 },
                 "payments": {
                     "type": "array",
@@ -1154,8 +1368,11 @@ const docTemplate = `{
                     "type": "string",
                     "example": "24/07/1992"
                 },
-                "card": {
-                    "$ref": "#/definitions/model.Card"
+                "card_id": {
+                    "type": "integer"
+                },
+                "created_at": {
+                    "type": "string"
                 },
                 "document": {
                     "type": "string",
@@ -1167,6 +1384,10 @@ const docTemplate = `{
                     "minLength": 6,
                     "example": "jhondoe@mail.com"
                 },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
                 "name": {
                     "type": "string",
                     "maxLength": 100,
@@ -1176,6 +1397,9 @@ const docTemplate = `{
                 "phone": {
                     "type": "string",
                     "example": "+123456789"
+                },
+                "updated_at": {
+                    "type": "string"
                 },
                 "user_reference": {
                     "type": "string",
@@ -1192,6 +1416,10 @@ const docTemplate = `{
                 "birth_date": {
                     "type": "string",
                     "example": "24/07/1992"
+                },
+                "card_id": {
+                    "type": "integer",
+                    "example": 1
                 },
                 "created_at": {
                     "type": "string"
@@ -1224,51 +1452,31 @@ const docTemplate = `{
                 }
             }
         },
-        "model.Payment": {
+        "model.PaymentRequest": {
             "type": "object",
             "properties": {
                 "amount": {
                     "type": "number",
-                    "example": 5000
-                },
-                "cardID": {
-                    "type": "integer",
-                    "example": 1
+                    "example": 125
                 },
                 "country": {
                     "type": "string",
-                    "maxLength": 2,
-                    "minLength": 2,
                     "example": "UY"
                 },
                 "currency": {
                     "type": "string",
-                    "maxLength": 3,
-                    "minLength": 3,
                     "example": "USD"
                 },
-                "id": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "orderID": {
-                    "type": "integer",
-                    "example": 1
-                },
-                "orderNumber": {
+                "order_number": {
                     "type": "string",
                     "example": "657434343"
                 },
-                "paymentMethodFlow": {
+                "payment_method_flow": {
                     "type": "string",
-                    "maxLength": 10,
-                    "minLength": 2,
                     "example": "DIRECT"
                 },
-                "paymentMethodID": {
+                "payment_method_id": {
                     "type": "string",
-                    "maxLength": 4,
-                    "minLength": 2,
                     "example": "CARD"
                 }
             }
@@ -1311,6 +1519,37 @@ const docTemplate = `{
             }
         },
         "model.Product": {
+            "type": "object",
+            "properties": {
+                "amount": {
+                    "type": "number",
+                    "example": 5000
+                },
+                "currency": {
+                    "type": "string",
+                    "maxLength": 3,
+                    "minLength": 3,
+                    "example": "USD"
+                },
+                "description": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 6,
+                    "example": "Curso de Programacion"
+                },
+                "id": {
+                    "type": "integer",
+                    "example": 1
+                },
+                "name": {
+                    "type": "string",
+                    "maxLength": 100,
+                    "minLength": 6,
+                    "example": "programacion en C"
+                }
+            }
+        },
+        "model.ProductRequest": {
             "type": "object",
             "properties": {
                 "amount": {
