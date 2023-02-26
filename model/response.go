@@ -1,6 +1,10 @@
 package model
 
-import "time"
+import (
+	"time"
+
+	"gorm.io/gorm"
+)
 
 type PayerResponse struct {
 	ID            int       `json:"id" example:"1"`
@@ -10,6 +14,7 @@ type PayerResponse struct {
 	Phone         *string   `json:"phone" example:"+123456789"`
 	Document      *string   `json:"document" xample:"23415162"`
 	UserReference *string   `json:"user_reference" example:"12345"`
+	CardID        int       `json:"card_id" example:"1"`
 	Address       Address   `json:"address" gorm:"foreignKey:AddressID;references:ID"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
@@ -22,6 +27,14 @@ type AddressResponse struct {
 	ZipCode   *string   `json:"zip_code" example:"27275-595"`
 	Street    *string   `json:"street" example:"Servidão B-1"`
 	Number    *string   `json:"number" example:"1106"`
+	CreatedAt time.Time `json:"created_at"`
+}
+
+type CardResponse struct {
+	ID        int       `json:"id" example:"1"`
+	Token     *string   `json:"token"`
+	Last4     *string   `json:"last_4" example:"1234"`
+	Brand     *string   `json:"brand" example:"Visa"`
 	CreatedAt time.Time `json:"created_at"`
 }
 
@@ -39,7 +52,6 @@ type PaymentResponse struct {
 
 type OrderResponse struct {
 	ID        int               `json:"id"`
-	Payer     PayerResponse     `json:"payer"`
 	Product   Product           `json:"product" `
 	TotalFees int               `json:"total_fees"`
 	Payments  []PaymentResponse `json:"payments"`
@@ -48,11 +60,12 @@ type OrderResponse struct {
 }
 
 type ProductResponse struct {
-	ID          int       `json:"id" example:"1"`
-	Name        *string   `json:"name" example:"programacion en C" validate:"nonzero,min=6,max=100"`
-	Description *string   `json:"description" example:"Curso de Programacion" validate:"nonzero,min=6,max=100"`
-	Amount      float64   `json:"amount" example:"5000.00" validate:"nonzero"`
-	Currency    *string   `json:"currency" example:"USD" validate:"nonzero,min=3,max=3"`
-	CreatedAt   time.Time `json:"created_at"`
-	UpdatedAt   time.Time `json:"updated_at"`
+	ID          int            `json:"id" example:"1"`
+	Name        *string        `json:"name" example:"programacion en C" validate:"nonzero,min=6,max=100"`
+	Description *string        `json:"description" example:"Curso de Programacion" validate:"nonzero,min=6,max=100"`
+	Amount      float64        `json:"amount" example:"5000.00"`
+	Currency    *string        `json:"currency" example:"USD" validate:"nonzero,min=3,max=3"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt `json:"-" swaggerignore:"true"`
 }

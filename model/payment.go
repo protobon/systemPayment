@@ -9,18 +9,18 @@ import (
 
 // Payment object
 type Payment struct {
-	ID                int            `gorm:"primaryKey" example:"1"`
-	Amount            float64        `example:"5000.00" validate:"nonzero"`
-	Currency          *string        `example:"USD" validate:"nonzero,min=3,max=3"`
-	Country           *string        `example:"UY" validate:"nonzero,min=2,max=2"`
-	PaymentMethodID   *string        `example:"CARD" validate:"nonzero,min=2,max=4"`
-	PaymentMethodFlow *string        `example:"DIRECT" validate:"nonzero,min=2,max=10"`
-	OrderID           int            `gorm:"column:order_id" example:"1"  validate:"nonzero"`
-	OrderNumber       *string        `example:"657434343"  validate:"nonzero"`
-	CardID            int            `gorm:"column:card_id" example:"1"  validate:"nonzero"`
-	CreatedAt         time.Time      `json:"-" swaggerignore:"true"`
-	UpdatedAt         time.Time      `json:"-" swaggerignore:"true"`
-	DeletedAt         gorm.DeletedAt `json:"-" swaggerignore:"true"`
+	ID                int            `json:"id" gorm:"primaryKey" example:"1"`
+	Amount            float64        `json:"amount" example:"5000.00" validate:"nonzero"`
+	Currency          *string        `json:"currency" example:"USD" validate:"nonzero,min=3,max=3"`
+	Country           *string        `json:"country" example:"UY" validate:"nonzero,min=2,max=2"`
+	PaymentMethodID   *string        `json:"payment_method_id" example:"CARD" validate:"nonzero,min=2,max=4"`
+	PaymentMethodFlow *string        `json:"payment_method_flow" example:"DIRECT" validate:"nonzero,min=2,max=10"`
+	OrderID           int            `json:"order_id" gorm:"column:order_id" example:"1"  validate:"nonzero"`
+	OrderNumber       *string        `json:"order_number" example:"657434343"  validate:"nonzero"`
+	CardID            int            `json:"card_id" gorm:"column:card_id" example:"1"  validate:"nonzero"`
+	CreatedAt         time.Time      `json:"created_at"`
+	UpdatedAt         time.Time      `json:"updated_at"`
+	DeletedAt         gorm.DeletedAt `json:"-"`
 }
 
 func (Payment) TableName() string {

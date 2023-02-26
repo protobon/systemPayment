@@ -9,18 +9,26 @@ import (
 
 // Product example
 type Product struct {
-	ID          int            `json:"-" gorm:"primaryKey" example:"1" swaggerignore:"true"`
-	Name        *string        `example:"programacion en C" validate:"nonzero,min=6,max=100"`
-	Description *string        `example:"Curso de Programacion" validate:"nonzero,min=6,max=100"`
-	Amount      float64        `example:"5000.00" validate:"nonzero"`
-	Currency    *string        `example:"USD" validate:"nonzero,min=3,max=3"`
-	CreatedAt   time.Time      `json:"-" swaggerignore:"true"`
-	UpdatedAt   time.Time      `json:"-" swaggerignore:"true"`
-	DeletedAt   gorm.DeletedAt `json:"-" swaggerignore:"true"`
+	ID          int            `json:"id" gorm:"primaryKey" example:"1"`
+	Name        *string        `json:"name" example:"programacion en C" validate:"nonzero,min=6,max=100"`
+	Description *string        `json:"description" example:"Curso de Programacion" validate:"nonzero,min=6,max=100"`
+	Amount      float64        `json:"amount" example:"5000.00" validate:"nonzero"`
+	Currency    *string        `json:"currency" example:"USD" validate:"nonzero,min=3,max=3"`
+	CreatedAt   time.Time      `json:"-"`
+	UpdatedAt   time.Time      `json:"-"`
+	DeletedAt   gorm.DeletedAt `json:"-"`
 }
 
 func (Product) TableName() string {
 	return "product"
+}
+
+func ProductExists(db *gorm.DB, id int) (bool, error) {
+	var p Product
+	if err := db.Table("product").Select("id").Where("id=?", id).First(&p).Error; err != nil {
+		return false, err
+	}
+	return true, nil
 }
 
 // QCreateproduct - Insert into product

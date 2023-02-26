@@ -16,7 +16,7 @@ import (
 //		@Description	save Product in database
 //		@Tags			Product
 //		@Accept			json
-//	 @Param   example     body     model.Product     true  "Product example"     example(model.Product)
+//	 @Param   example     body     model.ProductRequest     true  "Product example"     example(model.ProductRequest)
 //		@in body
 //		@Produce		json
 //		@Success		200	{object}	model.ProductResponse
@@ -127,7 +127,7 @@ func (c *Controller) GetProduct(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, product)
+	ctx.JSON(200, model.ProductResponse(product))
 }
 
 // UpdateProduct godoc
@@ -139,7 +139,7 @@ func (c *Controller) GetProduct(ctx *gin.Context) {
 //
 // @Param   int  query  int  true  "example: 1"  "Payer ID"
 //
-// @Param   example     body     model.Product     true  "Product example"     example(model.Product)
+// @Param   example     body     model.ProductRequest     true  "Product example"     example(model.ProductRequest)
 //
 //	@Produce		json
 //	@Success		200	{object}	model.ProductResponse

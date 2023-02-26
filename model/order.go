@@ -7,23 +7,43 @@ import (
 	"gorm.io/gorm"
 )
 
+type OrderMetadata struct {
+	Order   Order   `json:"order"`
+	Product Product `json:"product"`
+}
+
 // Order object
 type Order struct {
 	ID        int            `json:"id" gorm:"primaryKey" example:"1"`
-	PayerID   int            `json:"-" gorm:"column:payer_id" example:"1"  validate:"nonzero"`
-	Payer     Payer          `json:"payer"`
-	ProductID int            `json:"-" gorm:"column:product_id" example:"1"  validate:"nonzero"`
+	PayerID   int            `json:"payer_id" gorm:"column:payer_id" example:"1"  validate:"nonzero"`
+	ProductID int            `json:"product_id" example:"1"  validate:"nonzero"`
 	Product   Product        `json:"product"`
 	TotalFees int            `json:"total_fees" example:"3"  validate:"nonzero,min=1,max=24"`
 	Payments  []Payment      `json:"payments"`
-	Finished  bool           `json:"-" gorm:"default:false" swaggerignore:"true"`
-	CreatedAt time.Time      `json:"-" swaggerignore:"true"`
-	UpdatedAt time.Time      `json:"-" swaggerignore:"true"`
-	DeletedAt gorm.DeletedAt `json:"-" swaggerignore:"true"`
+	Finished  bool           `json:"finished" gorm:"default:false"`
+	CreatedAt time.Time      `json:"created_at"`
+	UpdatedAt time.Time      `json:"updated_at"`
+	DeletedAt gorm.DeletedAt `json:"-"`
 }
 
 func (Order) TableName() string {
 	return "order"
+}
+
+func OrderExists(db *gorm.DB, id int) (bool, error) {
+	var o Order
+	if err := db.Table("order").Select("id").Where("id=?", id).First(&o).Error; err != nil {
+		return false, err
+	}
+	return true, nil
+}
+
+func PreloadOrder(db *gorm.DB, id int) (*Order, error) {
+	var o *Order
+	if err := db.Table("order").Select("id, payer_id").Where("id=?", id).First(&o).Error; err != nil {
+		return nil, err
+	}
+	return o, nil
 }
 
 // QCreateOrder - Insert into Order
@@ -31,7 +51,16 @@ func (Order) TableName() string {
 // Inserts new Order
 func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 	var err error
-	if err = validator.Validate(o); err != nil {
+	if t, err := PayerExists(db, o.PayerID); !t {
+		return 404, err
+	}
+
+	if t, err := ProductExists(db, o.ProductID); !t {
+		return 404, err
+	}
+
+	var o_req = OrderRequest{TotalFees: o.TotalFees}
+	if err = validator.Validate(o_req); err != nil {
 		return 400, err
 	}
 
@@ -46,7 +75,7 @@ func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 
 func (o *Order) QGetOrders(db *gorm.DB, start int, count int) ([]Order, int, error) {
 	var orders []Order
-	if err := db.Preload("Product").Where("payer_id=?", o.PayerID).Find(&orders).Error; err != nil {
+	if err := db.Model(&Order{}).Preload("Product").Find(&orders).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return orders, 404, err
@@ -55,10 +84,6 @@ func (o *Order) QGetOrders(db *gorm.DB, start int, count int) ([]Order, int, err
 		}
 	}
 	for idx, order := range orders {
-		order.Payer.ID = order.PayerID
-		if code, err := order.Payer.QGetPayer(db); err != nil {
-			return orders, code, err
-		}
 		p := Payment{OrderID: order.ID}
 		payments, code, err := p.QGetPayments(db, 0, 10)
 		if err != nil {
@@ -71,17 +96,13 @@ func (o *Order) QGetOrders(db *gorm.DB, start int, count int) ([]Order, int, err
 }
 
 func (o *Order) QGetOrder(db *gorm.DB) (int, error) {
-	if err := db.Preload("Product").Where("id=?", o.ID).First(&o).Error; err != nil {
+	if err := db.Table("order").Preload("Product").Where("id=?", o.ID).First(&o).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return 404, err
 		default:
 			return 500, err
 		}
-	}
-	o.Payer.ID = o.PayerID
-	if code, err := o.Payer.QGetPayer(db); err != nil {
-		return code, err
 	}
 	p := Payment{OrderID: o.ID}
 	payments, code, err := p.QGetPayments(db, 0, 10)
