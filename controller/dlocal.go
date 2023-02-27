@@ -29,16 +29,16 @@ func (c *Controller) CreateCard(ctx *gin.Context) {
 	var err error
 	var Body dlocal.CardRequestBody
 	if err := ctx.BindJSON(&Body); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	body_json, err := json.Marshal(Body)
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	if req, err = dlocal.PostRequest(body_json, "/secure_cards"); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	client := http.Client{
@@ -76,16 +76,16 @@ func (c *Controller) MakePayment(ctx *gin.Context) {
 	var err error
 	var Body dlocal.PaymentRequestBody
 	if err := ctx.BindJSON(&Body); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	body_json, err := json.Marshal(Body)
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	if req, err = dlocal.PostRequest(body_json, "/payments"); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	client := http.Client{
@@ -123,16 +123,16 @@ func (c *Controller) MakeSecurePayment(ctx *gin.Context) {
 	var err error
 	var Body dlocal.SecurePaymentRequestBody
 	if err := ctx.BindJSON(&Body); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	body_json, err := json.Marshal(Body)
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	if req, err = dlocal.PostRequest(body_json, "/secure_payments"); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	client := http.Client{

@@ -26,18 +26,16 @@ import (
 func (c *Controller) NewPayer(ctx *gin.Context) {
 	var payer model.Payer
 	if err := ctx.BindJSON(&payer); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
 
 	if code, err := payer.QCreatePayer(database.DB); err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, err)
-		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError400(ctx, http.StatusBadRequest, "Body validation failed", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "Error creating Payer", err)
 		}
 		return
 	}
@@ -60,12 +58,12 @@ func (c *Controller) NewPayer(ctx *gin.Context) {
 func (c *Controller) Payers(ctx *gin.Context) {
 	start, err := strconv.Atoi(ctx.Query("start"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: start", err)
 		return
 	}
 	count, err := strconv.Atoi(ctx.Query("count"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: count", err)
 		return
 	}
 
@@ -79,12 +77,10 @@ func (c *Controller) Payers(ctx *gin.Context) {
 	payers, code, err := payer.QGetPayers(database.DB, start, count)
 	if err != nil {
 		switch code {
-		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "Query returned 0 records", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "Error fetching Payers", err)
 		}
 		return
 	}
@@ -109,7 +105,7 @@ func (c *Controller) Payers(ctx *gin.Context) {
 func (c *Controller) GetPayer(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
@@ -120,11 +116,9 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
-		case 500:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "Payer not found", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "Error fetching Payer", err)
 		}
 		return
 	}
@@ -152,24 +146,24 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 func (c *Controller) UpdatePayer(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: id", err)
 		return
 	}
 
 	payer := model.Payer{ID: id}
 	if err := ctx.BindJSON(&payer); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
 
 	if code, err := payer.QUpdatePayer(database.DB); err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, err)
+			httputil.NewError400(ctx, http.StatusBadRequest, "Body validation failed", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "Payer not found", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "Error updating Payer", err)
 		}
 		return
 	}
