@@ -29,21 +29,21 @@ import (
 func (c *Controller) NewCard(ctx *gin.Context) {
 	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	var payer = model.Payer{ID: payer_id}
 	if code, err := payer.QGetPayer(database.DB); err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 	}
 	var card model.Card
 	if err := ctx.BindJSON(&card); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
@@ -51,11 +51,11 @@ func (c *Controller) NewCard(ctx *gin.Context) {
 	if code, err := card.QCreateCard(database.DB); err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, err)
+			httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}
@@ -63,9 +63,9 @@ func (c *Controller) NewCard(ctx *gin.Context) {
 	if code, err := payer.QUpdatePayer(database.DB); err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 	}
 
@@ -88,17 +88,17 @@ func (c *Controller) NewCard(ctx *gin.Context) {
 func (c *Controller) Cards(ctx *gin.Context) {
 	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	start, err := strconv.Atoi(ctx.Query("start"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	count, err := strconv.Atoi(ctx.Query("count"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
@@ -116,11 +116,11 @@ func (c *Controller) Cards(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, err)
+			httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}
@@ -146,7 +146,7 @@ func (c *Controller) Cards(ctx *gin.Context) {
 func (o *Controller) GetCard(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
@@ -155,9 +155,9 @@ func (o *Controller) GetCard(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}

@@ -29,12 +29,12 @@ import (
 func (o *Controller) NewOrder(ctx *gin.Context) {
 	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	var order model.Order
 	if err := ctx.BindJSON(&order); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	order.PayerID = payer_id
@@ -42,11 +42,11 @@ func (o *Controller) NewOrder(ctx *gin.Context) {
 	if code, err := order.QCreateOrder(database.DB); err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, err)
+			httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}
@@ -71,17 +71,17 @@ func (o *Controller) NewOrder(ctx *gin.Context) {
 func (o *Controller) Orders(ctx *gin.Context) {
 	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	start, err := strconv.Atoi(ctx.Query("start"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	count, err := strconv.Atoi(ctx.Query("count"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
@@ -96,11 +96,11 @@ func (o *Controller) Orders(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, err)
+			httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}
@@ -127,7 +127,7 @@ func (o *Controller) GetOrder(ctx *gin.Context) {
 	// var out model.OrderResponse
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
@@ -136,9 +136,9 @@ func (o *Controller) GetOrder(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}

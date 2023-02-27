@@ -27,18 +27,18 @@ import (
 func (c *Controller) NewProduct(ctx *gin.Context) {
 	var product model.Product
 	if err := ctx.BindJSON(&product); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
 	if code, err := product.QCreateProduct(database.DB); err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, err)
+			httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}
@@ -61,12 +61,12 @@ func (c *Controller) NewProduct(ctx *gin.Context) {
 func (c *Controller) Products(ctx *gin.Context) {
 	start, err := strconv.Atoi(ctx.Query("start"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	count, err := strconv.Atoi(ctx.Query("count"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
@@ -81,11 +81,11 @@ func (c *Controller) Products(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, err)
+			httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}
@@ -110,7 +110,7 @@ func (c *Controller) Products(ctx *gin.Context) {
 func (c *Controller) GetProduct(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
@@ -118,11 +118,11 @@ func (c *Controller) GetProduct(ctx *gin.Context) {
 	if code, err := product.QGetProduct(database.DB); err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		case 500:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}
@@ -150,24 +150,24 @@ func (c *Controller) GetProduct(ctx *gin.Context) {
 func (c *Controller) UpdateProduct(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
 	product := model.Product{ID: id}
 	if err := ctx.BindJSON(&product); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
 	if code, err := product.QUpdateProduct(database.DB); err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, err)
+			httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}

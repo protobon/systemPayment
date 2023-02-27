@@ -26,18 +26,18 @@ import (
 func (c *Controller) NewPayer(ctx *gin.Context) {
 	var payer model.Payer
 	if err := ctx.BindJSON(&payer); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
 	if code, err := payer.QCreatePayer(database.DB); err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, err)
+			httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}
@@ -60,12 +60,12 @@ func (c *Controller) NewPayer(ctx *gin.Context) {
 func (c *Controller) Payers(ctx *gin.Context) {
 	start, err := strconv.Atoi(ctx.Query("start"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 	count, err := strconv.Atoi(ctx.Query("count"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
@@ -80,11 +80,11 @@ func (c *Controller) Payers(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, err)
+			httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}
@@ -109,7 +109,7 @@ func (c *Controller) Payers(ctx *gin.Context) {
 func (c *Controller) GetPayer(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
@@ -120,11 +120,11 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		case 500:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}
@@ -152,24 +152,24 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 func (c *Controller) UpdatePayer(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
 	payer := model.Payer{ID: id}
 	if err := ctx.BindJSON(&payer); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
 	if code, err := payer.QUpdatePayer(database.DB); err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, err)
+			httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, err)
+			httputil.NewError404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}
