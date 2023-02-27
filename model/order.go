@@ -38,9 +38,10 @@ func OrderExists(db *gorm.DB, id int) (bool, error) {
 	return true, nil
 }
 
-func PreloadOrder(db *gorm.DB, id int) (*Order, error) {
+func PreloadOrder(db *gorm.DB, order_id int, payer_id int) (*Order, error) {
 	var o *Order
-	if err := db.Table("order").Select("id, payer_id").Where("id=?", id).First(&o).Error; err != nil {
+	if err := db.Table("order").Select("id, payer_id").Where("id=? AND payer_id=?", order_id, payer_id).
+		First(&o).Error; err != nil {
 		return nil, err
 	}
 	return o, nil
