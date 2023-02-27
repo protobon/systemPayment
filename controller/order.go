@@ -29,12 +29,12 @@ import (
 func (o *Controller) NewOrder(ctx *gin.Context) {
 	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: payer_id", err)
 		return
 	}
 	var order model.Order
 	if err := ctx.BindJSON(&order); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
 	order.PayerID = payer_id
@@ -42,11 +42,9 @@ func (o *Controller) NewOrder(ctx *gin.Context) {
 	if code, err := order.QCreateOrder(database.DB); err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, "", err)
-		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "", err)
+			httputil.NewError400(ctx, http.StatusBadRequest, "Body validation failed", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "Could not create Order", err)
 		}
 		return
 	}
@@ -71,17 +69,17 @@ func (o *Controller) NewOrder(ctx *gin.Context) {
 func (o *Controller) Orders(ctx *gin.Context) {
 	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: payer_id", err)
 		return
 	}
 	start, err := strconv.Atoi(ctx.Query("start"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: start", err)
 		return
 	}
 	count, err := strconv.Atoi(ctx.Query("count"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: count", err)
 		return
 	}
 
@@ -95,12 +93,10 @@ func (o *Controller) Orders(ctx *gin.Context) {
 	orders, code, err := order.QGetOrders(database.DB, start, count)
 	if err != nil {
 		switch code {
-		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "", err)
+			httputil.NewError404(ctx, http.StatusNotFound, "Query returned 0 records", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "Error fetching Orders", err)
 		}
 		return
 	}
@@ -127,7 +123,7 @@ func (o *Controller) GetOrder(ctx *gin.Context) {
 	// var out model.OrderResponse
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: id", err)
 		return
 	}
 
@@ -136,9 +132,9 @@ func (o *Controller) GetOrder(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "", err)
+			httputil.NewError404(ctx, http.StatusNotFound, "Order not found", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "Error fetching order", err)
 		}
 		return
 	}

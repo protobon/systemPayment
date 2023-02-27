@@ -114,7 +114,7 @@ func (c *Controller) GetProduct(ctx *gin.Context) {
 	if code, err := product.QGetProduct(database.DB); err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "Record not found", err)
+			httputil.NewError404(ctx, http.StatusNotFound, "Product not found", err)
 		default:
 			httputil.NewError500(ctx, http.StatusInternalServerError, "Error fetching Product", err)
 		}
@@ -159,7 +159,7 @@ func (c *Controller) UpdateProduct(ctx *gin.Context) {
 		case 400:
 			httputil.NewError400(ctx, http.StatusBadRequest, "Body validation failed", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "Record not found", err)
+			httputil.NewError404(ctx, http.StatusNotFound, "Product not found", err)
 		default:
 			httputil.NewError500(ctx, http.StatusInternalServerError, "Error updating Product", err)
 		}
