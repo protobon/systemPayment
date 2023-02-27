@@ -1193,6 +1193,9 @@ const docTemplate = `{
                 "error": {
                     "type": "string",
                     "example": "Invalid request body or query parameters"
+                },
+                "message": {
+                    "type": "string"
                 }
             }
         },
@@ -1206,6 +1209,9 @@ const docTemplate = `{
                 "error": {
                     "type": "string",
                     "example": "Page not found"
+                },
+                "message": {
+                    "type": "string"
                 }
             }
         },
@@ -1219,6 +1225,9 @@ const docTemplate = `{
                 "error": {
                     "type": "string",
                     "example": "Internal Server Error"
+                },
+                "message": {
+                    "type": "string"
                 }
             }
         },
