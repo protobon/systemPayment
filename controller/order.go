@@ -59,7 +59,6 @@ func (o *Controller) NewOrder(ctx *gin.Context) {
 //	@Tags			Order
 //	@Accept			json
 //
-// @Param   payer_id  query  int  true  "start example"  example(1)
 // @Param   start  query  int  true  "start example"  example(0)
 // @Param   count  query  int  true  "count example"  example(10)
 //
@@ -67,11 +66,6 @@ func (o *Controller) NewOrder(ctx *gin.Context) {
 //	@Success		200	{array}		model.OrderResponse
 //	@Router			/order/orders [get]
 func (o *Controller) Orders(ctx *gin.Context) {
-	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
-	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: payer_id", err)
-		return
-	}
 	start, err := strconv.Atoi(ctx.Query("start"))
 	if err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: start", err)
@@ -89,7 +83,7 @@ func (o *Controller) Orders(ctx *gin.Context) {
 	if start < 0 {
 		start = 0
 	}
-	var order = model.Order{PayerID: payer_id}
+	var order = model.Order{}
 	orders, code, err := order.QGetOrders(database.DB, start, count)
 	if err != nil {
 		switch code {
