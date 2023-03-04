@@ -114,6 +114,7 @@ func main() {
 		payment := v1.Group("/payment")
 		{
 			payment.POST("/new", c.MockPayment)
+			payment.GET("/payments", c.Payments)
 		}
 		card := v1.Group("/card")
 		{

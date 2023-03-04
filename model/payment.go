@@ -45,7 +45,7 @@ func (p *Payment) QCreatePayment(db *gorm.DB) (int, error) {
 	return 200, nil
 }
 
-func (p *Payment) QGetPayments(db *gorm.DB, start int, count int) ([]Payment, int, error) {
+func (p *Payment) QGetPayments(db *gorm.DB) ([]Payment, int, error) {
 	var payments []Payment
 	if err := db.Table("payment").Select("*").Where("order_id=?", p.OrderID).Scan(&payments).Error; err != nil {
 		switch err {
@@ -82,4 +82,18 @@ func (p *Payment) QUpdatePayment(db *gorm.DB) (int, error) {
 		return 500, err
 	}
 	return 200, nil
+}
+
+func (p *Payment) QGetAllPayments(db *gorm.DB, start int, count int) ([]Payment, int, error) {
+	var payments []Payment
+	if err := db.Table("payment").Select("*").Order("created_at desc").Limit(count).Offset(start).Scan(&payments).Error; err != nil {
+		switch err {
+		case gorm.ErrRecordNotFound:
+			return payments, 404, err
+		default:
+			return payments, 500, err
+		}
+	}
+
+	return payments, 200, nil
 }

@@ -68,3 +68,48 @@ func (c *Controller) MockPayment(ctx *gin.Context) {
 
 	ctx.JSON(200, payment)
 }
+
+// Payments godoc
+//
+//	@Summary		Select all Payments
+//	@Description	Select all Payments
+//	@Tags			Payment
+//
+// @Param   start  query  int  true  "start example"  example(0)
+// @Param   count  query  int  true  "count example"  example(10)
+//
+//	@Produce		json
+//	@Success		200	{array}		model.PaymentResponse
+//	@Router			/payment/payments [get]
+func (c *Controller) Payments(ctx *gin.Context) {
+	start, err := strconv.Atoi(ctx.Query("start"))
+	if err != nil {
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: start", err)
+		return
+	}
+	count, err := strconv.Atoi(ctx.Query("count"))
+	if err != nil {
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: count", err)
+		return
+	}
+
+	if count > 30 || count < 1 {
+		count = 30
+	}
+	if start < 0 {
+		start = 0
+	}
+	var payment = model.Payment{}
+	payments, code, err := payment.QGetAllPayments(database.DB, start, count)
+	if err != nil {
+		switch code {
+		case 404:
+			httputil.NewError404(ctx, http.StatusNotFound, "Query returned 0 records", err)
+		default:
+			httputil.NewError500(ctx, http.StatusInternalServerError, "Error fetching Payments", err)
+		}
+		return
+	}
+
+	ctx.JSON(200, payments)
+}
