@@ -774,12 +774,6 @@ paths:
       description: Select all Orders
       parameters:
       - description: start example
-        example: 1
-        in: query
-        name: payer_id
-        required: true
-        type: integer
-      - description: start example
         example: 0
         in: query
         name: start
@@ -967,6 +961,34 @@ paths:
           schema:
             $ref: '#/definitions/httputil.HTTPError500'
       summary: Mock Payment
+      tags:
+      - Payment
+  /payment/payments:
+    get:
+      description: Select all Payments
+      parameters:
+      - description: start example
+        example: 0
+        in: query
+        name: start
+        required: true
+        type: integer
+      - description: count example
+        example: 10
+        in: query
+        name: count
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.PaymentResponse'
+            type: array
+      summary: Select all Payments
       tags:
       - Payment
   /product/{id}:

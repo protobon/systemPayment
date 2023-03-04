@@ -89,26 +89,7 @@ func (c *Controller) Cards(ctx *gin.Context) {
 		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
-	start, err := strconv.Atoi(ctx.Query("start"))
-	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
-		return
-	}
-	count, err := strconv.Atoi(ctx.Query("count"))
-	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
-		return
-	}
 
-	if count < 1 {
-		count = 10
-	}
-	if count > 100 {
-		count = 100
-	}
-	if start < 0 {
-		start = 0
-	}
 	var card = model.Card{PayerID: payer_id}
 	cards, code, err := card.QGetCards(database.DB, payer_id)
 	if err != nil {

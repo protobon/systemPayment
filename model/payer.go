@@ -114,7 +114,7 @@ func (a *Address) QCreateAddress(db *gorm.DB, p *Payer) (int, error) {
 // QGetPayers - Get all Payers
 func (p *Payer) QGetPayers(db *gorm.DB, start int, count int) ([]Payer, int, error) {
 	var payers []Payer
-	if err := db.Model(&Payer{}).Preload("Address").Find(&payers).Error; err != nil {
+	if err := db.Model(&Payer{}).Preload("Address").Limit(count).Offset(start).Find(&payers).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return payers, 404, err

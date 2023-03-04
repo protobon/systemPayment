@@ -51,7 +51,7 @@ func (p *Product) QCreateProduct(db *gorm.DB) (int, error) {
 
 func (p *Product) QGetProducts(db *gorm.DB, start int, count int) ([]Product, int, error) {
 	var products []Product
-	if err := db.Table("product").Select("*").Scan(&products).Error; err != nil {
+	if err := db.Table("product").Select("*").Limit(count).Offset(start).Scan(&products).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return products, 404, err

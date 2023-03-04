@@ -76,7 +76,7 @@ func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 
 func (o *Order) QGetOrders(db *gorm.DB, start int, count int) ([]Order, int, error) {
 	var orders []Order
-	if err := db.Model(&Order{}).Preload("Product").Find(&orders).Error; err != nil {
+	if err := db.Model(&Order{}).Preload("Product").Limit(count).Offset(start).Find(&orders).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return orders, 404, err
@@ -86,7 +86,7 @@ func (o *Order) QGetOrders(db *gorm.DB, start int, count int) ([]Order, int, err
 	}
 	for idx, order := range orders {
 		p := Payment{OrderID: order.ID}
-		payments, code, err := p.QGetPayments(db, 0, 10)
+		payments, code, err := p.QGetPayments(db)
 		if err != nil {
 			return orders, code, err
 		}
@@ -106,7 +106,7 @@ func (o *Order) QGetOrder(db *gorm.DB) (int, error) {
 		}
 	}
 	p := Payment{OrderID: o.ID}
-	payments, code, err := p.QGetPayments(db, 0, 10)
+	payments, code, err := p.QGetPayments(db)
 	if err != nil {
 		return code, err
 	}
