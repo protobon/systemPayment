@@ -409,14 +409,6 @@
                 "parameters": [
                     {
                         "type": "integer",
-                        "example": 1,
-                        "description": "start example",
-                        "name": "payer_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
                         "example": 0,
                         "description": "start example",
                         "name": "start",
@@ -741,6 +733,47 @@
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError500"
+                        }
+                    }
+                }
+            }
+        },
+        "/payment/payments": {
+            "get": {
+                "description": "Select all Payments",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Payment"
+                ],
+                "summary": "Select all Payments",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 0,
+                        "description": "start example",
+                        "name": "start",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 10,
+                        "description": "count example",
+                        "name": "count",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.PaymentResponse"
+                            }
                         }
                     }
                 }
