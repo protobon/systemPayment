@@ -67,8 +67,8 @@ func (c *Controller) Payers(ctx *gin.Context) {
 		return
 	}
 
-	if count > 10 || count < 1 {
-		count = 10
+	if count > 30 || count < 1 {
+		count = 30
 	}
 	if start < 0 {
 		start = 0
