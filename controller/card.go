@@ -57,8 +57,8 @@ func (c *Controller) NewCard(ctx *gin.Context) {
 		}
 		return
 	}
-	payer.CardID = card.ID
-	if code, err := payer.QUpdatePayer(database.DB); err != nil {
+
+	if code, err := payer.QPrimaryCard(database.DB, card.ID); err != nil {
 		switch code {
 		case 404:
 			httputil.NewError404(ctx, http.StatusNotFound, "Payer not found", err)
