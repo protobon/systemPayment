@@ -18,6 +18,7 @@ type Payer struct {
 	UserReference *string        `json:"user_reference" example:"12345" validate:"nonzero"`
 	Address       Address        `json:"address" gorm:"foreignKey:PayerID;references:ID" validate:"nonzero"`
 	AddressID     int            `json:"-"`
+	Country       *string        `json:"country" example:"UY" validate:"nonzero,min=2,max=2,uppercase"`
 	CardID        int            `json:"card_id"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
@@ -82,8 +83,8 @@ func (p *Payer) QCreatePayer(db *gorm.DB) (int, error) {
 
 	p.CreatedAt = time.Now()
 	// Create Payer
-	if err = db.Raw(`INSERT INTO payer(name, email, birth_date, phone, document, user_reference, created_at) 
-	VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING id`, p.Name, p.Email, p.BirthDate, p.Phone,
+	if err = db.Raw(`INSERT INTO payer(name, email, country, birth_date, phone, document, user_reference, created_at) 
+	VALUES(?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`, p.Name, p.Email, p.Country, p.BirthDate, p.Phone,
 		p.Document, p.UserReference, p.CreatedAt).Scan(&p.ID).Error; err != nil {
 		return 500, err
 	}

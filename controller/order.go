@@ -61,6 +61,7 @@ func (o *Controller) NewOrder(ctx *gin.Context) {
 //
 // @Param   start  query  int  true  "start example"  example(0)
 // @Param   count  query  int  true  "count example"  example(10)
+// @Param   payerId  query  int  false  "payerId example"  example(1)
 //
 //	@Produce		json
 //	@Success		200	{array}		model.OrderResponse
@@ -76,6 +77,8 @@ func (o *Controller) Orders(ctx *gin.Context) {
 		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: count", err)
 		return
 	}
+	payer_id := 0
+	payer_id, _ = strconv.Atoi(ctx.Query("payerId"))
 
 	if count > 30 || count < 1 {
 		count = 30
@@ -84,7 +87,7 @@ func (o *Controller) Orders(ctx *gin.Context) {
 		start = 0
 	}
 	var order = model.Order{}
-	orders, code, err := order.QGetOrders(database.DB, start, count)
+	orders, code, err := order.QGetOrders(database.DB, start, count, payer_id)
 	if err != nil {
 		switch code {
 		case 404:

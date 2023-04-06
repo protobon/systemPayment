@@ -77,6 +77,7 @@ func (c *Controller) MockPayment(ctx *gin.Context) {
 //
 // @Param   start  query  int  true  "start example"  example(0)
 // @Param   count  query  int  true  "count example"  example(10)
+// @Param   orderId  query  int  false  "orderId example"  example(1)
 //
 //	@Produce		json
 //	@Success		200	{array}		model.PaymentResponse
@@ -92,6 +93,8 @@ func (c *Controller) Payments(ctx *gin.Context) {
 		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: count", err)
 		return
 	}
+	order_id := 0
+	order_id, _ = strconv.Atoi(ctx.Query("orderId"))
 
 	if count > 30 || count < 1 {
 		count = 30
@@ -100,7 +103,7 @@ func (c *Controller) Payments(ctx *gin.Context) {
 		start = 0
 	}
 	var payment = model.Payment{}
-	payments, code, err := payment.QGetAllPayments(database.DB, start, count)
+	payments, code, err := payment.QGetAllPayments(database.DB, start, count, order_id)
 	if err != nil {
 		switch code {
 		case 404:

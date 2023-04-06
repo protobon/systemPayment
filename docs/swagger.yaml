@@ -292,6 +292,11 @@ definitions:
         type: string
       card_id:
         type: integer
+      country:
+        example: UY
+        maxLength: 2
+        minLength: 2
+        type: string
       created_at:
         type: string
       document:
@@ -785,6 +790,11 @@ paths:
         name: count
         required: true
         type: integer
+      - description: payerId example
+        example: 1
+        in: query
+        name: payerId
+        type: integer
       produces:
       - application/json
       responses:
@@ -978,6 +988,11 @@ paths:
         in: query
         name: count
         required: true
+        type: integer
+      - description: orderId example
+        example: 1
+        in: query
+        name: orderId
         type: integer
       produces:
       - application/json
