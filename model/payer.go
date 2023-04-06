@@ -160,3 +160,16 @@ func (p *Payer) QUpdatePayer(db *gorm.DB) (int, error) {
 	}
 	return 200, nil
 }
+
+func (p *Payer) QPrimaryCard(db *gorm.DB, card_id int) (int, error) {
+	var err error
+	if err = db.Model(&p).Update("card_id", card_id).Error; err != nil {
+		switch err {
+		case gorm.ErrRecordNotFound:
+			return 404, err
+		default:
+			return 500, err
+		}
+	}
+	return 200, nil
+}
