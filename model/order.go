@@ -74,16 +74,30 @@ func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 	return 200, nil
 }
 
-func (o *Order) QGetOrders(db *gorm.DB, start int, count int) ([]Order, int, error) {
+func (o *Order) QGetOrders(db *gorm.DB, start int, count int, payer_id int) ([]Order, int, error) {
 	var orders []Order
-	if err := db.Model(&Order{}).Preload("Product").Limit(count).Offset(start).Find(&orders).Error; err != nil {
-		switch err {
-		case gorm.ErrRecordNotFound:
-			return orders, 404, err
-		default:
-			return orders, 500, err
+	if payer_id != 0 {
+		if err := db.Model(&Order{}).Where("payer_id=?", payer_id).Preload("Product").Limit(count).
+			Offset(start).Find(&orders).Error; err != nil {
+			switch err {
+			case gorm.ErrRecordNotFound:
+				return orders, 404, err
+			default:
+				return orders, 500, err
+			}
+		}
+	} else {
+		if err := db.Model(&Order{}).Preload("Product").Limit(count).Offset(start).
+			Find(&orders).Error; err != nil {
+			switch err {
+			case gorm.ErrRecordNotFound:
+				return orders, 404, err
+			default:
+				return orders, 500, err
+			}
 		}
 	}
+
 	for idx, order := range orders {
 		p := Payment{OrderID: order.ID}
 		payments, code, err := p.QGetPayments(db)

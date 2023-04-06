@@ -11,8 +11,8 @@ import (
 type Payment struct {
 	ID                int            `json:"id" gorm:"primaryKey" example:"1"`
 	Amount            float64        `json:"amount" example:"5000.00" validate:"nonzero"`
-	Currency          *string        `json:"currency" example:"USD" validate:"nonzero,min=3,max=3"`
-	Country           *string        `json:"country" example:"UY" validate:"nonzero,min=2,max=2"`
+	Currency          *string        `json:"currency" example:"USD" validate:"nonzero,min=3,max=3,uppercase"`
+	Country           *string        `json:"country" example:"UY" validate:"nonzero,min=2,max=2,uppercase"`
 	PaymentMethodID   *string        `json:"payment_method_id" example:"CARD" validate:"nonzero,min=2,max=4"`
 	PaymentMethodFlow *string        `json:"payment_method_flow" example:"DIRECT" validate:"nonzero,min=2,max=10"`
 	OrderID           int            `json:"order_id" gorm:"column:order_id" example:"1"  validate:"nonzero"`
@@ -84,14 +84,27 @@ func (p *Payment) QUpdatePayment(db *gorm.DB) (int, error) {
 	return 200, nil
 }
 
-func (p *Payment) QGetAllPayments(db *gorm.DB, start int, count int) ([]Payment, int, error) {
+func (p *Payment) QGetAllPayments(db *gorm.DB, start int, count int, order_id int) ([]Payment, int, error) {
 	var payments []Payment
-	if err := db.Table("payment").Select("*").Order("created_at desc").Limit(count).Offset(start).Scan(&payments).Error; err != nil {
-		switch err {
-		case gorm.ErrRecordNotFound:
-			return payments, 404, err
-		default:
-			return payments, 500, err
+	if order_id != 0 {
+		if err := db.Table("payment").Where("order_id=?", order_id).Select("*").
+			Order("created_at desc").Limit(count).Offset(start).Scan(&payments).Error; err != nil {
+			switch err {
+			case gorm.ErrRecordNotFound:
+				return payments, 404, err
+			default:
+				return payments, 500, err
+			}
+		}
+	} else {
+		if err := db.Table("payment").Select("*").Order("created_at desc").
+			Limit(count).Offset(start).Scan(&payments).Error; err != nil {
+			switch err {
+			case gorm.ErrRecordNotFound:
+				return payments, 404, err
+			default:
+				return payments, 500, err
+			}
 		}
 	}
 

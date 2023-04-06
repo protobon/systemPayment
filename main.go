@@ -7,6 +7,7 @@ import (
 	"systempayment/database"
 	_ "systempayment/docs"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	log "github.com/sirupsen/logrus"
 	swaggerFiles "github.com/swaggo/files"
@@ -76,8 +77,13 @@ func main() {
 	port = os.Getenv("APPLICATION_PORT")
 
 	r := gin.Default()
-	r.Use(CORSMiddleware())
-	r.OPTIONS("/*path", CORSMiddleware())
+	config := cors.DefaultConfig()
+	config.AllowOrigins = []string{"http://localhost:3000"}
+	// config.AllowAllOrigins = true
+
+	r.Use(cors.New(config))
+	// r.Use(CORSMiddleware())
+	// r.OPTIONS("/*path", CORSMiddleware())
 
 	database.DBInit(user, password, dbhost, dbname)
 
@@ -128,21 +134,21 @@ func main() {
 	r.Run(port)
 }
 
-func CORSMiddleware() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		c.Writer.Header().Set("Content-Type", "application/json")
-		c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
-		c.Writer.Header().Set("Access-Control-Max-Age", "86400")
-		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
-		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
+// func CORSMiddleware() gin.HandlerFunc {
+// 	return func(c *gin.Context) {
+// 		c.Writer.Header().Set("Content-Type", "application/json")
+// 		c.Writer.Header().Set("Access-Control-Allow-Origin", "localhost:3000/*")
+// 		c.Writer.Header().Set("Access-Control-Max-Age", "86400")
+// 		c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, GET, OPTIONS, PUT, DELETE")
+// 		c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization")
 
-		if c.Request.Method == "OPTIONS" {
-			c.AbortWithStatus(200)
-		}
+// 		if c.Request.Method == "OPTIONS" {
+// 			c.AbortWithStatus(200)
+// 		}
 
-		c.Next()
-	}
-}
+// 		c.Next()
+// 	}
+// }
 
 // func auth() gin.HandlerFunc {
 // 	return func(c *gin.Context) {

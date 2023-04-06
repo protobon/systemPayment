@@ -428,6 +428,13 @@ const docTemplate = `{
                         "name": "count",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "payerId example",
+                        "name": "payerId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -770,6 +777,13 @@ const docTemplate = `{
                         "name": "count",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "orderId example",
+                        "name": "orderId",
+                        "in": "query"
                     }
                 ],
                 "responses": {
@@ -1412,6 +1426,12 @@ const docTemplate = `{
                 },
                 "card_id": {
                     "type": "integer"
+                },
+                "country": {
+                    "type": "string",
+                    "maxLength": 2,
+                    "minLength": 2,
+                    "example": "UY"
                 },
                 "created_at": {
                     "type": "string"
