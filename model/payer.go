@@ -18,7 +18,7 @@ type Payer struct {
 	UserReference *string        `json:"user_reference" example:"12345" validate:"nonzero"`
 	Address       Address        `json:"address" gorm:"foreignKey:PayerID;references:ID" validate:"nonzero"`
 	AddressID     int            `json:"-"`
-	Country       *string        `json:"country" example:"UY" validate:"nonzero,min=2,max=2,uppercase"`
+	Country       *string        `json:"country" example:"UY" validate:"nonzero,min=2,max=2"`
 	CardID        int            `json:"card_id"`
 	CreatedAt     time.Time      `json:"created_at"`
 	UpdatedAt     time.Time      `json:"updated_at"`
