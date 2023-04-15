@@ -110,3 +110,27 @@ func (p *Payment) QGetAllPayments(db *gorm.DB, start int, count int, order_id in
 
 	return payments, 200, nil
 }
+
+func (p *Payment) QPaymentPlan(db *gorm.DB, order_id int) (string, int, error) {
+	order := Order{}
+	code, err := order.QGetOrder(db)
+	if err != nil {
+		return "order not found", code, err
+	}
+	if order.Automatic {
+		return "this order is already under an automatic payment plan", 400, nil
+	}
+	if order.Finished {
+		return "this order is fully paid", 400, nil
+	}
+	// year, month, day := time.Now().Date()
+	// s := gocron.NewScheduler(time.UTC)
+	// _, err = s.Every(day).Month(1).Do(func() {
+	// 	err := dlocal.(db)
+	// 	if err != nil {
+	// 		return
+	// 	}
+	// })
+	message := "Error creating payment plan"
+	return message, 400, nil
+}

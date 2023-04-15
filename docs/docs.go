@@ -183,58 +183,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/dlocal/card": {
-            "post": {
-                "description": "Creates card and saves card token in database",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Dlocal"
-                ],
-                "summary": "Create Card with Dlocal",
-                "parameters": [
-                    {
-                        "description": "Card example",
-                        "name": "example",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dlocal.Card"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dlocal.CardResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError400"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError500"
-                        }
-                    }
-                }
-            }
-        },
         "/dlocal/payment": {
             "post": {
                 "description": "Makes a new Payment with the Dlocal API",
@@ -250,13 +198,12 @@ const docTemplate = `{
                 "summary": "Make Payment with Dlocal",
                 "parameters": [
                     {
-                        "description": "Payment with Dlocal example",
-                        "name": "example",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dlocal.PaymentRequestBody"
-                        }
+                        "type": "integer",
+                        "example": 32,
+                        "description": "order_id example",
+                        "name": "order_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -264,58 +211,6 @@ const docTemplate = `{
                         "description": "OK",
                         "schema": {
                             "$ref": "#/definitions/dlocal.PaymentResponseBody"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError400"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError500"
-                        }
-                    }
-                }
-            }
-        },
-        "/dlocal/secure-payment": {
-            "post": {
-                "description": "Makes a new Secure Payment with the Dlocal API",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Dlocal"
-                ],
-                "summary": "Make Secure Payment with Dlocal",
-                "parameters": [
-                    {
-                        "description": "Secure Payment with Dlocal example",
-                        "name": "example",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/dlocal.SecurePaymentRequestBody"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dlocal.SecurePaymentRequestBody"
                         }
                     },
                     "400": {
@@ -1000,55 +895,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dlocal.Address": {
-            "type": "object",
-            "properties": {
-                "city": {
-                    "type": "string"
-                },
-                "number": {
-                    "type": "string"
-                },
-                "state": {
-                    "type": "string"
-                },
-                "street": {
-                    "type": "string"
-                },
-                "zip_code": {
-                    "type": "string"
-                }
-            }
-        },
-        "dlocal.Card": {
-            "type": "object",
-            "properties": {
-                "cvv": {
-                    "type": "string",
-                    "maxLength": 3,
-                    "minLength": 3,
-                    "example": "123"
-                },
-                "expiration_month": {
-                    "type": "integer",
-                    "maximum": 12,
-                    "minimum": 1,
-                    "example": 3
-                },
-                "expiration_year": {
-                    "type": "integer",
-                    "example": 2033
-                },
-                "holder_name": {
-                    "type": "string",
-                    "example": "Jhon Doe"
-                },
-                "number": {
-                    "type": "string",
-                    "example": "4111111111111111"
-                }
-            }
-        },
         "dlocal.CardResponse": {
             "type": "object",
             "properties": {
@@ -1068,74 +914,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "last4": {
-                    "type": "string"
-                }
-            }
-        },
-        "dlocal.Payer": {
-            "type": "object",
-            "properties": {
-                "address": {
-                    "$ref": "#/definitions/dlocal.Address"
-                },
-                "birth_date": {
-                    "type": "string"
-                },
-                "device_id": {
-                    "type": "string"
-                },
-                "document": {
-                    "type": "string"
-                },
-                "email": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 6
-                },
-                "ip": {
-                    "type": "string"
-                },
-                "name": {
-                    "type": "string",
-                    "maxLength": 100,
-                    "minLength": 6
-                },
-                "phone": {
-                    "type": "string"
-                },
-                "user_reference": {
-                    "type": "string"
-                }
-            }
-        },
-        "dlocal.PaymentRequestBody": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "card": {
-                    "$ref": "#/definitions/dlocal.SecureCard"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "notification_url": {
-                    "type": "string"
-                },
-                "order_id": {
-                    "type": "string"
-                },
-                "payer": {
-                    "$ref": "#/definitions/dlocal.Payer"
-                },
-                "payment_method_flow": {
-                    "type": "string"
-                },
-                "payment_method_id": {
                     "type": "string"
                 }
             }
@@ -1186,46 +964,6 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "status_detail": {
-                    "type": "string"
-                }
-            }
-        },
-        "dlocal.SecureCard": {
-            "type": "object",
-            "properties": {
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
-        "dlocal.SecurePaymentRequestBody": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "card": {
-                    "$ref": "#/definitions/dlocal.Card"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "notification_url": {
-                    "type": "string"
-                },
-                "order_id": {
-                    "type": "string"
-                },
-                "payer": {
-                    "$ref": "#/definitions/dlocal.Payer"
-                },
-                "payment_method_flow": {
-                    "type": "string"
-                },
-                "payment_method_id": {
                     "type": "string"
                 }
             }

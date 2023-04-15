@@ -35,8 +35,9 @@ type PaymentRequest struct {
 }
 
 type OrderRequest struct {
-	ProductID int `json:"product_id" example:"1"`
-	TotalFees int `json:"total_fees" validate:"nonzero" example:"3"`
+	ProductID int     `json:"product_id" example:"1"`
+	Currency  *string `json:"currency" validate:"nonzero,min=3,max=3"`
+	TotalFees int     `json:"total_fees" validate:"nonzero" example:"3"`
 }
 
 type ProductRequest struct {

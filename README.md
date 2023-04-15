@@ -5,16 +5,15 @@
 
 ```console
 $ make build
-$ make build stage=local
 ```
 Production: 'make build stage=prod'
 </br>
 </br>
 
-## Run Project
-
-### Local
+## Start Local
 ```console
+$ make build stage=local
+$ make start stage=local
 $ make run
 ```
 

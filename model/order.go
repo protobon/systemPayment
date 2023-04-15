@@ -14,16 +14,20 @@ type OrderMetadata struct {
 
 // Order object
 type Order struct {
-	ID        int            `json:"id" gorm:"primaryKey" example:"1"`
-	PayerID   int            `json:"payer_id" gorm:"column:payer_id" example:"1"  validate:"nonzero"`
-	ProductID int            `json:"product_id" example:"1"  validate:"nonzero"`
-	Product   Product        `json:"product"`
-	TotalFees int            `json:"total_fees" example:"3"  validate:"nonzero,min=1,max=24"`
-	Payments  []Payment      `json:"payments"`
-	Finished  bool           `json:"finished" gorm:"default:false"`
-	CreatedAt time.Time      `json:"created_at"`
-	UpdatedAt time.Time      `json:"updated_at"`
-	DeletedAt gorm.DeletedAt `json:"-"`
+	ID         int            `json:"id" gorm:"primaryKey" example:"1"`
+	Currency   *string        `json:"currency" example:"USD" validate:"nonzero"`
+	PayerID    int            `json:"payer_id" gorm:"column:payer_id" example:"1"  validate:"nonzero"`
+	ProductID  int            `json:"product_id" example:"1"  validate:"nonzero"`
+	Product    Product        `json:"product"`
+	TotalFees  int            `json:"total_fees" example:"3"  validate:"nonzero,min=1,max=24"`
+	CurrentFee int            `json:"current_fee" example:"1"`
+	Automatic  bool           `json:"-"`
+	ChargeDay  int            `json:"charge_day" example:"7" validate:"min=1,max=28"`
+	Payments   []Payment      `json:"payments"`
+	Finished   bool           `json:"finished" gorm:"default:false"`
+	CreatedAt  time.Time      `json:"created_at"`
+	UpdatedAt  time.Time      `json:"updated_at"`
+	DeletedAt  gorm.DeletedAt `json:"-"`
 }
 
 func (Order) TableName() string {
@@ -60,12 +64,16 @@ func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 		return 404, err
 	}
 
-	var o_req = OrderRequest{TotalFees: o.TotalFees}
+	var o_req = OrderRequest{
+		TotalFees: o.TotalFees,
+		Currency:  o.Currency,
+	}
 	if err = validator.Validate(o_req); err != nil {
 		return 400, err
 	}
 
 	o.CreatedAt = time.Now()
+	o.CurrentFee = 1
 	// Create Order
 	if err = db.Create(o).Error; err != nil {
 		return 500, err

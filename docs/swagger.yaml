@@ -1,40 +1,5 @@
 basePath: /api/v1
 definitions:
-  dlocal.Address:
-    properties:
-      city:
-        type: string
-      number:
-        type: string
-      state:
-        type: string
-      street:
-        type: string
-      zip_code:
-        type: string
-    type: object
-  dlocal.Card:
-    properties:
-      cvv:
-        example: "123"
-        maxLength: 3
-        minLength: 3
-        type: string
-      expiration_month:
-        example: 3
-        maximum: 12
-        minimum: 1
-        type: integer
-      expiration_year:
-        example: 2033
-        type: integer
-      holder_name:
-        example: Jhon Doe
-        type: string
-      number:
-        example: "4111111111111111"
-        type: string
-    type: object
   dlocal.CardResponse:
     properties:
       brand:
@@ -48,52 +13,6 @@ definitions:
       holder_name:
         type: string
       last4:
-        type: string
-    type: object
-  dlocal.Payer:
-    properties:
-      address:
-        $ref: '#/definitions/dlocal.Address'
-      birth_date:
-        type: string
-      device_id:
-        type: string
-      document:
-        type: string
-      email:
-        maxLength: 100
-        minLength: 6
-        type: string
-      ip:
-        type: string
-      name:
-        maxLength: 100
-        minLength: 6
-        type: string
-      phone:
-        type: string
-      user_reference:
-        type: string
-    type: object
-  dlocal.PaymentRequestBody:
-    properties:
-      amount:
-        type: number
-      card:
-        $ref: '#/definitions/dlocal.SecureCard'
-      country:
-        type: string
-      currency:
-        type: string
-      notification_url:
-        type: string
-      order_id:
-        type: string
-      payer:
-        $ref: '#/definitions/dlocal.Payer'
-      payment_method_flow:
-        type: string
-      payment_method_id:
         type: string
     type: object
   dlocal.PaymentResponseBody:
@@ -127,32 +46,6 @@ definitions:
       status_code:
         type: string
       status_detail:
-        type: string
-    type: object
-  dlocal.SecureCard:
-    properties:
-      token:
-        type: string
-    type: object
-  dlocal.SecurePaymentRequestBody:
-    properties:
-      amount:
-        type: number
-      card:
-        $ref: '#/definitions/dlocal.Card'
-      country:
-        type: string
-      currency:
-        type: string
-      notification_url:
-        type: string
-      order_id:
-        type: string
-      payer:
-        $ref: '#/definitions/dlocal.Payer'
-      payment_method_flow:
-        type: string
-      payment_method_id:
         type: string
     type: object
   httputil.HTTPError400:
@@ -597,52 +490,18 @@ paths:
       summary: Insert Card
       tags:
       - Card
-  /dlocal/card:
-    post:
-      consumes:
-      - application/json
-      description: Creates card and saves card token in database
-      parameters:
-      - description: Card example
-        in: body
-        name: example
-        required: true
-        schema:
-          $ref: '#/definitions/dlocal.Card'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dlocal.CardResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httputil.HTTPError400'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/httputil.HTTPError404'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/httputil.HTTPError500'
-      summary: Create Card with Dlocal
-      tags:
-      - Dlocal
   /dlocal/payment:
     post:
       consumes:
       - application/json
       description: Makes a new Payment with the Dlocal API
       parameters:
-      - description: Payment with Dlocal example
-        in: body
-        name: example
+      - description: order_id example
+        example: 32
+        in: query
+        name: order_id
         required: true
-        schema:
-          $ref: '#/definitions/dlocal.PaymentRequestBody'
+        type: integer
       produces:
       - application/json
       responses:
@@ -663,40 +522,6 @@ paths:
           schema:
             $ref: '#/definitions/httputil.HTTPError500'
       summary: Make Payment with Dlocal
-      tags:
-      - Dlocal
-  /dlocal/secure-payment:
-    post:
-      consumes:
-      - application/json
-      description: Makes a new Secure Payment with the Dlocal API
-      parameters:
-      - description: Secure Payment with Dlocal example
-        in: body
-        name: example
-        required: true
-        schema:
-          $ref: '#/definitions/dlocal.SecurePaymentRequestBody'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/dlocal.SecurePaymentRequestBody'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httputil.HTTPError400'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/httputil.HTTPError404'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/httputil.HTTPError500'
-      summary: Make Secure Payment with Dlocal
       tags:
       - Dlocal
   /order/{id}:

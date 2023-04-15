@@ -10,7 +10,7 @@ import (
 )
 
 func PostRequest(body []byte, endpoint string) (*http.Request, error) {
-	host := os.Getenv("DLOCAL_URL")
+	host := os.Getenv("DLOCAL_URL_TEST")
 	x_login := os.Getenv("DLOCAL_X_LOGIN")
 	x_trans_key := os.Getenv("DLOCAL_X_TRANS_KEY")
 	x_date := time.Now().Format(time.RFC3339)

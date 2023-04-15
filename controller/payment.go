@@ -116,3 +116,32 @@ func (c *Controller) Payments(ctx *gin.Context) {
 
 	ctx.JSON(200, payments)
 }
+
+// AutomaticPayment godoc
+//
+//	@Summary		Automatic Payment
+//	@Description	New payment each month until all fees are paid
+//	@Tags			Payment
+//
+// @Param   orderId  query  int  true  "orderId example"  example(1)
+//
+//	@Produce		json
+//	@Success		200	{array}		model.PaymentResponse
+//	@Router			/payment/automatic [post]
+func (c *Controller) AutomaticPayment(ctx *gin.Context) {
+	order_id := 0
+	order_id, _ = strconv.Atoi(ctx.Query("orderId"))
+	var payment = model.Payment{}
+	message, code, err := payment.QPaymentPlan(database.DB, order_id)
+	if err != nil {
+		switch code {
+		case 404:
+			httputil.NewError404(ctx, http.StatusNotFound, "Query returned 0 records", err)
+		default:
+			httputil.NewError500(ctx, http.StatusInternalServerError, "Error fetching Payments", err)
+		}
+		return
+	}
+
+	ctx.JSON(200, message)
+}
