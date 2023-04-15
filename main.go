@@ -113,8 +113,8 @@ func main() {
 		}
 		dlocal := v1.Group("/dlocal")
 		{
-			dlocal.POST("/card", c.CreateCard)
-			dlocal.POST("/secure-payment", c.MakeSecurePayment)
+			// dlocal.POST("/card", c.CreateCard)
+			// dlocal.POST("/secure-payment", c.MakeSecurePayment)
 			dlocal.POST("/payment", c.MakePayment)
 		}
 		payment := v1.Group("/payment")
