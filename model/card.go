@@ -11,7 +11,7 @@ import (
 type Card struct {
 	ID        int            `json:"id" gorm:"primaryKey" example:"1"`
 	PayerID   int            `json:"payer_id" gorm:"column:payer_id" example:"1"  validate:"nonzero,min=1"`
-	Token     *string        `json:"token" validate:"nonzero"`
+	CardId    *string        `json:"card_id" validate:"nonzero"`
 	Last4     *string        `json:"last_4" gorm:"column:last_4" example:"1234" validate:"nonzero,min=4,max=4"`
 	Brand     *string        `json:"brand" example:"Visa" validate:"nonzero"`
 	CreatedAt time.Time      `json:"created_at"`

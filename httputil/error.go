@@ -12,6 +12,16 @@ func NewError400(ctx *gin.Context, status int, message string, err error) {
 	ctx.JSON(status, er)
 }
 
+// NewError408 example
+func NewError408(ctx *gin.Context, status int, message string, err error) {
+	er := HTTPError400{
+		Code:    status,
+		Message: message,
+		Error:   err.Error(),
+	}
+	ctx.JSON(status, er)
+}
+
 // NewError404 example
 func NewError404(ctx *gin.Context, status int, message string, err error) {
 	er := HTTPError404{
