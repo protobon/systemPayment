@@ -1,25 +1,13 @@
 package dlocal
 
+// Tokenized card for one use
 type SecureCard struct {
 	Token *string `json:"token" validate:"nonzero"`
+	Save  bool    `json:"save"`
 }
 
-// Create Card with Dlocal
-
-// Card object
 type Card struct {
-	HolderName      string `json:"holder_name" example:"Jhon Doe" validate:"nonzero"`
-	Number          string `json:"number" example:"4111111111111111" validate:"nonzero"`
-	CVV             string `json:"cvv" example:"123" validate:"nonzero,min=3,max=3"`
-	ExpirationMonth int    `json:"expiration_month" example:"3" validate:"nonzero,min=1,max=12"`
-	ExpirationYear  int    `json:"expiration_year" example:"2033" validate:"nonzero"`
-}
-
-// Request
-type CardRequestBody struct {
-	Country *string `json:"country" validate:"nonzero,min=2,max=2"`
-	Card    Card    `json:"card" validate:"nonzero"`
-	Payer   Payer   `json:"payer" validate:"nonzero"`
+	CardId *string `json:"card_id" validate:"nonzero"`
 }
 
 // Response

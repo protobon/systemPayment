@@ -1,32 +1,25 @@
 package dlocal
 
-// SecurePayment
-//
-// Requires Payer.IP, Payer.DeviceID
-// type SecurePaymentRequestBody struct {
-// 	Amount            float64 `json:"amount"`
-// 	Currency          string  `json:"currency"`
-// 	Country           string  `json:"country"`
-// 	PaymentMethodID   string  `json:"payment_method_id"`
-// 	PaymentMethodFlow string  `json:"payment_method_flow"`
-// 	Payer             Payer   `json:"payer"`
-// 	Card              Card    `json:"card"`
-// 	OrderID           string  `json:"order_id"`
-// 	NotificationURL   string  `json:"notification_url"`
-// }
+import (
+	"encoding/json"
+	"io/ioutil"
+	"net/http"
+	"systempayment/model"
+	"time"
+)
 
 // Payment
 //
 // Use Card's Token saved in 'card' table
 type PaymentRequestBody struct {
-	Amount            float64    `json:"amount"`
-	Currency          string     `json:"currency"`
-	Country           string     `json:"country"`
-	PaymentMethodID   string     `json:"payment_method_id"`
-	PaymentMethodFlow string     `json:"payment_method_flow"`
-	Payer             Payer      `json:"payer"`
-	Card              SecureCard `json:"card"`
-	// OrderID           string     `json:"order_id"`
+	Amount            float64 `json:"amount"`
+	Currency          string  `json:"currency"`
+	Country           string  `json:"country"`
+	PaymentMethodID   string  `json:"payment_method_id"`
+	PaymentMethodFlow string  `json:"payment_method_flow"`
+	Payer             Payer   `json:"payer"`
+	Card              Card    `json:"card"`
+	OrderID           string  `json:"order_id"`
 	// NotificationURL string `json:"notification_url"`
 }
 
@@ -47,4 +40,68 @@ type PaymentResponseBody struct {
 	StatusDetail      string       `json:"status_detail"`
 	OrderID           string       `json:"order_id"`
 	NotificationUrl   string       `json:"notification_url"`
+}
+
+func MakePayment(order model.Order, payer model.Payer, card model.Card) (int, []byte, error) {
+	var req *http.Request
+	var err error
+
+	// Prepare Request Body
+	DlocalCard := Card{
+		CardId: card.CardId,
+	}
+	// Payer's address
+	DlocalAddress := Address{
+		State:   *payer.Address.State,
+		City:    *payer.Address.City,
+		ZipCode: *payer.Address.ZipCode,
+		Street:  *payer.Address.Street,
+		Number:  *payer.Address.Number,
+	}
+	// Payer's info
+	DlocalPayer := Payer{
+		Name:      *payer.Name,
+		Email:     *payer.Email,
+		BirthDate: *payer.BirthDate,
+		Phone:     *payer.Phone,
+		Document:  *payer.Document,
+		// UserReference: payer,
+		Address: DlocalAddress,
+	}
+	// Payment request
+	Body := PaymentRequestBody{
+		Amount:            order.Product.Amount / float64(order.TotalFees),
+		Currency:          *order.Currency,
+		Country:           *payer.Country,
+		PaymentMethodID:   "CARD",
+		PaymentMethodFlow: "DIRECT",
+		Payer:             DlocalPayer,
+		Card:              DlocalCard,
+		OrderID:           *order.OrderId,
+	}
+
+	body_json, err := json.Marshal(Body)
+	if err != nil {
+		return 501, nil, err
+	}
+	// prepare dlocal POST request
+	if req, err = PostRequest(body_json, "/payments"); err != nil {
+		return 501, nil, err
+	}
+
+	client := http.Client{
+		Timeout: 30 * time.Second,
+	}
+
+	res, err := client.Do(req)
+	res_body, _ := ioutil.ReadAll(res.Body)
+	if err != nil {
+		if res != nil {
+			return 501, res_body, err
+		}
+		return 408, nil, err
+	}
+	defer res.Body.Close()
+
+	return 200, res_body, nil
 }

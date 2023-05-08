@@ -111,15 +111,9 @@ func main() {
 			order.GET("/orders", c.Orders)
 			order.GET(":id", c.GetOrder)
 		}
-		dlocal := v1.Group("/dlocal")
-		{
-			// dlocal.POST("/card", c.CreateCard)
-			// dlocal.POST("/secure-payment", c.MakeSecurePayment)
-			dlocal.POST("/payment", c.MakePayment)
-		}
 		payment := v1.Group("/payment")
 		{
-			payment.POST("/new", c.MockPayment)
+			payment.POST("/new", c.Payment)
 			payment.GET("/payments", c.Payments)
 		}
 		card := v1.Group("/card")

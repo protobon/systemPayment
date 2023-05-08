@@ -45,6 +45,7 @@ func (p *Payment) QCreatePayment(db *gorm.DB) (int, error) {
 	return 200, nil
 }
 
+// QGetPayments - Get payments from order
 func (p *Payment) QGetPayments(db *gorm.DB) ([]Payment, int, error) {
 	var payments []Payment
 	if err := db.Table("payment").Select("*").Where("order_id=?", p.OrderID).Scan(&payments).Error; err != nil {
@@ -59,6 +60,7 @@ func (p *Payment) QGetPayments(db *gorm.DB) ([]Payment, int, error) {
 	return payments, 200, nil
 }
 
+// QGetPayment - Get payment from id
 func (p *Payment) QGetPayment(db *gorm.DB) (int, error) {
 	if err := db.Where("id = ?", p.ID).First(&p).Error; err != nil {
 		switch err {
@@ -71,19 +73,7 @@ func (p *Payment) QGetPayment(db *gorm.DB) (int, error) {
 	return 200, nil
 }
 
-func (p *Payment) QUpdatePayment(db *gorm.DB) (int, error) {
-	var err error
-	if err = validator.Validate(p); err != nil {
-		return 400, err
-	}
-
-	p.UpdatedAt = time.Now()
-	if err = db.Model(&p).Updates(p).Error; err != nil {
-		return 500, err
-	}
-	return 200, nil
-}
-
+// Get all payments (optional order_id)
 func (p *Payment) QGetAllPayments(db *gorm.DB, start int, count int, order_id int) ([]Payment, int, error) {
 	var payments []Payment
 	if order_id != 0 {

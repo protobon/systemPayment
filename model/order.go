@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	"github.com/google/uuid"
 	"gopkg.in/validator.v2"
 	"gorm.io/gorm"
 )
@@ -15,6 +16,7 @@ type OrderMetadata struct {
 // Order object
 type Order struct {
 	ID         int            `json:"id" gorm:"primaryKey" example:"1"`
+	OrderId    *string        `json:"order_id"`
 	Currency   *string        `json:"currency" example:"USD" validate:"nonzero"`
 	PayerID    int            `json:"payer_id" gorm:"column:payer_id" example:"1"  validate:"nonzero"`
 	ProductID  int            `json:"product_id" example:"1"  validate:"nonzero"`
@@ -72,6 +74,7 @@ func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 		return 400, err
 	}
 
+	*o.OrderId = uuid.New().String()
 	o.CreatedAt = time.Now()
 	o.CurrentFee = 1
 	// Create Order

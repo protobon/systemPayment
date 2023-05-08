@@ -4,6 +4,7 @@ import (
 	"net/http"
 	"strconv"
 	"systempayment/database"
+	"systempayment/dlocal"
 	"systempayment/httputil"
 	"systempayment/model"
 
@@ -12,61 +13,70 @@ import (
 
 // MockPayment godoc
 //
-//	@Summary		Mock Payment
-//	@Description	Mocks a new Payment (for testing purposes)
+//	@Summary		New Payment
+//	@Description	Creates a new payment with dlocal
 //	@Tags			Payment
 //	@Accept			json
-//	 @Param   example     body     model.PaymentRequest     true  "Payment example"     example(model.PaymentRequest)
+//
+// @Param   order_id  query  int  true  "order_id example"  example(1)
+//
 //	@Produce		json
 //	@Success		200	{object}	model.PaymentResponse
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
 //	@Router			/payment/new [post]
-func (c *Controller) MockPayment(ctx *gin.Context) {
-	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
-	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: payer_id", err)
-		return
-	}
-	var p *model.Payer
-	p, err = model.PreloadPayer(database.DB, payer_id)
-	if err != nil {
-		httputil.NewError404(ctx, http.StatusNotFound, "Payer not found", err)
-		return
-	}
-
+func (c *Controller) Payment(ctx *gin.Context) {
 	order_id, err := strconv.Atoi(ctx.Query("order_id"))
 	if err != nil {
 		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: order_id", err)
 		return
 	}
-	var o *model.Order
-	o, err = model.PreloadOrder(database.DB, order_id, payer_id)
-	if err != nil {
-		httputil.NewError404(ctx, http.StatusNotFound, "Order not found", err)
-		return
-	}
-
-	var payment model.Payment
-	if err := ctx.BindJSON(&payment); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid request payload", err)
-		return
-	}
-
-	payment.CardID = p.CardID
-	payment.OrderID = o.ID
-	if code, err := payment.QCreatePayment(database.DB); err != nil {
+	var order = model.Order{ID: order_id}
+	if code, err := order.QGetOrder(database.DB); err != nil {
 		switch code {
-		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, "Body validation failed", err)
+		case 404:
+			httputil.NewError400(ctx, http.StatusBadRequest, "Order not found", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "Could not create Payment", err)
+			httputil.NewError500(ctx, http.StatusInternalServerError, "An error occurred while fetching the order", err)
 		}
 		return
 	}
 
-	ctx.JSON(200, payment)
+	var payer = model.Payer{ID: order.PayerID}
+	if code, err := payer.QGetPayer(database.DB); err != nil {
+		switch code {
+		case 404:
+			httputil.NewError400(ctx, http.StatusBadRequest, "Payer not found", err)
+		default:
+			httputil.NewError500(ctx, http.StatusInternalServerError, "An error occurred while fetching the payer", err)
+		}
+		return
+	}
+
+	var card = model.Card{ID: payer.CardID}
+	if code, err := card.QGetCard(database.DB); err != nil {
+		switch code {
+		case 404:
+			httputil.NewError400(ctx, http.StatusBadRequest, "Card not found", err)
+		default:
+			httputil.NewError500(ctx, http.StatusInternalServerError, "An error occurred while fetching the card", err)
+		}
+		return
+	}
+
+	code, result, err := dlocal.MakePayment(order, payer, card)
+	if err != nil {
+		switch code {
+		case 408:
+			httputil.NewError408(ctx, http.StatusBadRequest, "Request to dlocal timed out", err)
+		default:
+			httputil.NewError500(ctx, http.StatusInternalServerError, "Could not make the request to dlocal", err)
+		}
+		return
+	}
+
+	ctx.JSON(200, result)
 }
 
 // Payments godoc

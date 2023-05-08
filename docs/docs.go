@@ -183,57 +183,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/dlocal/payment": {
-            "post": {
-                "description": "Makes a new Payment with the Dlocal API",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Dlocal"
-                ],
-                "summary": "Make Payment with Dlocal",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "example": 32,
-                        "description": "order_id example",
-                        "name": "order_id",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/dlocal.PaymentResponseBody"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError400"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError500"
-                        }
-                    }
-                }
-            }
-        },
         "/order/new": {
             "post": {
                 "description": "save Order in database",
@@ -594,9 +543,42 @@ const docTemplate = `{
                 }
             }
         },
+        "/payment/automatic": {
+            "post": {
+                "description": "New payment each month until all fees are paid",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Payment"
+                ],
+                "summary": "Automatic Payment",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "orderId example",
+                        "name": "orderId",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.PaymentResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/payment/new": {
             "post": {
-                "description": "Mocks a new Payment (for testing purposes)",
+                "description": "Creates a new payment with dlocal",
                 "consumes": [
                     "application/json"
                 ],
@@ -606,16 +588,15 @@ const docTemplate = `{
                 "tags": [
                     "Payment"
                 ],
-                "summary": "Mock Payment",
+                "summary": "New Payment",
                 "parameters": [
                     {
-                        "description": "Payment example",
-                        "name": "example",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.PaymentRequest"
-                        }
+                        "type": "integer",
+                        "example": 1,
+                        "description": "order_id example",
+                        "name": "order_id",
+                        "in": "query",
+                        "required": true
                     }
                 ],
                 "responses": {
@@ -895,79 +876,6 @@ const docTemplate = `{
         }
     },
     "definitions": {
-        "dlocal.CardResponse": {
-            "type": "object",
-            "properties": {
-                "brand": {
-                    "type": "string"
-                },
-                "card_id": {
-                    "type": "string"
-                },
-                "expiration_month": {
-                    "type": "string"
-                },
-                "expiration_year": {
-                    "type": "string"
-                },
-                "holder_name": {
-                    "type": "string"
-                },
-                "last4": {
-                    "type": "string"
-                }
-            }
-        },
-        "dlocal.PaymentResponseBody": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number"
-                },
-                "approved_date": {
-                    "type": "string"
-                },
-                "card": {
-                    "$ref": "#/definitions/dlocal.CardResponse"
-                },
-                "country": {
-                    "type": "string"
-                },
-                "created_date": {
-                    "type": "string"
-                },
-                "currency": {
-                    "type": "string"
-                },
-                "id": {
-                    "type": "string"
-                },
-                "notification_url": {
-                    "type": "string"
-                },
-                "order_id": {
-                    "type": "string"
-                },
-                "payment_method_flow": {
-                    "type": "string"
-                },
-                "payment_method_id": {
-                    "type": "string"
-                },
-                "payment_method_type": {
-                    "type": "string"
-                },
-                "status": {
-                    "type": "string"
-                },
-                "status_code": {
-                    "type": "string"
-                },
-                "status_detail": {
-                    "type": "string"
-                }
-            }
-        },
         "httputil.HTTPError400": {
             "type": "object",
             "properties": {
@@ -1051,6 +959,9 @@ const docTemplate = `{
                     "type": "string",
                     "example": "Visa"
                 },
+                "card_id": {
+                    "type": "string"
+                },
                 "created_at": {
                     "type": "string"
                 },
@@ -1068,9 +979,6 @@ const docTemplate = `{
                     "type": "integer",
                     "minimum": 1,
                     "example": 1
-                },
-                "token": {
-                    "type": "string"
                 }
             }
         },
@@ -1116,6 +1024,11 @@ const docTemplate = `{
         "model.OrderRequest": {
             "type": "object",
             "properties": {
+                "currency": {
+                    "type": "string",
+                    "maxLength": 3,
+                    "minLength": 3
+                },
                 "product_id": {
                     "type": "integer",
                     "example": 1
@@ -1249,35 +1162,6 @@ const docTemplate = `{
                 "user_reference": {
                     "type": "string",
                     "example": "12345"
-                }
-            }
-        },
-        "model.PaymentRequest": {
-            "type": "object",
-            "properties": {
-                "amount": {
-                    "type": "number",
-                    "example": 125
-                },
-                "country": {
-                    "type": "string",
-                    "example": "UY"
-                },
-                "currency": {
-                    "type": "string",
-                    "example": "USD"
-                },
-                "order_number": {
-                    "type": "string",
-                    "example": "657434343"
-                },
-                "payment_method_flow": {
-                    "type": "string",
-                    "example": "DIRECT"
-                },
-                "payment_method_id": {
-                    "type": "string",
-                    "example": "CARD"
                 }
             }
         },
