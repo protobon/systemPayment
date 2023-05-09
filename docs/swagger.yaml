@@ -351,40 +351,6 @@ paths:
       summary: Select Card
       tags:
       - Card
-  /card/cards:
-    get:
-      description: Select all cards
-      parameters:
-      - description: count example
-        example: 1
-        in: query
-        name: payer_id
-        required: true
-        type: integer
-      - description: start example
-        example: 0
-        in: query
-        name: start
-        required: true
-        type: integer
-      - description: count example
-        example: 10
-        in: query
-        name: count
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.CardResponse'
-            type: array
-      summary: Select all cards
-      tags:
-      - Card
   /card/new:
     post:
       consumes:
@@ -562,6 +528,28 @@ paths:
           schema:
             $ref: '#/definitions/httputil.HTTPError500'
       summary: Select Payer
+      tags:
+      - Payer
+  /payer/cards:
+    get:
+      description: ?payer_id=1
+      parameters:
+      - description: payer_id example
+        example: 1
+        in: query
+        name: payer_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/model.CardResponse'
+            type: array
+      summary: Get all cards from payer id
       tags:
       - Payer
   /payer/new:

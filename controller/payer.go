@@ -223,3 +223,36 @@ func (c *Controller) PrimaryCard(ctx *gin.Context) {
 
 	ctx.JSON(200, payer)
 }
+
+// PayerCards godoc
+//
+//	@Summary		Get all cards from payer id
+//	@Description	?payer_id=1
+//	@Tags			Payer
+//
+// @Param   payer_id  query  int  true  "payer_id example"  example(1)
+//
+//	@Produce		json
+//	@Success		200	{array}		model.CardResponse
+//	@Router			/payer/cards [get]
+func (c *Controller) PayerCards(ctx *gin.Context) {
+	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
+	if err != nil {
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: start", err)
+		return
+	}
+
+	card := model.Card{PayerID: payer_id}
+	cards, code, err := card.QGetCards(database.DB, payer_id)
+	if err != nil {
+		switch code {
+		case 404:
+			httputil.NewError404(ctx, http.StatusNotFound, "Query returned 0 records", err)
+		default:
+			httputil.NewError500(ctx, http.StatusInternalServerError, "Error fetching cards", err)
+		}
+		return
+	}
+
+	ctx.JSON(200, cards)
+}

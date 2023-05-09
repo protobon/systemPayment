@@ -70,43 +70,6 @@ func (c *Controller) NewCard(ctx *gin.Context) {
 	ctx.JSON(200, card)
 }
 
-// cards godoc
-//
-//	@Summary		Select all cards
-//	@Description	Select all cards
-//	@Tags			Card
-//
-// @Param   payer_id  query  int  true  "count example"  example(1)
-// @Param   start  query  int  true  "start example"  example(0)
-// @Param   count  query  int  true  "count example"  example(10)
-//
-//	@Produce		json
-//	@Success		200	{array}		model.CardResponse
-//	@Router			/card/cards [get]
-func (c *Controller) Cards(ctx *gin.Context) {
-	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
-	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
-		return
-	}
-
-	var card = model.Card{PayerID: payer_id}
-	cards, code, err := card.QGetCards(database.DB, payer_id)
-	if err != nil {
-		switch code {
-		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, "", err)
-		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "", err)
-		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
-		}
-		return
-	}
-
-	ctx.JSON(200, cards)
-}
-
 // GetCard godoc
 //
 //	@Summary		Select Card

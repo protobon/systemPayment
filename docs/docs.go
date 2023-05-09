@@ -24,55 +24,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/card/cards": {
-            "get": {
-                "description": "Select all cards",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Card"
-                ],
-                "summary": "Select all cards",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "count example",
-                        "name": "payer_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "example": 0,
-                        "description": "start example",
-                        "name": "start",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "example": 10,
-                        "description": "count example",
-                        "name": "count",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.CardResponse"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/card/new": {
             "post": {
                 "description": "Inserts a new Card",
@@ -339,6 +290,39 @@ const docTemplate = `{
                         "description": "Internal Server Error",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError500"
+                        }
+                    }
+                }
+            }
+        },
+        "/payer/cards": {
+            "get": {
+                "description": "?payer_id=1",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Payer"
+                ],
+                "summary": "Get all cards from payer id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "payer_id example",
+                        "name": "payer_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CardResponse"
+                            }
                         }
                     }
                 }

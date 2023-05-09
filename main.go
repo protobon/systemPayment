@@ -98,6 +98,7 @@ func main() {
 			payer.GET(":id", c.GetPayer)
 			payer.PUT(":id", c.UpdatePayer)
 			payer.PUT("/setCard", c.PrimaryCard)
+			payer.GET("/cards", c.PayerCards)
 		}
 		product := v1.Group("/product")
 		{
@@ -120,7 +121,6 @@ func main() {
 		card := v1.Group("/card")
 		{
 			card.POST("/new", c.NewCard)
-			card.GET("/cards", c.Cards)
 			card.GET(":id", c.GetCard)
 		}
 	}
