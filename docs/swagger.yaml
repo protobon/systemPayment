@@ -626,6 +626,44 @@ paths:
       summary: Select all Payers
       tags:
       - Payer
+  /payer/setCard:
+    put:
+      consumes:
+      - application/json
+      description: ?payer_id=1&card_id=1
+      parameters:
+      - description: 'example: 1'
+        in: query
+        name: payer_id
+        required: true
+        type: integer
+      - description: 'example: 1'
+        in: query
+        name: card_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PayerResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError400'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError404'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError500'
+      summary: Sets Payers primary card
+      tags:
+      - Payer
   /payer/update/{id}:
     put:
       consumes:
@@ -634,7 +672,7 @@ paths:
       parameters:
       - description: 'example: 1'
         in: query
-        name: int
+        name: id
         required: true
         type: integer
       - description: Payer example

@@ -133,7 +133,7 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 //	@Tags			Payer
 //	@Accept			json
 //
-// @Param   int  query  int  true  "example: 1"  "Payer ID"
+// @Param   id  query  int  true  "example: 1"  "Payer ID"
 //
 // @Param   example     body     model.Payer     true  "Payer example"     example(model.Payer)
 //
@@ -162,6 +162,59 @@ func (c *Controller) UpdatePayer(ctx *gin.Context) {
 			httputil.NewError400(ctx, http.StatusBadRequest, "Body validation failed", err)
 		case 404:
 			httputil.NewError404(ctx, http.StatusNotFound, "Payer not found", err)
+		default:
+			httputil.NewError500(ctx, http.StatusInternalServerError, "Error updating Payer", err)
+		}
+		return
+	}
+
+	ctx.JSON(200, payer)
+}
+
+// PrimaryCard godoc
+//
+//	@Summary		Sets Payers primary card
+//	@Description	?payer_id=1&card_id=1
+//	@Tags			Payer
+//	@Accept			json
+//
+// @Param   payer_id  query  int  true  "example: 1"  "Payer ID"
+// @Param   card_id  query  int  true  "example: 1"  "Card ID"
+//
+//	@Produce		json
+//	@Success		200	{object}	model.PayerResponse
+//	@Failure		400	{object}	httputil.HTTPError400
+//	@Failure		404	{object}	httputil.HTTPError404
+//	@Failure		500	{object}	httputil.HTTPError500
+//	@Router			/payer/setCard [put]
+func (c *Controller) PrimaryCard(ctx *gin.Context) {
+	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
+	if err != nil {
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: payer_id", err)
+		return
+	}
+	card_id, err := strconv.Atoi(ctx.Query("card_id"))
+	if err != nil {
+		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: card_id", err)
+		return
+	}
+
+	payer := model.Payer{ID: payer_id}
+	if code, err := payer.QGetPayer(database.DB); err != nil {
+		switch code {
+		case 404:
+			httputil.NewError404(ctx, http.StatusNotFound, "Payer not found", err)
+		default:
+			httputil.NewError500(ctx, http.StatusInternalServerError, "Error updating Payer", err)
+		}
+	}
+
+	if code, err := payer.QPrimaryCard(database.DB, card_id); err != nil {
+		switch code {
+		case 400:
+			httputil.NewError400(ctx, http.StatusNotFound, "Invalid card ID", err)
+		case 404:
+			httputil.NewError404(ctx, http.StatusNotFound, "Card not found", err)
 		default:
 			httputil.NewError500(ctx, http.StatusInternalServerError, "Error updating Payer", err)
 		}

@@ -437,6 +437,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/payer/setCard": {
+            "put": {
+                "description": "?payer_id=1\u0026card_id=1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Payer"
+                ],
+                "summary": "Sets Payers primary card",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "example: 1",
+                        "name": "payer_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "example: 1",
+                        "name": "card_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.PayerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError400"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError404"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError500"
+                        }
+                    }
+                }
+            }
+        },
         "/payer/update/{id}": {
             "put": {
                 "description": "Updates a payer in database (id req)",
@@ -454,7 +511,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "example: 1",
-                        "name": "int",
+                        "name": "id",
                         "in": "query",
                         "required": true
                     },

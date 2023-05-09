@@ -97,6 +97,7 @@ func main() {
 			payer.GET("/payers", c.Payers)
 			payer.GET(":id", c.GetPayer)
 			payer.PUT(":id", c.UpdatePayer)
+			payer.PUT("/setCard", c.PrimaryCard)
 		}
 		product := v1.Group("/product")
 		{
