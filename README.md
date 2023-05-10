@@ -4,38 +4,35 @@
 
 
 ```console
-$ make build
-```
-Production: 'make build stage=prod'
-</br>
-</br>
-
-## Start Local
-```console
-$ make build stage=local
-$ make start stage=local
-$ make run
+$ make build stage=test
+$ make build stage=prod
 ```
 
-### Compose Test
+</br>
+
+## Compose Up
 ```console
-$ make up
+$ make up stage=test  # dup for detached
+$ make dup stage=prod
 ```
 
-### Detached 
-```console
-$ make dup
-```
-Production: 'make dup stage=prod'
-</br>
 </br>
 
 ## Docker Logs (view)
 ```console
-$ make logs
+$ make logs stage=test
+$ make logs stage=prod
 ```
-Production: 'make logs stage=prod'
+
 </br>
 
+## Run locally
+```console
+$ make build stage=local  # only the first time
+$ make start stage=local
+$ make run
+```
 
-### [Swagger](http://localhost:8080/swagger/index.html)
+</br>
+
+# [Swagger](http://localhost:8080/swagger/index.html)
