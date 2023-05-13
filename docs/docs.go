@@ -24,55 +24,6 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/card/cards": {
-            "get": {
-                "description": "Select all cards",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Card"
-                ],
-                "summary": "Select all cards",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "count example",
-                        "name": "payer_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "example": 0,
-                        "description": "start example",
-                        "name": "start",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "type": "integer",
-                        "example": 10,
-                        "description": "count example",
-                        "name": "count",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.CardResponse"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/card/new": {
             "post": {
                 "description": "Inserts a new Card",
@@ -344,6 +295,39 @@ const docTemplate = `{
                 }
             }
         },
+        "/payer/cards": {
+            "get": {
+                "description": "?payer_id=1",
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Payer"
+                ],
+                "summary": "Get all cards from payer id",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "payer_id example",
+                        "name": "payer_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "type": "array",
+                            "items": {
+                                "$ref": "#/definitions/model.CardResponse"
+                            }
+                        }
+                    }
+                }
+            }
+        },
         "/payer/new": {
             "post": {
                 "description": "save payer in database",
@@ -437,6 +421,63 @@ const docTemplate = `{
                 }
             }
         },
+        "/payer/setCard": {
+            "put": {
+                "description": "?payer_id=1\u0026card_id=1",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Payer"
+                ],
+                "summary": "Sets Payers primary card",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "description": "example: 1",
+                        "name": "payer_id",
+                        "in": "query",
+                        "required": true
+                    },
+                    {
+                        "type": "integer",
+                        "description": "example: 1",
+                        "name": "card_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.PayerResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError400"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError404"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError500"
+                        }
+                    }
+                }
+            }
+        },
         "/payer/update/{id}": {
             "put": {
                 "description": "Updates a payer in database (id req)",
@@ -454,7 +495,7 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "description": "example: 1",
-                        "name": "int",
+                        "name": "id",
                         "in": "query",
                         "required": true
                     },

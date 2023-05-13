@@ -2,8 +2,8 @@ package httputil
 
 import "github.com/gin-gonic/gin"
 
-// NewError400 example
-func NewError400(ctx *gin.Context, status int, message string, err error) {
+// Error400 example
+func Error400(ctx *gin.Context, status int, message string, err error) {
 	er := HTTPError400{
 		Code:    status,
 		Message: message,
@@ -12,8 +12,8 @@ func NewError400(ctx *gin.Context, status int, message string, err error) {
 	ctx.JSON(status, er)
 }
 
-// NewError408 example
-func NewError408(ctx *gin.Context, status int, message string, err error) {
+// Error408 example
+func Error408(ctx *gin.Context, status int, message string, err error) {
 	er := HTTPError400{
 		Code:    status,
 		Message: message,
@@ -22,8 +22,8 @@ func NewError408(ctx *gin.Context, status int, message string, err error) {
 	ctx.JSON(status, er)
 }
 
-// NewError404 example
-func NewError404(ctx *gin.Context, status int, message string, err error) {
+// Error404 example
+func Error404(ctx *gin.Context, status int, message string, err error) {
 	er := HTTPError404{
 		Code:    status,
 		Message: message,
@@ -32,8 +32,8 @@ func NewError404(ctx *gin.Context, status int, message string, err error) {
 	ctx.JSON(status, er)
 }
 
-// NewError500 example
-func NewError500(ctx *gin.Context, status int, message string, err error) {
+// Error500 example
+func Error500(ctx *gin.Context, status int, message string, err error) {
 	er := HTTPError500{
 		Code:    status,
 		Message: message,

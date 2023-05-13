@@ -1,9 +1,9 @@
 package dlocal
 
 // Tokenized card for one use
-type SecureCard struct {
-	Token *string `json:"token" validate:"nonzero"`
-	Save  bool    `json:"save"`
+type CardWithToken struct {
+	Token string `json:"token" validate:"nonzero"`
+	Save  bool   `json:"save"`
 }
 
 type Card struct {

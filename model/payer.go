@@ -1,6 +1,7 @@
 package model
 
 import (
+	"errors"
 	"time"
 
 	"gopkg.in/validator.v2"
@@ -101,7 +102,7 @@ func (a *Address) QCreateAddress(db *gorm.DB, p *Payer) (int, error) {
 	var err error
 	a.PayerID = p.ID
 	a.CreatedAt = time.Now()
-	// err = db.Create(a).Error
+	// err = db.Raw(q).Error
 	if err = db.Raw(`INSERT INTO address(payer_id, state, city, zip_code, street, number, created_at) 
 	VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING id`,
 		a.PayerID, a.State, a.City, a.ZipCode, a.Street, a.Number, a.CreatedAt).Scan(&a.ID).Error; err != nil {
@@ -163,6 +164,13 @@ func (p *Payer) QUpdatePayer(db *gorm.DB) (int, error) {
 
 func (p *Payer) QPrimaryCard(db *gorm.DB, card_id int) (int, error) {
 	var err error
+	card := Card{ID: card_id}
+	if code, err := card.QGetCard(db); err != nil {
+		return code, err
+	}
+	if card.PayerID != p.ID {
+		return 400, errors.New("invalid card id")
+	}
 	if err = db.Model(&p).Update("card_id", card_id).Error; err != nil {
 		switch err {
 		case gorm.ErrRecordNotFound:
