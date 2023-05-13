@@ -26,16 +26,16 @@ import (
 func (c *Controller) NewPayer(ctx *gin.Context) {
 	var payer model.Payer
 	if err := ctx.BindJSON(&payer); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid request payload", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
 
 	if code, err := payer.QCreatePayer(database.DB); err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, "Body validation failed", err)
+			httputil.Error400(ctx, http.StatusBadRequest, "Body validation failed", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "Error creating Payer", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Error creating Payer", err)
 		}
 		return
 	}
@@ -58,12 +58,12 @@ func (c *Controller) NewPayer(ctx *gin.Context) {
 func (c *Controller) Payers(ctx *gin.Context) {
 	start, err := strconv.Atoi(ctx.Query("start"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: start", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid parameter: start", err)
 		return
 	}
 	count, err := strconv.Atoi(ctx.Query("count"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: count", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid parameter: count", err)
 		return
 	}
 
@@ -78,9 +78,9 @@ func (c *Controller) Payers(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "Query returned 0 records", err)
+			httputil.Error404(ctx, http.StatusNotFound, "Query returned 0 records", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "Error fetching Payers", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Error fetching Payers", err)
 		}
 		return
 	}
@@ -105,7 +105,7 @@ func (c *Controller) Payers(ctx *gin.Context) {
 func (c *Controller) GetPayer(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
@@ -116,9 +116,9 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "Payer not found", err)
+			httputil.Error404(ctx, http.StatusNotFound, "Payer not found", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "Error fetching Payer", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Error fetching Payer", err)
 		}
 		return
 	}
@@ -146,24 +146,24 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 func (c *Controller) UpdatePayer(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: id", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid parameter: id", err)
 		return
 	}
 
 	payer := model.Payer{ID: id}
 	if err := ctx.BindJSON(&payer); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid request payload", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
 
 	if code, err := payer.QUpdatePayer(database.DB); err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, "Body validation failed", err)
+			httputil.Error400(ctx, http.StatusBadRequest, "Body validation failed", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "Payer not found", err)
+			httputil.Error404(ctx, http.StatusNotFound, "Payer not found", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "Error updating Payer", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Error updating Payer", err)
 		}
 		return
 	}
@@ -190,12 +190,12 @@ func (c *Controller) UpdatePayer(ctx *gin.Context) {
 func (c *Controller) PrimaryCard(ctx *gin.Context) {
 	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: payer_id", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid parameter: payer_id", err)
 		return
 	}
 	card_id, err := strconv.Atoi(ctx.Query("card_id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: card_id", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid parameter: card_id", err)
 		return
 	}
 
@@ -203,20 +203,20 @@ func (c *Controller) PrimaryCard(ctx *gin.Context) {
 	if code, err := payer.QGetPayer(database.DB); err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "Payer not found", err)
+			httputil.Error404(ctx, http.StatusNotFound, "Payer not found", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "Error updating Payer", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Error updating Payer", err)
 		}
 	}
 
 	if code, err := payer.QPrimaryCard(database.DB, card_id); err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusNotFound, "Invalid card ID", err)
+			httputil.Error400(ctx, http.StatusNotFound, "Invalid card ID", err)
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "Card not found", err)
+			httputil.Error404(ctx, http.StatusNotFound, "Card not found", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "Error updating Payer", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Error updating Payer", err)
 		}
 		return
 	}
@@ -238,7 +238,7 @@ func (c *Controller) PrimaryCard(ctx *gin.Context) {
 func (c *Controller) PayerCards(ctx *gin.Context) {
 	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: start", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid parameter: start", err)
 		return
 	}
 
@@ -247,9 +247,9 @@ func (c *Controller) PayerCards(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "Query returned 0 records", err)
+			httputil.Error404(ctx, http.StatusNotFound, "Query returned 0 records", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "Error fetching cards", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Error fetching cards", err)
 		}
 		return
 	}

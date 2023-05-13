@@ -29,21 +29,21 @@ import (
 func (c *Controller) NewCard(ctx *gin.Context) {
 	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: payer_id", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid parameter: payer_id", err)
 		return
 	}
 	var payer = model.Payer{ID: payer_id}
 	if code, err := payer.QGetPayer(database.DB); err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "Payer not found", err)
+			httputil.Error404(ctx, http.StatusNotFound, "Payer not found", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "Error fetching Payer", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Error fetching Payer", err)
 		}
 	}
 	var card model.Card
 	if err := ctx.BindJSON(&card); err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid request payload", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
 
@@ -51,9 +51,9 @@ func (c *Controller) NewCard(ctx *gin.Context) {
 	if code, err := card.QCreateCard(database.DB); err != nil {
 		switch code {
 		case 400:
-			httputil.NewError400(ctx, http.StatusBadRequest, "Body validation failed", err)
+			httputil.Error400(ctx, http.StatusBadRequest, "Body validation failed", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "Could not create Card", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Could not create Card", err)
 		}
 		return
 	}
@@ -61,9 +61,9 @@ func (c *Controller) NewCard(ctx *gin.Context) {
 	if code, err := payer.QPrimaryCard(database.DB, card.ID); err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "Payer not found", err)
+			httputil.Error404(ctx, http.StatusNotFound, "Payer not found", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "Could not set new Card as primary", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Could not set new Card as primary", err)
 		}
 	}
 
@@ -88,7 +88,7 @@ func (c *Controller) NewCard(ctx *gin.Context) {
 func (o *Controller) GetCard(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "", err)
 		return
 	}
 
@@ -97,9 +97,9 @@ func (o *Controller) GetCard(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "", err)
+			httputil.Error404(ctx, http.StatusNotFound, "", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "", err)
 		}
 		return
 	}

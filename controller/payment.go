@@ -11,7 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-// MockPayment godoc
+// NewPayment godoc
 //
 //	@Summary		New Payment
 //	@Description	Creates a new payment with dlocal
@@ -26,19 +26,19 @@ import (
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
 //	@Router			/payment/new [post]
-func (c *Controller) Payment(ctx *gin.Context) {
+func (c *Controller) NewPayment(ctx *gin.Context) {
 	order_id, err := strconv.Atoi(ctx.Query("order_id"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: order_id", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid parameter: order_id", err)
 		return
 	}
 	var order = model.Order{ID: order_id}
 	if code, err := order.QGetOrder(database.DB); err != nil {
 		switch code {
 		case 404:
-			httputil.NewError400(ctx, http.StatusBadRequest, "Order not found", err)
+			httputil.Error400(ctx, http.StatusBadRequest, "Order not found", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "An error occurred while fetching the order", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "An error occurred while fetching the order", err)
 		}
 		return
 	}
@@ -47,9 +47,9 @@ func (c *Controller) Payment(ctx *gin.Context) {
 	if code, err := payer.QGetPayer(database.DB); err != nil {
 		switch code {
 		case 404:
-			httputil.NewError400(ctx, http.StatusBadRequest, "Payer not found", err)
+			httputil.Error400(ctx, http.StatusBadRequest, "Payer not found", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "An error occurred while fetching the payer", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "An error occurred while fetching the payer", err)
 		}
 		return
 	}
@@ -58,9 +58,9 @@ func (c *Controller) Payment(ctx *gin.Context) {
 	if code, err := card.QGetCard(database.DB); err != nil {
 		switch code {
 		case 404:
-			httputil.NewError400(ctx, http.StatusBadRequest, "Card not found", err)
+			httputil.Error400(ctx, http.StatusBadRequest, "Card not found", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "An error occurred while fetching the card", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "An error occurred while fetching the card", err)
 		}
 		return
 	}
@@ -69,9 +69,9 @@ func (c *Controller) Payment(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 408:
-			httputil.NewError408(ctx, http.StatusBadRequest, "Request to dlocal timed out", err)
+			httputil.Error408(ctx, http.StatusBadRequest, "Request to dlocal timed out", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "Could not make the request to dlocal", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Request to dlocal failed", err)
 		}
 		return
 	}
@@ -79,7 +79,73 @@ func (c *Controller) Payment(ctx *gin.Context) {
 	ctx.JSON(200, result)
 }
 
-// Payments godoc
+type Token struct {
+	Token string `json:"token"`
+}
+
+// PaymentWithToken godoc
+//
+//	@Summary		New Payment with Card's token
+//	@Description	Creates a new payment with a CC token
+//	@Tags			Payment
+//	@Accept			json
+//
+// @Param   order_id  query  int  true  "order_id example"  example(1)
+//
+//	@Produce		json
+//	@Success		200	{object}	model.PaymentResponse
+//	@Failure		400	{object}	httputil.HTTPError400
+//	@Failure		404	{object}	httputil.HTTPError404
+//	@Failure		500	{object}	httputil.HTTPError500
+//	@Router			/payment/save-card [post]
+func (c *Controller) PaymentWithToken(ctx *gin.Context) {
+	var token Token
+	if err := ctx.BindJSON(&token); err != nil || token.Token == "" {
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid request payload", err)
+		return
+	}
+	order_id, err := strconv.Atoi(ctx.Query("order_id"))
+	if err != nil {
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid parameter: order_id", err)
+		return
+	}
+	var order = model.Order{ID: order_id}
+	if code, err := order.QGetOrder(database.DB); err != nil {
+		switch code {
+		case 404:
+			httputil.Error400(ctx, http.StatusBadRequest, "Order not found", err)
+		default:
+			httputil.Error500(ctx, http.StatusInternalServerError, "An error occurred while fetching the order", err)
+		}
+		return
+	}
+
+	var payer = model.Payer{ID: order.PayerID}
+	if code, err := payer.QGetPayer(database.DB); err != nil {
+		switch code {
+		case 404:
+			httputil.Error400(ctx, http.StatusBadRequest, "Payer not found", err)
+		default:
+			httputil.Error500(ctx, http.StatusInternalServerError, "An error occurred while fetching the payer", err)
+		}
+		return
+	}
+
+	code, result, err := dlocal.PaymentWithToken(order, payer, token.Token)
+	if err != nil {
+		switch code {
+		case 408:
+			httputil.Error408(ctx, http.StatusBadRequest, "Request to dlocal timed out", err)
+		default:
+			httputil.Error500(ctx, http.StatusInternalServerError, "Request to dlocal failed", err)
+		}
+		return
+	}
+
+	ctx.JSON(200, result)
+}
+
+// GetPayments godoc
 //
 //	@Summary		Select all Payments
 //	@Description	Select all Payments
@@ -92,15 +158,15 @@ func (c *Controller) Payment(ctx *gin.Context) {
 //	@Produce		json
 //	@Success		200	{array}		model.PaymentResponse
 //	@Router			/payment/payments [get]
-func (c *Controller) Payments(ctx *gin.Context) {
+func (c *Controller) GetPayments(ctx *gin.Context) {
 	start, err := strconv.Atoi(ctx.Query("start"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: start", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid parameter: start", err)
 		return
 	}
 	count, err := strconv.Atoi(ctx.Query("count"))
 	if err != nil {
-		httputil.NewError400(ctx, http.StatusBadRequest, "Invalid parameter: count", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid parameter: count", err)
 		return
 	}
 	order_id := 0
@@ -117,41 +183,12 @@ func (c *Controller) Payments(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "Query returned 0 records", err)
+			httputil.Error404(ctx, http.StatusNotFound, "Query returned 0 records", err)
 		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "Error fetching Payments", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Error fetching Payments", err)
 		}
 		return
 	}
 
 	ctx.JSON(200, payments)
-}
-
-// AutomaticPayment godoc
-//
-//	@Summary		Automatic Payment
-//	@Description	New payment each month until all fees are paid
-//	@Tags			Payment
-//
-// @Param   orderId  query  int  true  "orderId example"  example(1)
-//
-//	@Produce		json
-//	@Success		200	{array}		model.PaymentResponse
-//	@Router			/payment/automatic [post]
-func (c *Controller) AutomaticPayment(ctx *gin.Context) {
-	order_id := 0
-	order_id, _ = strconv.Atoi(ctx.Query("orderId"))
-	var payment = model.Payment{}
-	message, code, err := payment.QPaymentPlan(database.DB, order_id)
-	if err != nil {
-		switch code {
-		case 404:
-			httputil.NewError404(ctx, http.StatusNotFound, "Query returned 0 records", err)
-		default:
-			httputil.NewError500(ctx, http.StatusInternalServerError, "Error fetching Payments", err)
-		}
-		return
-	}
-
-	ctx.JSON(200, message)
 }
