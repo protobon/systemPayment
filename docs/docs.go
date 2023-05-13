@@ -584,39 +584,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/payment/automatic": {
-            "post": {
-                "description": "New payment each month until all fees are paid",
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Payment"
-                ],
-                "summary": "Automatic Payment",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "orderId example",
-                        "name": "orderId",
-                        "in": "query",
-                        "required": true
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "type": "array",
-                            "items": {
-                                "$ref": "#/definitions/model.PaymentResponse"
-                            }
-                        }
-                    }
-                }
-            }
-        },
         "/payment/new": {
             "post": {
                 "description": "Creates a new payment with dlocal",
@@ -711,6 +678,57 @@ const docTemplate = `{
                             "items": {
                                 "$ref": "#/definitions/model.PaymentResponse"
                             }
+                        }
+                    }
+                }
+            }
+        },
+        "/payment/save-card": {
+            "post": {
+                "description": "Creates a new payment with a CC token",
+                "consumes": [
+                    "application/json"
+                ],
+                "produces": [
+                    "application/json"
+                ],
+                "tags": [
+                    "Payment"
+                ],
+                "summary": "New Payment with Card's token",
+                "parameters": [
+                    {
+                        "type": "integer",
+                        "example": 1,
+                        "description": "order_id example",
+                        "name": "order_id",
+                        "in": "query",
+                        "required": true
+                    }
+                ],
+                "responses": {
+                    "200": {
+                        "description": "OK",
+                        "schema": {
+                            "$ref": "#/definitions/model.PaymentResponse"
+                        }
+                    },
+                    "400": {
+                        "description": "Bad Request",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError400"
+                        }
+                    },
+                    "404": {
+                        "description": "Not Found",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError404"
+                        }
+                    },
+                    "500": {
+                        "description": "Internal Server Error",
+                        "schema": {
+                            "$ref": "#/definitions/httputil.HTTPError500"
                         }
                     }
                 }

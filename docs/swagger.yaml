@@ -691,28 +691,6 @@ paths:
       summary: Updates Payer
       tags:
       - Payer
-  /payment/automatic:
-    post:
-      description: New payment each month until all fees are paid
-      parameters:
-      - description: orderId example
-        example: 1
-        in: query
-        name: orderId
-        required: true
-        type: integer
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            items:
-              $ref: '#/definitions/model.PaymentResponse'
-            type: array
-      summary: Automatic Payment
-      tags:
-      - Payment
   /payment/new:
     post:
       consumes:
@@ -778,6 +756,40 @@ paths:
               $ref: '#/definitions/model.PaymentResponse'
             type: array
       summary: Select all Payments
+      tags:
+      - Payment
+  /payment/save-card:
+    post:
+      consumes:
+      - application/json
+      description: Creates a new payment with a CC token
+      parameters:
+      - description: order_id example
+        example: 1
+        in: query
+        name: order_id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/model.PaymentResponse'
+        "400":
+          description: Bad Request
+          schema:
+            $ref: '#/definitions/httputil.HTTPError400'
+        "404":
+          description: Not Found
+          schema:
+            $ref: '#/definitions/httputil.HTTPError404'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/httputil.HTTPError500'
+      summary: New Payment with Card's token
       tags:
       - Payment
   /product/{id}:

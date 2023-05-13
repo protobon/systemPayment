@@ -5,7 +5,7 @@ PROD := prod
 LOCAL := local
 
 # ------- Test (server) ------- 
-COMPOSE-TEST=sudo docker compose -f docker-compose.yml
+COMPOSE-TEST=sudo docker compose -f docker-compose-test.yml
 LOGS-TEST=sudo docker logs -f system_payment_test
 
 # ------- Prod (server) ------- 
@@ -18,6 +18,7 @@ COMPOSE-DB-LOCAL=sudo docker run --name system_payment_db_local -v systempayment
 START-LOCAL=sudo docker start system_payment_db_local
 RESTART-LOCAL=sudo docker restart system_payment_db_local
 STOP-LOCAL=sudo docker stop system_payment_db_local
+REMOVE-LOCAL=sudo docker rm -f system_payment_db_local
 
 # ------- Local Compose -------
 COMPOSE=sudo docker compose -f docker-compose.yml
@@ -127,17 +128,20 @@ ifeq ($(stage),)
 endif
 
 
-# ------- Down ----------------------------------------------------
-down:
+# ------- Restart ----------------------------------------------------
+remove:
 	@echo $(stage)
 ifeq ($(stage), $(TEST))
-	$(COMPOSE-TEST) down
+	$(COMPOSE-TEST) restart
 endif
 ifeq ($(stage), $(PROD))
-	$(COMPOSE-PROD) down
+	$(COMPOSE-PROD) restart
+endif
+ifeq ($(stage), $(LOCAL))
+	$(REMOVE-LOCAL)
 endif
 ifeq ($(stage),)
-	$(COMPOSE) down
+	$(COMPOSE) restart
 endif
 
 
