@@ -65,7 +65,7 @@ func (c *Controller) NewPayment(ctx *gin.Context) {
 		return
 	}
 
-	code, result, err := dlocal.MakePayment(order, payer, card)
+	code, response, err := dlocal.MakePayment(order, payer, card)
 	if err != nil {
 		switch code {
 		case 408:
@@ -76,7 +76,22 @@ func (c *Controller) NewPayment(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, result)
+	var payment = model.Payment{
+		OrderID: order.ID,
+		CardID:  card.ID,
+	}
+	code, err = payment.SavePaymentFromResponse(database.DB, response)
+	if err != nil {
+		switch code {
+		case 400:
+			httputil.Error400(ctx, http.StatusBadRequest, "Payment validation failed", err)
+		default:
+			httputil.Error500(ctx, http.StatusInternalServerError, "Could not save new Payment", err)
+		}
+		return
+	}
+
+	ctx.JSON(200, payment)
 }
 
 type Token struct {
@@ -141,8 +156,34 @@ func (c *Controller) PaymentWithToken(ctx *gin.Context) {
 		}
 		return
 	}
+	var card = model.Card{PayerID: payer.ID}
+	code, err = card.SaveCardFromResponse(database.DB, result)
+	if err != nil {
+		switch code {
+		case 400:
+			httputil.Error400(ctx, http.StatusBadRequest, "Card validation failed", err)
+		default:
+			httputil.Error500(ctx, http.StatusInternalServerError, "Could not save new Card", err)
+		}
+		return
+	}
 
-	ctx.JSON(200, result)
+	var payment = model.Payment{
+		OrderID: order.ID,
+		CardID:  card.ID,
+	}
+	code, err = payment.SavePaymentFromResponse(database.DB, result)
+	if err != nil {
+		switch code {
+		case 400:
+			httputil.Error400(ctx, http.StatusBadRequest, "Payment validation failed", err)
+		default:
+			httputil.Error500(ctx, http.StatusInternalServerError, "Could not save new Payment", err)
+		}
+		return
+	}
+
+	ctx.JSON(200, payment)
 }
 
 // GetPayments godoc

@@ -19,12 +19,31 @@ type Payment struct {
 	OrderNumber       *string        `json:"order_number" example:"657434343"  validate:"nonzero"`
 	CardID            int            `json:"card_id" gorm:"column:card_id" example:"1"  validate:"nonzero"`
 	CreatedAt         time.Time      `json:"created_at"`
-	UpdatedAt         time.Time      `json:"updated_at"`
 	DeletedAt         gorm.DeletedAt `json:"-"`
 }
 
 func (Payment) TableName() string {
 	return "payment"
+}
+
+// Save payment from dlocal's payment response
+func (p *Payment) SavePaymentFromResponse(db *gorm.DB, response map[string]interface{}) (int, error) {
+	amount, _ := response["amount"].(float64)
+	currency, _ := response["currency"].(string)
+	country, _ := response["country"].(string)
+	payment_method_id, _ := response["payment_method_id"].(string)
+	payment_method_flow, _ := response["payment_method_flow"].(string)
+	order_number, _ := response["order_id"].(string)
+
+	p.Amount = amount
+	p.Currency = &currency
+	p.Country = &country
+	p.PaymentMethodID = &payment_method_id
+	p.PaymentMethodFlow = &payment_method_flow
+	p.OrderNumber = &order_number
+	p.CreatedAt = time.Now()
+
+	return p.QCreatePayment(db)
 }
 
 // QCreatePayment - Insert into Payment
