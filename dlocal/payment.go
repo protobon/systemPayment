@@ -84,7 +84,7 @@ func MakePayment(order model.Order, payer model.Payer, card model.Card) (int, ma
 		PaymentMethodFlow: "DIRECT",
 		Payer:             DlocalPayer,
 		Card:              dlocalCard,
-		OrderID:           *order.OrderId,
+		OrderID:           order.OrderId,
 	}
 
 	body_json, err := json.Marshal(Body)
@@ -117,7 +117,7 @@ func MakePayment(order model.Order, payer model.Payer, card model.Card) (int, ma
 func PaymentWithToken(order model.Order, payer model.Payer, token string) (int, map[string]interface{}, error) {
 	var req *http.Request
 	var err error
-	var dlocalCard = CardWithToken{Token: token}
+	var dlocalCard = CardWithToken{Token: token, Save: true}
 
 	// Payer's address
 	DlocalAddress := Address{
@@ -146,7 +146,7 @@ func PaymentWithToken(order model.Order, payer model.Payer, token string) (int, 
 		PaymentMethodFlow: "DIRECT",
 		Payer:             DlocalPayer,
 		Card:              dlocalCard,
-		OrderID:           *order.OrderId,
+		OrderID:           order.OrderId,
 	}
 
 	body_json, err := json.Marshal(Body)

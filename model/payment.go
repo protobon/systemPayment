@@ -16,8 +16,9 @@ type Payment struct {
 	PaymentMethodID   *string        `json:"payment_method_id" example:"CARD" validate:"nonzero,min=2,max=4"`
 	PaymentMethodFlow *string        `json:"payment_method_flow" example:"DIRECT" validate:"nonzero,min=2,max=10"`
 	OrderID           int            `json:"order_id" gorm:"column:order_id" example:"1"  validate:"nonzero"`
-	OrderNumber       *string        `json:"order_number" example:"657434343"  validate:"nonzero"`
+	OrderNumber       *string        `json:"order_number" validate:"nonzero"`
 	CardID            int            `json:"card_id" gorm:"column:card_id" example:"1"  validate:"nonzero"`
+	Description       *string        `json:"description"`
 	CreatedAt         time.Time      `json:"created_at"`
 	DeletedAt         gorm.DeletedAt `json:"-"`
 }
@@ -34,6 +35,7 @@ func (p *Payment) SavePaymentFromResponse(db *gorm.DB, response map[string]inter
 	payment_method_id, _ := response["payment_method_id"].(string)
 	payment_method_flow, _ := response["payment_method_flow"].(string)
 	order_number, _ := response["order_id"].(string)
+	description, _ := response["description"].(string)
 
 	p.Amount = amount
 	p.Currency = &currency
@@ -41,6 +43,7 @@ func (p *Payment) SavePaymentFromResponse(db *gorm.DB, response map[string]inter
 	p.PaymentMethodID = &payment_method_id
 	p.PaymentMethodFlow = &payment_method_flow
 	p.OrderNumber = &order_number
+	p.Description = &description
 	p.CreatedAt = time.Now()
 
 	return p.QCreatePayment(db)

@@ -94,10 +94,6 @@ func (c *Controller) NewPayment(ctx *gin.Context) {
 	ctx.JSON(200, payment)
 }
 
-type Token struct {
-	Token string `json:"token"`
-}
-
 // PaymentWithToken godoc
 //
 //	@Summary		New Payment with Card's token
@@ -106,6 +102,7 @@ type Token struct {
 //	@Accept			json
 //
 // @Param   order_id  query  int  true  "order_id example"  example(1)
+// @Param   token     body     model.Token    true  "Card's token example"     example(model.Token)
 //
 //	@Produce		json
 //	@Success		200	{object}	model.PaymentResponse
@@ -114,7 +111,7 @@ type Token struct {
 //	@Failure		500	{object}	httputil.HTTPError500
 //	@Router			/payment/save-card [post]
 func (c *Controller) PaymentWithToken(ctx *gin.Context) {
-	var token Token
+	var token model.Token
 	if err := ctx.BindJSON(&token); err != nil || token.Token == "" {
 		httputil.Error400(ctx, http.StatusBadRequest, "Invalid request payload", err)
 		return

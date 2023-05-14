@@ -8,49 +8,28 @@ import (
 	"gorm.io/gorm"
 )
 
-type OrderMetadata struct {
-	Order   Order   `json:"order"`
-	Product Product `json:"product"`
-}
-
 // Order object
 type Order struct {
-	ID         int            `json:"id" gorm:"primaryKey" example:"1"`
-	OrderId    *string        `json:"order_id"`
-	Currency   *string        `json:"currency" example:"USD" validate:"nonzero"`
-	PayerID    int            `json:"payer_id" gorm:"column:payer_id" example:"1"  validate:"nonzero"`
-	ProductID  int            `json:"product_id" example:"1"  validate:"nonzero"`
-	Product    Product        `json:"product"`
-	TotalFees  int            `json:"total_fees" example:"3"  validate:"nonzero,min=1,max=24"`
-	CurrentFee int            `json:"current_fee" example:"1"`
-	Automatic  bool           `json:"-"`
-	ChargeDay  int            `json:"charge_day" example:"7" validate:"min=1,max=28"`
-	Payments   []Payment      `json:"payments"`
-	Finished   bool           `json:"finished" gorm:"default:false"`
-	CreatedAt  time.Time      `json:"created_at"`
-	UpdatedAt  time.Time      `json:"updated_at"`
-	DeletedAt  gorm.DeletedAt `json:"-"`
+	ID          int            `json:"id" gorm:"primaryKey" example:"1"`
+	Amount      float64        `json:"amount"`
+	OrderId     string         `json:"order_id"`
+	Currency    *string        `json:"currency" example:"USD" validate:"nonzero"`
+	PayerID     int            `json:"payer_id" gorm:"column:payer_id" example:"1"  validate:"nonzero"`
+	ProductID   int            `json:"product_id" example:"1"  validate:"nonzero"`
+	Product     Product        `json:"product"`
+	TotalFees   int            `json:"total_fees" example:"3"  validate:"nonzero,min=1,max=24"`
+	CurrentFee  int            `json:"current_fee" example:"1"`
+	Auto        bool           `json:"-"`
+	NextPayment time.Time      `json:"next_payment"`
+	Payments    []Payment      `json:"payments"`
+	Finished    bool           `json:"finished" gorm:"default:false"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt `json:"-"`
 }
 
 func (Order) TableName() string {
 	return "order"
-}
-
-func OrderExists(db *gorm.DB, id int) (bool, error) {
-	var o Order
-	if err := db.Table("order").Select("id").Where("id=?", id).First(&o).Error; err != nil {
-		return false, err
-	}
-	return true, nil
-}
-
-func PreloadOrder(db *gorm.DB, order_id int, payer_id int) (*Order, error) {
-	var o *Order
-	if err := db.Table("order").Select("id, payer_id").Where("id=? AND payer_id=?", order_id, payer_id).
-		First(&o).Error; err != nil {
-		return nil, err
-	}
-	return o, nil
 }
 
 // QCreateOrder - Insert into Order
@@ -62,11 +41,8 @@ func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 		return 404, err
 	}
 
-	if t, err := ProductExists(db, o.ProductID); !t {
-		return 404, err
-	}
-
 	var o_req = OrderRequest{
+		ProductID: o.ProductID,
 		TotalFees: o.TotalFees,
 		Currency:  o.Currency,
 	}
@@ -74,7 +50,13 @@ func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 		return 400, err
 	}
 
-	*o.OrderId = uuid.New().String()
+	var product = Product{ID: o.ProductID}
+	code, err := product.QGetProduct(db)
+	if err != nil {
+		return code, err
+	}
+
+	o.OrderId = uuid.New().String()
 	o.CreatedAt = time.Now()
 	o.CurrentFee = 1
 	// Create Order

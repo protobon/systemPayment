@@ -42,7 +42,7 @@
                     },
                     {
                         "description": "Card example",
-                        "name": "example",
+                        "name": "card",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -152,7 +152,7 @@
                     },
                     {
                         "description": "Order example",
-                        "name": "example",
+                        "name": "order",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -338,7 +338,7 @@
                 "parameters": [
                     {
                         "description": "Payer example",
-                        "name": "example",
+                        "name": "payer",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -495,7 +495,7 @@
                     },
                     {
                         "description": "Payer example",
-                        "name": "example",
+                        "name": "payer",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -698,6 +698,15 @@
                         "name": "order_id",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "description": "Card's token example",
+                        "name": "token",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Token"
+                        }
                     }
                 ],
                 "responses": {
@@ -744,7 +753,7 @@
                 "parameters": [
                     {
                         "description": "Product example",
-                        "name": "example",
+                        "name": "product",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -844,7 +853,7 @@
                     },
                     {
                         "description": "Product example",
-                        "name": "example",
+                        "name": "product",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -1346,6 +1355,14 @@
                     "example": "programacion en C"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Token": {
+            "type": "object",
+            "properties": {
+                "token": {
                     "type": "string"
                 }
             }

@@ -2,12 +2,13 @@ package dlocal
 
 // DlocalPayer example
 type Payer struct {
-	Name      string  `json:"name" validate:"nonzero,min=6,max=100"`
-	Email     string  `json:"email" validate:"nonzero,min=6,max=100"`
-	BirthDate string  `json:"birth_date" validate:"nonzero"`
-	Phone     string  `json:"phone" validate:"nonzero"`
-	Document  string  `json:"document" validate:"nonzero"`
-	Address   Address `json:"address" validate:"nonzero"`
+	Name          string  `json:"name" validate:"nonzero,min=6,max=100"`
+	Email         string  `json:"email" validate:"nonzero,min=6,max=100"`
+	BirthDate     string  `json:"birth_date" validate:"nonzero"`
+	Phone         string  `json:"phone" validate:"nonzero"`
+	Document      string  `json:"document" validate:"nonzero"`
+	UserReference string  `json:"user_reference"`
+	Address       Address `json:"address" validate:"nonzero"`
 }
 
 type Address struct {

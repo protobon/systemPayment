@@ -7,6 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
+// Card's token
+type Token struct {
+	Token string `json:"token"`
+}
+
 // Card example
 type Card struct {
 	ID        int            `json:"id" gorm:"primaryKey" example:"1"`

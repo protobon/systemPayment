@@ -18,7 +18,7 @@ import (
 //	@Accept			json
 //
 //	@Param   payer_id  query  int  true  "count example"  example(1)
-//	@Param   example     body     model.CardRequest     true  "Card example"     example(model.CardRequest)
+//	@Param   card     body     model.CardRequest     true  "Card example"     example(model.CardRequest)
 //
 //	@Produce		json
 //	@Success		200	{object}	model.CardResponse

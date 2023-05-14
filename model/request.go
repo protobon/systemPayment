@@ -5,7 +5,7 @@ type PayerRequest struct {
 	Email         *string        `json:"email" example:"jhondoe@mail.com"`
 	BirthDate     *string        `json:"birth_date" example:"24/07/1992"`
 	Phone         *string        `json:"phone" example:"+123456789"`
-	Document      *string        `json:"document" xample:"23415162"`
+	Document      *string        `json:"document" example:"23415162"`
 	UserReference *string        `json:"user_reference" example:"12345"`
 	Address       AddressRequest `json:"address" gorm:"foreignKey:AddressID;references:ID"`
 }
