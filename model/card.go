@@ -22,6 +22,21 @@ func (Card) TableName() string {
 	return "card"
 }
 
+// Save card from dlocal's payment response
+func (c *Card) SaveCardFromResponse(db *gorm.DB, response map[string]interface{}) (int, error) {
+	card, _ := response["card"].(map[string]interface{})
+	cardId, _ := card["card_id"].(string)
+	last4, _ := card["last4"].(string)
+	brand, _ := card["brand"].(string)
+
+	c.CardId = &cardId
+	c.Last4 = &last4
+	c.Brand = &brand
+	c.CreatedAt = time.Now()
+
+	return c.QCreateCard(db)
+}
+
 // QCreateCard
 //
 // Inserts new Card
