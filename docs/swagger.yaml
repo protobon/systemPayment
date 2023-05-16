@@ -75,17 +75,6 @@ definitions:
         minimum: 1
         type: integer
     type: object
-  model.CardRequest:
-    properties:
-      brand:
-        example: Visa
-        type: string
-      last_4:
-        example: "1234"
-        type: string
-      token:
-        type: string
-    type: object
   model.CardResponse:
     properties:
       brand:
@@ -356,31 +345,31 @@ paths:
       summary: Select Card
       tags:
       - Card
-  /card/new:
+  /card/save-card:
     post:
       consumes:
       - application/json
-      description: Inserts a new Card
+      description: Creates a new payment with a CC token, saves card returned by dlocal.
       parameters:
-      - description: count example
+      - description: payer_id example
         example: 1
         in: query
         name: payer_id
         required: true
         type: integer
-      - description: Card example
+      - description: Card's token example
         in: body
-        name: card
+        name: token
         required: true
         schema:
-          $ref: '#/definitions/model.CardRequest'
+          $ref: '#/definitions/model.Token'
       produces:
       - application/json
       responses:
         "200":
           description: OK
           schema:
-            $ref: '#/definitions/model.CardResponse'
+            $ref: '#/definitions/model.PaymentResponse'
         "400":
           description: Bad Request
           schema:
@@ -393,9 +382,9 @@ paths:
           description: Internal Server Error
           schema:
             $ref: '#/definitions/httputil.HTTPError500'
-      summary: Insert Card
+      summary: Saves a new Card
       tags:
-      - Card
+      - Payment
   /order/{id}:
     get:
       consumes:
@@ -761,46 +750,6 @@ paths:
               $ref: '#/definitions/model.PaymentResponse'
             type: array
       summary: Select all Payments
-      tags:
-      - Payment
-  /payment/save-card:
-    post:
-      consumes:
-      - application/json
-      description: Creates a new payment with a CC token
-      parameters:
-      - description: order_id example
-        example: 1
-        in: query
-        name: order_id
-        required: true
-        type: integer
-      - description: Card's token example
-        in: body
-        name: token
-        required: true
-        schema:
-          $ref: '#/definitions/model.Token'
-      produces:
-      - application/json
-      responses:
-        "200":
-          description: OK
-          schema:
-            $ref: '#/definitions/model.PaymentResponse'
-        "400":
-          description: Bad Request
-          schema:
-            $ref: '#/definitions/httputil.HTTPError400'
-        "404":
-          description: Not Found
-          schema:
-            $ref: '#/definitions/httputil.HTTPError404'
-        "500":
-          description: Internal Server Error
-          schema:
-            $ref: '#/definitions/httputil.HTTPError500'
-      summary: New Payment with Card's token
       tags:
       - Payment
   /product/{id}:
