@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"systempayment/model"
 	"time"
+
+	"github.com/google/uuid"
 )
 
 // Payment
@@ -84,7 +86,7 @@ func MakePayment(order model.Order, payer model.Payer, card model.Card) (int, ma
 		PaymentMethodFlow: "DIRECT",
 		Payer:             DlocalPayer,
 		Card:              dlocalCard,
-		OrderID:           *order.OrderId,
+		OrderID:           order.OrderId,
 	}
 
 	body_json, err := json.Marshal(Body)
@@ -114,10 +116,10 @@ func MakePayment(order model.Order, payer model.Payer, card model.Card) (int, ma
 	return 200, res_body, nil
 }
 
-func PaymentWithToken(order model.Order, payer model.Payer, token string) (int, map[string]interface{}, error) {
+func PaymentWithToken(payer model.Payer, token string) (int, map[string]interface{}, error) {
 	var req *http.Request
 	var err error
-	var dlocalCard = CardWithToken{Token: token}
+	var dlocalCard = CardWithToken{Token: token, Save: true}
 
 	// Payer's address
 	DlocalAddress := Address{
@@ -139,14 +141,14 @@ func PaymentWithToken(order model.Order, payer model.Payer, token string) (int, 
 	}
 	// Payment request body
 	Body := PaymentWithTokenRequestBody{
-		Amount:            order.Product.Amount / float64(order.TotalFees),
-		Currency:          *order.Currency,
+		Amount:            1,
+		Currency:          "USD",
 		Country:           *payer.Country,
 		PaymentMethodID:   "CARD",
 		PaymentMethodFlow: "DIRECT",
 		Payer:             DlocalPayer,
 		Card:              dlocalCard,
-		OrderID:           *order.OrderId,
+		OrderID:           uuid.New().String(),
 	}
 
 	body_json, err := json.Marshal(Body)

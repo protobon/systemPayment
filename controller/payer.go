@@ -16,7 +16,7 @@ import (
 //		@Description	save payer in database
 //		@Tags			Payer
 //		@Accept			json
-//	 @Param   example     body     model.Payer     true  "Payer example"     example(model.Payer)
+//	 @Param   payer     body     model.Payer     true  "Payer example"     example(model.Payer)
 //		@Produce		json
 //		@Success		200	{object}	model.PayerResponse
 //		@Failure		400	{object}	httputil.HTTPError400
@@ -134,8 +134,7 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 //	@Accept			json
 //
 // @Param   id  query  int  true  "example: 1"  "Payer ID"
-//
-// @Param   example     body     model.Payer     true  "Payer example"     example(model.Payer)
+// @Param   payer     body     model.Payer     true  "Payer example"     example(model.Payer)
 //
 //	@Produce		json
 //	@Success		200	{object}	model.PayerResponse

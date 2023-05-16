@@ -48,7 +48,7 @@ const docTemplate = `{
                     },
                     {
                         "description": "Card example",
-                        "name": "example",
+                        "name": "card",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -158,7 +158,7 @@ const docTemplate = `{
                     },
                     {
                         "description": "Order example",
-                        "name": "example",
+                        "name": "order",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -344,7 +344,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Payer example",
-                        "name": "example",
+                        "name": "payer",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -501,7 +501,7 @@ const docTemplate = `{
                     },
                     {
                         "description": "Payer example",
-                        "name": "example",
+                        "name": "payer",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -704,6 +704,15 @@ const docTemplate = `{
                         "name": "order_id",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "description": "Card's token example",
+                        "name": "token",
+                        "in": "body",
+                        "required": true,
+                        "schema": {
+                            "$ref": "#/definitions/model.Token"
+                        }
                     }
                 ],
                 "responses": {
@@ -750,7 +759,7 @@ const docTemplate = `{
                 "parameters": [
                     {
                         "description": "Product example",
-                        "name": "example",
+                        "name": "product",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -850,7 +859,7 @@ const docTemplate = `{
                     },
                     {
                         "description": "Product example",
-                        "name": "example",
+                        "name": "product",
                         "in": "body",
                         "required": true,
                         "schema": {
@@ -1352,6 +1361,14 @@ const docTemplate = `{
                     "example": "programacion en C"
                 },
                 "updated_at": {
+                    "type": "string"
+                }
+            }
+        },
+        "model.Token": {
+            "type": "object",
+            "properties": {
+                "token": {
                     "type": "string"
                 }
             }

@@ -18,7 +18,7 @@ import (
 //	@Accept			json
 //
 //	@Param payer_id  query  int  true  "start example"  example(1)
-//	@Param   example     body     model.OrderRequest     true  "Order example"     example(model.OrderRequest)
+//	@Param   order     body     model.OrderRequest     true  "Order example"     example(model.OrderRequest)
 //
 //	@Produce		json
 //	@Success		200	{object}	model.OrderResponse
@@ -43,6 +43,8 @@ func (o *Controller) NewOrder(ctx *gin.Context) {
 		switch code {
 		case 400:
 			httputil.Error400(ctx, http.StatusBadRequest, "Body validation failed", err)
+		case 404:
+			httputil.Error404(ctx, http.StatusBadRequest, "Payer or Product not found", err)
 		default:
 			httputil.Error500(ctx, http.StatusInternalServerError, "Could not create Order", err)
 		}

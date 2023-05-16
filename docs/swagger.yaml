@@ -304,6 +304,11 @@ definitions:
       updated_at:
         type: string
     type: object
+  model.Token:
+    properties:
+      token:
+        type: string
+    type: object
 host: localhost:8080
 info:
   contact:
@@ -365,7 +370,7 @@ paths:
         type: integer
       - description: Card example
         in: body
-        name: example
+        name: card
         required: true
         schema:
           $ref: '#/definitions/model.CardRequest'
@@ -438,7 +443,7 @@ paths:
         type: integer
       - description: Order example
         in: body
-        name: example
+        name: order
         required: true
         schema:
           $ref: '#/definitions/model.OrderRequest'
@@ -560,7 +565,7 @@ paths:
       parameters:
       - description: Payer example
         in: body
-        name: example
+        name: payer
         required: true
         schema:
           $ref: '#/definitions/model.Payer'
@@ -665,7 +670,7 @@ paths:
         type: integer
       - description: Payer example
         in: body
-        name: example
+        name: payer
         required: true
         schema:
           $ref: '#/definitions/model.Payer'
@@ -770,6 +775,12 @@ paths:
         name: order_id
         required: true
         type: integer
+      - description: Card's token example
+        in: body
+        name: token
+        required: true
+        schema:
+          $ref: '#/definitions/model.Token'
       produces:
       - application/json
       responses:
@@ -831,7 +842,7 @@ paths:
       parameters:
       - description: Product example
         in: body
-        name: example
+        name: product
         required: true
         schema:
           $ref: '#/definitions/model.ProductRequest'
@@ -898,7 +909,7 @@ paths:
         type: integer
       - description: Product example
         in: body
-        name: example
+        name: product
         required: true
         schema:
           $ref: '#/definitions/model.ProductRequest'
