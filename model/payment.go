@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/validator.v2"
 	"gorm.io/gorm"
 )
@@ -55,12 +56,14 @@ func (p *Payment) SavePaymentFromResponse(db *gorm.DB, response map[string]inter
 func (p *Payment) QCreatePayment(db *gorm.DB) (int, error) {
 	var err error
 	if err = validator.Validate(p); err != nil {
+		log.Error("QCreatePayment - ", err)
 		return 400, err
 	}
 
 	p.CreatedAt = time.Now()
 	// Create Payment
 	if err = db.Create(p).Error; err != nil {
+		log.Error("QCreatePayment - ", err)
 		return 500, err
 	}
 
@@ -71,6 +74,7 @@ func (p *Payment) QCreatePayment(db *gorm.DB) (int, error) {
 func (p *Payment) QGetPayments(db *gorm.DB) ([]Payment, int, error) {
 	var payments []Payment
 	if err := db.Table("payment").Select("*").Where("order_id=?", p.OrderID).Scan(&payments).Error; err != nil {
+		log.Error("QGetPayments - ", err)
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return payments, 404, err
@@ -85,6 +89,7 @@ func (p *Payment) QGetPayments(db *gorm.DB) ([]Payment, int, error) {
 // QGetPayment - Get payment from id
 func (p *Payment) QGetPayment(db *gorm.DB) (int, error) {
 	if err := db.Where("id = ?", p.ID).First(&p).Error; err != nil {
+		log.Error("QGetPayment - ", err)
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return 404, err
@@ -101,6 +106,7 @@ func (p *Payment) QGetAllPayments(db *gorm.DB, start int, count int, order_id in
 	if order_id != 0 {
 		if err := db.Table("payment").Where("order_id=?", order_id).Select("*").
 			Order("created_at desc").Limit(count).Offset(start).Scan(&payments).Error; err != nil {
+			log.Error("QGetAllPayments - ", err)
 			switch err {
 			case gorm.ErrRecordNotFound:
 				return payments, 404, err
@@ -111,6 +117,7 @@ func (p *Payment) QGetAllPayments(db *gorm.DB, start int, count int, order_id in
 	} else {
 		if err := db.Table("payment").Select("*").Order("created_at desc").
 			Limit(count).Offset(start).Scan(&payments).Error; err != nil {
+			log.Error("QGetAllPayments - ", err)
 			switch err {
 			case gorm.ErrRecordNotFound:
 				return payments, 404, err

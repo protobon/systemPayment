@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/validator.v2"
 	"gorm.io/gorm"
 )
@@ -26,6 +27,7 @@ func (Product) TableName() string {
 func ProductExists(db *gorm.DB, id int) (bool, error) {
 	var p Product
 	if err := db.Table("product").Select("id").Where("id=?", id).First(&p).Error; err != nil {
+		log.Error("ProductExists - ", err)
 		return false, err
 	}
 	return true, nil
@@ -37,12 +39,14 @@ func ProductExists(db *gorm.DB, id int) (bool, error) {
 func (p *Product) QCreateProduct(db *gorm.DB) (int, error) {
 	var err error
 	if err = validator.Validate(p); err != nil {
+		log.Error("QCreateProduct - ", err)
 		return 400, err
 	}
 
 	p.CreatedAt = time.Now()
 	// Create product
 	if err = db.Create(p).Error; err != nil {
+		log.Error("QCreateProduct - ", err)
 		return 500, err
 	}
 
@@ -52,6 +56,7 @@ func (p *Product) QCreateProduct(db *gorm.DB) (int, error) {
 func (p *Product) QGetProducts(db *gorm.DB, start int, count int) ([]Product, int, error) {
 	var products []Product
 	if err := db.Table("product").Select("*").Limit(count).Offset(start).Scan(&products).Error; err != nil {
+		log.Error("QGetProducts - ", err)
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return products, 404, err
@@ -65,6 +70,7 @@ func (p *Product) QGetProducts(db *gorm.DB, start int, count int) ([]Product, in
 
 func (p *Product) QGetProduct(db *gorm.DB) (int, error) {
 	if err := db.Where("id = ?", p.ID).First(&p).Error; err != nil {
+		log.Error("QGetProduct - ", err)
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return 404, err
@@ -78,11 +84,13 @@ func (p *Product) QGetProduct(db *gorm.DB) (int, error) {
 func (p *Product) QUpdateProduct(db *gorm.DB) (int, error) {
 	var err error
 	if err = validator.Validate(p); err != nil {
+		log.Error("QUpdateProduct - ", err)
 		return 400, err
 	}
 
 	p.UpdatedAt = time.Now()
 	if err = db.Model(&p).Updates(p).Error; err != nil {
+		log.Error("QUpdateProduct - ", err)
 		return 500, err
 	}
 	return 200, nil

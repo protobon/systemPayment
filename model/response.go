@@ -2,8 +2,6 @@ package model
 
 import (
 	"time"
-
-	"gorm.io/gorm"
 )
 
 type PayerResponse struct {
@@ -15,7 +13,7 @@ type PayerResponse struct {
 	Document      *string   `json:"document" xample:"23415162"`
 	UserReference *string   `json:"user_reference" example:"12345"`
 	CardID        int       `json:"card_id" example:"1"`
-	Address       Address   `json:"address" gorm:"foreignKey:AddressID;references:ID"`
+	Address       Address   `json:"address"`
 	CreatedAt     time.Time `json:"created_at"`
 	UpdatedAt     time.Time `json:"updated_at"`
 }
@@ -60,12 +58,11 @@ type OrderResponse struct {
 }
 
 type ProductResponse struct {
-	ID          int            `json:"id" example:"1"`
-	Name        *string        `json:"name" example:"programacion en C" validate:"nonzero,min=6,max=100"`
-	Description *string        `json:"description" example:"Curso de Programacion" validate:"nonzero,min=6,max=100"`
-	Amount      float64        `json:"amount" example:"5000.00"`
-	Currency    *string        `json:"currency" example:"USD" validate:"nonzero,min=3,max=3"`
-	CreatedAt   time.Time      `json:"created_at"`
-	UpdatedAt   time.Time      `json:"updated_at"`
-	DeletedAt   gorm.DeletedAt `json:"-" swaggerignore:"true"`
+	ID          int       `json:"id" example:"1"`
+	Name        *string   `json:"name" example:"programacion en C" validate:"nonzero,min=6,max=100"`
+	Description *string   `json:"description" example:"Curso de Programacion" validate:"nonzero,min=6,max=100"`
+	Amount      float64   `json:"amount" example:"5000.00"`
+	Currency    *string   `json:"currency" example:"USD" validate:"nonzero,min=3,max=3"`
+	CreatedAt   time.Time `json:"created_at"`
+	UpdatedAt   time.Time `json:"updated_at"`
 }

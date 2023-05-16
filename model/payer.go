@@ -6,6 +6,7 @@ import (
 	"strconv"
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/validator.v2"
 	"gorm.io/gorm"
 )
@@ -51,6 +52,7 @@ func (Address) TableName() string {
 func PayerExists(db *gorm.DB, id int) (bool, error) {
 	var p Payer
 	if err := db.Table("payer").Select("id").Where("id=?", id).First(&p).Error; err != nil {
+		log.Error("PayerExists - ", err)
 		return false, err
 	}
 	return true, nil
@@ -59,6 +61,7 @@ func PayerExists(db *gorm.DB, id int) (bool, error) {
 func PreloadPayer(db *gorm.DB, id int) (*Payer, error) {
 	var p *Payer
 	if err := db.Table("payer").Select("id, card_id").Where("id=?", id).First(&p).Error; err != nil {
+		log.Error("PreloadPayer - ", err)
 		return nil, err
 	}
 	return p, nil
@@ -69,6 +72,9 @@ func PreloadPayer(db *gorm.DB, id int) (*Payer, error) {
 // Filter by Payer.Email, returns Payer{} or ErrRecordNotFound
 func (p *Payer) QGetPayerFromEmail(db *gorm.DB) error {
 	err := db.Where("email = ?", p.Email).First(&p).Error
+	if err != nil {
+		log.Error("QGetPayerFromEmail - ", err)
+	}
 	return err
 }
 
@@ -78,9 +84,11 @@ func (p *Payer) QGetPayerFromEmail(db *gorm.DB) error {
 func (p *Payer) QCreatePayer(db *gorm.DB) (int, error) {
 	var err error
 	if err = validator.Validate(p); err != nil {
+		log.Error("QCreatePayer - ", err)
 		return 400, err
 	}
 	if err = validator.Validate(p.Address); err != nil {
+		log.Error("QCreatePayer - ", err)
 		return 400, err
 	}
 
@@ -89,6 +97,7 @@ func (p *Payer) QCreatePayer(db *gorm.DB) (int, error) {
 	if err = db.Raw(`INSERT INTO payer(name, email, country, birth_date, phone, document, created_at) 
 	VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING id`, p.Name, p.Email, p.Country, p.BirthDate, p.Phone,
 		p.Document, p.CreatedAt).Scan(&p.ID).Error; err != nil {
+		log.Error("QCreatePayer - ", err)
 		return 500, err
 	}
 	str_payer_id := strconv.Itoa(p.ID)
@@ -108,6 +117,7 @@ func (a *Address) QCreateAddress(db *gorm.DB, p *Payer) (int, error) {
 	if err = db.Raw(`INSERT INTO address(payer_id, state, city, zip_code, street, number, created_at) 
 	VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING id`,
 		a.PayerID, a.State, a.City, a.ZipCode, a.Street, a.Number, a.CreatedAt).Scan(&a.ID).Error; err != nil {
+		log.Error("QCreateAddress - ", err)
 		return 500, err
 	}
 	p.AddressID = a.ID
@@ -118,6 +128,7 @@ func (a *Address) QCreateAddress(db *gorm.DB, p *Payer) (int, error) {
 func (p *Payer) QGetPayers(db *gorm.DB, start int, count int) ([]Payer, int, error) {
 	var payers []Payer
 	if err := db.Model(&Payer{}).Preload("Address").Limit(count).Offset(start).Find(&payers).Error; err != nil {
+		log.Error("QGetPayers - ", err)
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return payers, 404, err
@@ -131,6 +142,7 @@ func (p *Payer) QGetPayers(db *gorm.DB, start int, count int) ([]Payer, int, err
 // QGetPayer - Get Payer by ID
 func (p *Payer) QGetPayer(db *gorm.DB) (int, error) {
 	if err := db.Preload("Address").Where("payer.id=?", p.ID).First(&p).Error; err != nil {
+		log.Error("QGetPayer - ", err)
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return 404, err
@@ -144,15 +156,18 @@ func (p *Payer) QGetPayer(db *gorm.DB) (int, error) {
 func (p *Payer) QUpdatePayer(db *gorm.DB) (int, error) {
 	var err error
 	if err = validator.Validate(p); err != nil {
+		log.Error("QUpdatePayer - ", err)
 		return 400, err
 	}
 
 	if err = validator.Validate(p.Address); err != nil {
+		log.Error("QUpdatePayer - ", err)
 		return 400, err
 	}
 
 	p.UpdatedAt = time.Now()
 	if err = db.Model(&p).Updates(p).Error; err != nil {
+		log.Error("QUpdatePayer - ", err)
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return 404, err
@@ -173,6 +188,7 @@ func (p *Payer) QPrimaryCard(db *gorm.DB, card_id int) (int, error) {
 		return 400, errors.New("invalid card id")
 	}
 	if err = db.Model(&p).Update("card_id", card_id).Error; err != nil {
+		log.Error("QPrimaryCard - ", err)
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return 404, err

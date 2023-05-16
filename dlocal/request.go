@@ -7,16 +7,19 @@ import (
 	"net/http"
 	"os"
 	"time"
+
+	log "github.com/sirupsen/logrus"
 )
 
-func PostRequest(body []byte, endpoint string) (*http.Request, error) {
-	host := os.Getenv("DLOCAL_URL_TEST")
+func DlocalPostRequest(body []byte, endpoint string) (*http.Request, error) {
+	host := os.Getenv("DLOCAL_URL")
 	x_login := os.Getenv("DLOCAL_X_LOGIN")
 	x_trans_key := os.Getenv("DLOCAL_X_TRANS_KEY")
 	x_date := time.Now().Format(time.RFC3339)
 
 	req, err := http.NewRequest(http.MethodPost, host+endpoint, nil)
 	if err != nil {
+		log.Error("DlocalPostRequest - ", err)
 		return nil, err
 	}
 
