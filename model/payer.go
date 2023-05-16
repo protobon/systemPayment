@@ -2,6 +2,8 @@ package model
 
 import (
 	"errors"
+	"fmt"
+	"strconv"
 	"time"
 
 	"gopkg.in/validator.v2"
@@ -11,12 +13,12 @@ import (
 // Payer example
 type Payer struct {
 	ID            int            `json:"id" gorm:"primaryKey" example:"1"`
-	Name          *string        `json:"name" example:"Jhon Doe" validate:"nonzero,min=6,max=100"`
-	Email         *string        `json:"email" example:"jhondoe@mail.com" validate:"nonzero,min=6,max=100"`
+	Name          *string        `json:"name" example:"Jhon Doe" validate:"nonzero,min=3,max=100"`
+	Email         *string        `json:"email" example:"jhondoe@mail.com" validate:"nonzero,min=8,max=100"`
 	BirthDate     *string        `json:"birth_date" example:"24/07/1992" validate:"nonzero"`
 	Phone         *string        `json:"phone" example:"+123456789" validate:"nonzero"`
 	Document      *string        `json:"document" example:"23415162" validate:"nonzero"`
-	UserReference *string        `json:"user_reference" example:"12345" validate:"nonzero"`
+	UserReference string         `json:"user_reference"`
 	Address       Address        `json:"address" gorm:"foreignKey:PayerID;references:ID" validate:"nonzero"`
 	AddressID     int            `json:"-"`
 	Country       *string        `json:"country" example:"UY" validate:"nonzero,min=2,max=2"`
@@ -84,15 +86,16 @@ func (p *Payer) QCreatePayer(db *gorm.DB) (int, error) {
 
 	p.CreatedAt = time.Now()
 	// Create Payer
-	if err = db.Raw(`INSERT INTO payer(name, email, country, birth_date, phone, document, user_reference, created_at) 
-	VALUES(?, ?, ?, ?, ?, ?, ?, ?) RETURNING id`, p.Name, p.Email, p.Country, p.BirthDate, p.Phone,
-		p.Document, p.UserReference, p.CreatedAt).Scan(&p.ID).Error; err != nil {
+	if err = db.Raw(`INSERT INTO payer(name, email, country, birth_date, phone, document, created_at) 
+	VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING id`, p.Name, p.Email, p.Country, p.BirthDate, p.Phone,
+		p.Document, p.CreatedAt).Scan(&p.ID).Error; err != nil {
 		return 500, err
 	}
+	str_payer_id := strconv.Itoa(p.ID)
+	p.UserReference = fmt.Sprintf("%05s", str_payer_id)
 
 	// Insert Payer's address
-	code, err := p.Address.QCreateAddress(db, p)
-	return code, err
+	return p.Address.QCreateAddress(db, p)
 }
 
 // QCreateAddress - Insert into address
@@ -102,15 +105,13 @@ func (a *Address) QCreateAddress(db *gorm.DB, p *Payer) (int, error) {
 	var err error
 	a.PayerID = p.ID
 	a.CreatedAt = time.Now()
-	// err = db.Raw(q).Error
 	if err = db.Raw(`INSERT INTO address(payer_id, state, city, zip_code, street, number, created_at) 
 	VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING id`,
 		a.PayerID, a.State, a.City, a.ZipCode, a.Street, a.Number, a.CreatedAt).Scan(&a.ID).Error; err != nil {
 		return 500, err
 	}
 	p.AddressID = a.ID
-	code, err := p.QUpdatePayer(db)
-	return code, err
+	return p.QUpdatePayer(db)
 }
 
 // QGetPayers - Get all Payers

@@ -69,13 +69,13 @@ func MakePayment(order model.Order, payer model.Payer, card model.Card) (int, ma
 	}
 	// Payer's info
 	DlocalPayer := Payer{
-		Name:      *payer.Name,
-		Email:     *payer.Email,
-		BirthDate: *payer.BirthDate,
-		Phone:     *payer.Phone,
-		Document:  *payer.Document,
-		// UserReference: payer,
-		Address: DlocalAddress,
+		Name:          *payer.Name,
+		Email:         *payer.Email,
+		BirthDate:     *payer.BirthDate,
+		Phone:         *payer.Phone,
+		Document:      *payer.Document,
+		UserReference: payer.UserReference,
+		Address:       DlocalAddress,
 	}
 	// Payment request body
 	Body := PaymentRequestBody{
@@ -131,13 +131,13 @@ func PaymentWithToken(payer model.Payer, token string) (int, map[string]interfac
 	}
 	// Payer's info
 	DlocalPayer := Payer{
-		Name:      *payer.Name,
-		Email:     *payer.Email,
-		BirthDate: *payer.BirthDate,
-		Phone:     *payer.Phone,
-		Document:  *payer.Document,
-		// UserReference: payer,
-		Address: DlocalAddress,
+		Name:          *payer.Name,
+		Email:         *payer.Email,
+		BirthDate:     *payer.BirthDate,
+		Phone:         *payer.Phone,
+		Document:      *payer.Document,
+		UserReference: payer.UserReference,
+		Address:       DlocalAddress,
 	}
 	// Payment request body
 	Body := PaymentWithTokenRequestBody{
