@@ -24,9 +24,9 @@ const docTemplate = `{
     "host": "{{.Host}}",
     "basePath": "{{.BasePath}}",
     "paths": {
-        "/card/new": {
+        "/card/save-card": {
             "post": {
-                "description": "Inserts a new Card",
+                "description": "Creates a new payment with a CC token, saves card returned by dlocal.",
                 "consumes": [
                     "application/json"
                 ],
@@ -34,25 +34,25 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Card"
+                    "Payment"
                 ],
-                "summary": "Insert Card",
+                "summary": "Saves a new Card",
                 "parameters": [
                     {
                         "type": "integer",
                         "example": 1,
-                        "description": "count example",
+                        "description": "payer_id example",
                         "name": "payer_id",
                         "in": "query",
                         "required": true
                     },
                     {
-                        "description": "Card example",
-                        "name": "card",
+                        "description": "Card's token example",
+                        "name": "token",
                         "in": "body",
                         "required": true,
                         "schema": {
-                            "$ref": "#/definitions/model.CardRequest"
+                            "$ref": "#/definitions/model.Token"
                         }
                     }
                 ],
@@ -60,7 +60,7 @@ const docTemplate = `{
                     "200": {
                         "description": "OK",
                         "schema": {
-                            "$ref": "#/definitions/model.CardResponse"
+                            "$ref": "#/definitions/model.PaymentResponse"
                         }
                     },
                     "400": {
@@ -683,66 +683,6 @@ const docTemplate = `{
                 }
             }
         },
-        "/payment/save-card": {
-            "post": {
-                "description": "Creates a new payment with a CC token",
-                "consumes": [
-                    "application/json"
-                ],
-                "produces": [
-                    "application/json"
-                ],
-                "tags": [
-                    "Payment"
-                ],
-                "summary": "New Payment with Card's token",
-                "parameters": [
-                    {
-                        "type": "integer",
-                        "example": 1,
-                        "description": "order_id example",
-                        "name": "order_id",
-                        "in": "query",
-                        "required": true
-                    },
-                    {
-                        "description": "Card's token example",
-                        "name": "token",
-                        "in": "body",
-                        "required": true,
-                        "schema": {
-                            "$ref": "#/definitions/model.Token"
-                        }
-                    }
-                ],
-                "responses": {
-                    "200": {
-                        "description": "OK",
-                        "schema": {
-                            "$ref": "#/definitions/model.PaymentResponse"
-                        }
-                    },
-                    "400": {
-                        "description": "Bad Request",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError400"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
-                    "500": {
-                        "description": "Internal Server Error",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError500"
-                        }
-                    }
-                }
-            }
-        },
         "/product/new": {
             "post": {
                 "description": "save Product in database",
@@ -1050,22 +990,6 @@ const docTemplate = `{
                 }
             }
         },
-        "model.CardRequest": {
-            "type": "object",
-            "properties": {
-                "brand": {
-                    "type": "string",
-                    "example": "Visa"
-                },
-                "last_4": {
-                    "type": "string",
-                    "example": "1234"
-                },
-                "token": {
-                    "type": "string"
-                }
-            }
-        },
         "model.CardResponse": {
             "type": "object",
             "properties": {
@@ -1162,7 +1086,7 @@ const docTemplate = `{
                 "email": {
                     "type": "string",
                     "maxLength": 100,
-                    "minLength": 6,
+                    "minLength": 8,
                     "example": "jhondoe@mail.com"
                 },
                 "id": {
@@ -1172,7 +1096,7 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "maxLength": 100,
-                    "minLength": 6,
+                    "minLength": 3,
                     "example": "Jhon Doe"
                 },
                 "phone": {
@@ -1183,8 +1107,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_reference": {
-                    "type": "string",
-                    "example": "12345"
+                    "type": "string"
                 }
             }
         },

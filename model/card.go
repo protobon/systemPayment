@@ -3,6 +3,7 @@ package model
 import (
 	"time"
 
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/validator.v2"
 	"gorm.io/gorm"
 )
@@ -48,11 +49,13 @@ func (c *Card) SaveCardFromResponse(db *gorm.DB, response map[string]interface{}
 func (c *Card) QCreateCard(db *gorm.DB) (int, error) {
 	var err error
 	if err = validator.Validate(c); err != nil {
+		log.Error("QCreateCard - ", err)
 		return 400, err
 	}
 	c.CreatedAt = time.Now()
 
 	if err = db.Create(c).Error; err != nil {
+		log.Error("QCreateCard - ", err)
 		return 500, err
 	}
 	return 200, nil
@@ -64,6 +67,7 @@ func (c *Card) QCreateCard(db *gorm.DB) (int, error) {
 func (c *Card) QGetCards(db *gorm.DB, payer_id int) ([]Card, int, error) {
 	var cards []Card
 	if err := db.Table("card").Where("payer_id=?", c.PayerID).Select("*").Scan(&cards).Error; err != nil {
+		log.Error("QGetCards - ", err)
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return cards, 404, err
@@ -80,6 +84,7 @@ func (c *Card) QGetCards(db *gorm.DB, payer_id int) ([]Card, int, error) {
 // Get one Card from Card.ID and Card.PayerID
 func (c *Card) QGetCard(db *gorm.DB) (int, error) {
 	if err := db.Where("id = ?", c.ID).First(&c).Error; err != nil {
+		log.Error("QGetCard - ", err)
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return 404, err

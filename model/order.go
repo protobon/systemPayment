@@ -4,6 +4,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 	"gopkg.in/validator.v2"
 	"gorm.io/gorm"
 )
@@ -38,6 +39,7 @@ func (Order) TableName() string {
 func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 	var err error
 	if t, err := PayerExists(db, o.PayerID); !t {
+		log.Error("QCreateOrder - ", err)
 		return 404, err
 	}
 
@@ -47,6 +49,7 @@ func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 		Currency:  o.Currency,
 	}
 	if err = validator.Validate(o_req); err != nil {
+		log.Error("QCreateOrder - ", err)
 		return 400, err
 	}
 
@@ -61,6 +64,7 @@ func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 	o.CurrentFee = 1
 	// Create Order
 	if err = db.Create(o).Error; err != nil {
+		log.Error("QCreateOrder - ", err)
 		return 500, err
 	}
 
@@ -72,6 +76,7 @@ func (o *Order) QGetOrders(db *gorm.DB, start int, count int, payer_id int) ([]O
 	if payer_id != 0 {
 		if err := db.Model(&Order{}).Where("payer_id=?", payer_id).Preload("Product").Limit(count).
 			Offset(start).Find(&orders).Error; err != nil {
+			log.Error("QGetOrders - ", err)
 			switch err {
 			case gorm.ErrRecordNotFound:
 				return orders, 404, err
@@ -82,6 +87,7 @@ func (o *Order) QGetOrders(db *gorm.DB, start int, count int, payer_id int) ([]O
 	} else {
 		if err := db.Model(&Order{}).Preload("Product").Limit(count).Offset(start).
 			Find(&orders).Error; err != nil {
+			log.Error("QGetOrders - ", err)
 			switch err {
 			case gorm.ErrRecordNotFound:
 				return orders, 404, err
@@ -105,6 +111,7 @@ func (o *Order) QGetOrders(db *gorm.DB, start int, count int, payer_id int) ([]O
 
 func (o *Order) QGetOrder(db *gorm.DB) (int, error) {
 	if err := db.Table("order").Preload("Product").Where("id=?", o.ID).First(&o).Error; err != nil {
+		log.Error("QGetOrder - ", err)
 		switch err {
 		case gorm.ErrRecordNotFound:
 			return 404, err
@@ -124,11 +131,13 @@ func (o *Order) QGetOrder(db *gorm.DB) (int, error) {
 func (o *Order) QUpdateOrder(db *gorm.DB) (int, error) {
 	var err error
 	if err = validator.Validate(o); err != nil {
+		log.Error("QGetOrder - ", err)
 		return 400, err
 	}
 
 	o.UpdatedAt = time.Now()
 	if err = db.Model(&o).Updates(o).Error; err != nil {
+		log.Error("QGetOrder - ", err)
 		return 500, err
 	}
 	return 200, nil

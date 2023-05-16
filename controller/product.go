@@ -121,7 +121,7 @@ func (c *Controller) GetProduct(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, model.ProductResponse(product))
+	ctx.JSON(200, product)
 }
 
 // UpdateProduct godoc

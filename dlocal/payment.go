@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/google/uuid"
+	log "github.com/sirupsen/logrus"
 )
 
 // Payment
@@ -69,13 +70,13 @@ func MakePayment(order model.Order, payer model.Payer, card model.Card) (int, ma
 	}
 	// Payer's info
 	DlocalPayer := Payer{
-		Name:      *payer.Name,
-		Email:     *payer.Email,
-		BirthDate: *payer.BirthDate,
-		Phone:     *payer.Phone,
-		Document:  *payer.Document,
-		// UserReference: payer,
-		Address: DlocalAddress,
+		Name:          *payer.Name,
+		Email:         *payer.Email,
+		BirthDate:     *payer.BirthDate,
+		Phone:         *payer.Phone,
+		Document:      *payer.Document,
+		UserReference: payer.UserReference,
+		Address:       DlocalAddress,
 	}
 	// Payment request body
 	Body := PaymentRequestBody{
@@ -91,10 +92,11 @@ func MakePayment(order model.Order, payer model.Payer, card model.Card) (int, ma
 
 	body_json, err := json.Marshal(Body)
 	if err != nil {
+		log.Error("MakePayment - ", err)
 		return 501, nil, err
 	}
 	// prepare dlocal POST request
-	if req, err = PostRequest(body_json, "/payments"); err != nil {
+	if req, err = DlocalPostRequest(body_json, "/payments"); err != nil {
 		return 501, nil, err
 	}
 
@@ -106,6 +108,7 @@ func MakePayment(order model.Order, payer model.Payer, card model.Card) (int, ma
 	var res_body map[string]interface{}
 	_ = json.NewDecoder(res.Body).Decode(&res_body)
 	if err != nil {
+		log.Error("MakePayment - ", err)
 		if res != nil {
 			return 501, res_body, err
 		}
@@ -131,13 +134,13 @@ func PaymentWithToken(payer model.Payer, token string) (int, map[string]interfac
 	}
 	// Payer's info
 	DlocalPayer := Payer{
-		Name:      *payer.Name,
-		Email:     *payer.Email,
-		BirthDate: *payer.BirthDate,
-		Phone:     *payer.Phone,
-		Document:  *payer.Document,
-		// UserReference: payer,
-		Address: DlocalAddress,
+		Name:          *payer.Name,
+		Email:         *payer.Email,
+		BirthDate:     *payer.BirthDate,
+		Phone:         *payer.Phone,
+		Document:      *payer.Document,
+		UserReference: payer.UserReference,
+		Address:       DlocalAddress,
 	}
 	// Payment request body
 	Body := PaymentWithTokenRequestBody{
@@ -153,10 +156,11 @@ func PaymentWithToken(payer model.Payer, token string) (int, map[string]interfac
 
 	body_json, err := json.Marshal(Body)
 	if err != nil {
+		log.Error("PaymentWithToken - ", err)
 		return 501, nil, err
 	}
 	// prepare dlocal POST request
-	if req, err = PostRequest(body_json, "/payments"); err != nil {
+	if req, err = DlocalPostRequest(body_json, "/payments"); err != nil {
 		return 501, nil, err
 	}
 
@@ -168,6 +172,7 @@ func PaymentWithToken(payer model.Payer, token string) (int, map[string]interfac
 	var res_body map[string]interface{}
 	_ = json.NewDecoder(res.Body).Decode(&res_body)
 	if err != nil {
+		log.Error("PaymentWithToken - ", err)
 		if res != nil {
 			return 501, res_body, err
 		}
