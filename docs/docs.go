@@ -1086,7 +1086,7 @@ const docTemplate = `{
                 "email": {
                     "type": "string",
                     "maxLength": 100,
-                    "minLength": 6,
+                    "minLength": 8,
                     "example": "jhondoe@mail.com"
                 },
                 "id": {
@@ -1096,7 +1096,7 @@ const docTemplate = `{
                 "name": {
                     "type": "string",
                     "maxLength": 100,
-                    "minLength": 6,
+                    "minLength": 3,
                     "example": "Jhon Doe"
                 },
                 "phone": {
@@ -1107,8 +1107,7 @@ const docTemplate = `{
                     "type": "string"
                 },
                 "user_reference": {
-                    "type": "string",
-                    "example": "12345"
+                    "type": "string"
                 }
             }
         },

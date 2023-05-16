@@ -1080,7 +1080,7 @@
                 "email": {
                     "type": "string",
                     "maxLength": 100,
-                    "minLength": 6,
+                    "minLength": 8,
                     "example": "jhondoe@mail.com"
                 },
                 "id": {
@@ -1090,7 +1090,7 @@
                 "name": {
                     "type": "string",
                     "maxLength": 100,
-                    "minLength": 6,
+                    "minLength": 3,
                     "example": "Jhon Doe"
                 },
                 "phone": {
@@ -1101,8 +1101,7 @@
                     "type": "string"
                 },
                 "user_reference": {
-                    "type": "string",
-                    "example": "12345"
+                    "type": "string"
                 }
             }
         },
