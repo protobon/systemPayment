@@ -4,29 +4,35 @@ import (
 	"net/http"
 	"strconv"
 	"systempayment/database"
+	"systempayment/dlocal"
 	"systempayment/httputil"
 	"systempayment/model"
 
 	"github.com/gin-gonic/gin"
 )
 
-// Card godoc
+// SaveCard godoc
 //
-//	@Summary		Insert Card
-//	@Description	Inserts a new Card
-//	@Tags			Card
+//	@Summary		Saves a new Card
+//	@Description	Creates a new payment with a CC token, saves card returned by dlocal.
+//	@Tags			Payment
 //	@Accept			json
 //
-//	@Param   payer_id  query  int  true  "count example"  example(1)
-//	@Param   card     body     model.CardRequest     true  "Card example"     example(model.CardRequest)
+// @Param   payer_id  query  int  true  "payer_id example"  example(1)
+// @Param   token     body     model.Token    true  "Card's token example"     example(model.Token)
 //
 //	@Produce		json
-//	@Success		200	{object}	model.CardResponse
+//	@Success		200	{object}	model.PaymentResponse
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
-//	@Router			/card/new [post]
-func (c *Controller) NewCard(ctx *gin.Context) {
+//	@Router			/card/save-card [post]
+func (c *Controller) SaveCard(ctx *gin.Context) {
+	var token model.Token
+	if err := ctx.BindJSON(&token); err != nil || token.Token == "" {
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid request payload", err)
+		return
+	}
 	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
 	if err != nil {
 		httputil.Error400(ctx, http.StatusBadRequest, "Invalid parameter: payer_id", err)
@@ -36,38 +42,36 @@ func (c *Controller) NewCard(ctx *gin.Context) {
 	if code, err := payer.QGetPayer(database.DB); err != nil {
 		switch code {
 		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "Payer not found", err)
+			httputil.Error400(ctx, http.StatusBadRequest, "Payer not found", err)
 		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Error fetching Payer", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "An error occurred while fetching the payer", err)
 		}
-	}
-	var card model.Card
-	if err := ctx.BindJSON(&card); err != nil {
-		httputil.Error400(ctx, http.StatusBadRequest, "Invalid request payload", err)
 		return
 	}
 
-	card.PayerID = payer.ID
-	if code, err := card.QCreateCard(database.DB); err != nil {
+	code, result, err := dlocal.PaymentWithToken(payer, token.Token)
+	if err != nil {
+		switch code {
+		case 408:
+			httputil.Error408(ctx, http.StatusBadRequest, "Request to dlocal timed out", err)
+		default:
+			httputil.Error500(ctx, http.StatusInternalServerError, "Request to dlocal failed", err)
+		}
+		return
+	}
+	var card = model.Card{PayerID: payer.ID}
+	code, err = card.SaveCardFromResponse(database.DB, result)
+	if err != nil {
 		switch code {
 		case 400:
-			httputil.Error400(ctx, http.StatusBadRequest, "Body validation failed", err)
+			httputil.Error400(ctx, http.StatusBadRequest, "Card validation failed", err)
 		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Could not create Card", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Could not save new Card", err)
 		}
 		return
 	}
 
-	if code, err := payer.QPrimaryCard(database.DB, card.ID); err != nil {
-		switch code {
-		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "Payer not found", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Could not set new Card as primary", err)
-		}
-	}
-
-	ctx.JSON(200, card)
+	ctx.JSON(200, result)
 }
 
 // GetCard godoc

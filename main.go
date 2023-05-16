@@ -116,12 +116,11 @@ func main() {
 		payment := v1.Group("/payment")
 		{
 			payment.POST("/new", c.NewPayment)
-			payment.POST("/save-card", c.PaymentWithToken)
 			payment.GET("/payments", c.GetPayments)
 		}
 		card := v1.Group("/card")
 		{
-			card.POST("/new", c.NewCard)
+			payment.POST("/save", c.SaveCard)
 			card.GET(":id", c.GetCard)
 		}
 	}
