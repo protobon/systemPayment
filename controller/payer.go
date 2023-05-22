@@ -185,7 +185,7 @@ func (c *Controller) UpdatePayer(ctx *gin.Context) {
 //	@Failure		400	{object}	httputil.HTTPError400
 //	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
-//	@Router			/payer/setCard [put]
+//	@Router			/payer/primary-card [put]
 func (c *Controller) PrimaryCard(ctx *gin.Context) {
 	payer_id, err := strconv.Atoi(ctx.Query("payer_id"))
 	if err != nil {

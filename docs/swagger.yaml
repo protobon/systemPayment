@@ -348,7 +348,8 @@ paths:
     post:
       consumes:
       - application/json
-      description: Creates a new payment with a CC token, saves card returned by dlocal.
+      description: Creates a new payment of 1USD with a CC token, saves card returned
+        by dlocal.
       parameters:
       - description: payer_id example
         example: 1
@@ -383,7 +384,7 @@ paths:
             $ref: '#/definitions/httputil.HTTPError500'
       summary: Saves a new Card
       tags:
-      - Payment
+      - Card
   /order/{id}:
     get:
       consumes:
@@ -423,12 +424,17 @@ paths:
       - application/json
       description: save Order in database
       parameters:
-      - description: start example
+      - description: payer_id example
         example: 1
         in: query
         name: payer_id
         required: true
         type: integer
+      - description: auto example
+        example: true
+        in: query
+        name: auto
+        type: boolean
       - description: Order example
         in: body
         name: order
@@ -607,7 +613,7 @@ paths:
       summary: Select all Payers
       tags:
       - Payer
-  /payer/setCard:
+  /payer/primary-card:
     put:
       consumes:
       - application/json
@@ -696,6 +702,11 @@ paths:
         name: order_id
         required: true
         type: integer
+      - description: auto example
+        example: true
+        in: query
+        name: auto
+        type: boolean
       produces:
       - application/json
       responses:

@@ -14,8 +14,8 @@ import (
 // SaveCard godoc
 //
 //	@Summary		Saves a new Card
-//	@Description	Creates a new payment with a CC token, saves card returned by dlocal.
-//	@Tags			Payment
+//	@Description	Creates a new payment of 1USD with a CC token, saves card returned by dlocal.
+//	@Tags			Card
 //	@Accept			json
 //
 // @Param   payer_id  query  int  true  "payer_id example"  example(1)
