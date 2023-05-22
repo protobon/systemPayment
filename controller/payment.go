@@ -33,14 +33,18 @@ func (c *Controller) NewPayment(ctx *gin.Context) {
 		return
 	}
 	var order = model.Order{ID: order_id}
-	if code, err := order.QGetOrder(database.DB); err != nil {
+	if code, err := order.GetOrderForPayment(database.DB); err != nil {
 		switch code {
 		case 404:
-			httputil.Error400(ctx, http.StatusBadRequest, "Order not found", err)
+			httputil.Error404(ctx, http.StatusNotFound, "Order not found or already finished", err)
 		default:
 			httputil.Error500(ctx, http.StatusInternalServerError, "An error occurred while fetching the order", err)
 		}
 		return
+	}
+	auto, _ := strconv.ParseBool(ctx.Query("auto"))
+	if !order.Auto && auto {
+		order.Auto = auto
 	}
 
 	var payer = model.Payer{ID: order.PayerID}
@@ -67,11 +71,19 @@ func (c *Controller) NewPayment(ctx *gin.Context) {
 
 	code, response, err := dlocal.MakePayment(order, payer, card)
 	if err != nil {
+		ctx.JSON(code, err)
+	}
+	if code != 200 {
+		ctx.JSON(code, response)
+	}
+
+	code, err = order.PaymentSuccessful(database.DB)
+	if err != nil {
 		switch code {
-		case 408:
-			httputil.Error408(ctx, http.StatusBadRequest, "Request to dlocal timed out", err)
+		case 400:
+			httputil.Error400(ctx, http.StatusBadRequest, "Order validation failed", err)
 		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Request to dlocal failed", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Could not update Order", err)
 		}
 		return
 	}

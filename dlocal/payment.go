@@ -2,6 +2,7 @@ package dlocal
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 	"systempayment/model"
 	"time"
@@ -55,10 +56,15 @@ type PaymentResponseBody struct {
 	NotificationUrl   string       `json:"notification_url"`
 }
 
+// Creates a new payment with Dlocal
 func MakePayment(order model.Order, payer model.Payer, card model.Card) (int, map[string]interface{}, error) {
 	var req *http.Request
 	var err error
 	var dlocalCard = Card{CardId: card.CardId}
+
+	if order.Finished {
+		return 400, nil, errors.New("order already complete")
+	}
 
 	// Payer's address
 	DlocalAddress := Address{
@@ -80,7 +86,7 @@ func MakePayment(order model.Order, payer model.Payer, card model.Card) (int, ma
 	}
 	// Payment request body
 	Body := PaymentRequestBody{
-		Amount:            order.Product.Amount / float64(order.TotalFees),
+		Amount:            order.Amount / float64(order.TotalFees),
 		Currency:          *order.Currency,
 		Country:           *payer.Country,
 		PaymentMethodID:   "CARD",
@@ -110,15 +116,17 @@ func MakePayment(order model.Order, payer model.Payer, card model.Card) (int, ma
 	if err != nil {
 		log.Error("MakePayment - ", err)
 		if res != nil {
-			return 501, res_body, err
+			return res.StatusCode, res_body, err
 		}
 		return 408, nil, err
 	}
 	defer res.Body.Close()
 
-	return 200, res_body, nil
+	return res.StatusCode, res_body, nil
 }
 
+// Creates a payment with amount 1USD and card's token, saves new card ID
+// to reuse for future payments
 func PaymentWithToken(payer model.Payer, token string) (int, map[string]interface{}, error) {
 	var req *http.Request
 	var err error
@@ -174,11 +182,11 @@ func PaymentWithToken(payer model.Payer, token string) (int, map[string]interfac
 	if err != nil {
 		log.Error("PaymentWithToken - ", err)
 		if res != nil {
-			return 501, res_body, err
+			return res.StatusCode, res_body, err
 		}
 		return 408, nil, err
 	}
 	defer res.Body.Close()
 
-	return 200, res_body, nil
+	return res.StatusCode, res_body, nil
 }
