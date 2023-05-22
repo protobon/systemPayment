@@ -19,6 +19,7 @@ import (
 //	@Accept			json
 //
 // @Param   order_id  query  int  true  "order_id example"  example(1)
+// @Param	auto  query	 bool  false  "auto example"  example(true)
 //
 //	@Produce		json
 //	@Success		200	{object}	model.PaymentResponse

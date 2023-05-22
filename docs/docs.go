@@ -26,7 +26,7 @@ const docTemplate = `{
     "paths": {
         "/card/save-card": {
             "post": {
-                "description": "Creates a new payment with a CC token, saves card returned by dlocal.",
+                "description": "Creates a new payment of 1USD with a CC token, saves card returned by dlocal.",
                 "consumes": [
                     "application/json"
                 ],
@@ -34,7 +34,7 @@ const docTemplate = `{
                     "application/json"
                 ],
                 "tags": [
-                    "Payment"
+                    "Card"
                 ],
                 "summary": "Saves a new Card",
                 "parameters": [
@@ -151,10 +151,17 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "example": 1,
-                        "description": "start example",
+                        "description": "payer_id example",
                         "name": "payer_id",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "example": true,
+                        "description": "auto example",
+                        "name": "auto",
+                        "in": "query"
                     },
                     {
                         "description": "Order example",
@@ -421,7 +428,7 @@ const docTemplate = `{
                 }
             }
         },
-        "/payer/setCard": {
+        "/payer/primary-card": {
             "put": {
                 "description": "?payer_id=1\u0026card_id=1",
                 "consumes": [
@@ -605,6 +612,13 @@ const docTemplate = `{
                         "name": "order_id",
                         "in": "query",
                         "required": true
+                    },
+                    {
+                        "type": "boolean",
+                        "example": true,
+                        "description": "auto example",
+                        "name": "auto",
+                        "in": "query"
                     }
                 ],
                 "responses": {

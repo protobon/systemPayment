@@ -17,7 +17,8 @@ import (
 //	@Tags			Order
 //	@Accept			json
 //
-//	@Param payer_id  query  int  true  "start example"  example(1)
+//	@Param payer_id  query  int  true  "payer_id example"  example(1)
+//	@Param auto  query  bool  false  "auto example"  example(true)
 //	@Param   order     body     model.OrderRequest     true  "Order example"     example(model.OrderRequest)
 //
 //	@Produce		json
