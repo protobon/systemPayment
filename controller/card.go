@@ -49,18 +49,17 @@ func (c *Controller) SaveCard(ctx *gin.Context) {
 		return
 	}
 
-	code, result, err := dlocal.PaymentWithToken(payer, token.Token)
+	code, response, err := dlocal.PaymentWithToken(payer, token.Token)
 	if err != nil {
-		switch code {
-		case 408:
-			httputil.Error408(ctx, http.StatusBadRequest, "Request to dlocal timed out", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Request to dlocal failed", err)
-		}
-		return
+		ctx.JSON(code, err)
 	}
+
+	if code != 200 {
+		ctx.JSON(code, response)
+	}
+
 	var card = model.Card{PayerID: payer.ID}
-	code, err = card.SaveCardFromResponse(database.DB, result)
+	code, err = card.SaveCardFromResponse(database.DB, response)
 	if err != nil {
 		switch code {
 		case 400:
@@ -71,7 +70,7 @@ func (c *Controller) SaveCard(ctx *gin.Context) {
 		return
 	}
 
-	ctx.JSON(200, result)
+	ctx.JSON(200, response)
 }
 
 // GetCard godoc
@@ -92,7 +91,7 @@ func (c *Controller) SaveCard(ctx *gin.Context) {
 func (o *Controller) GetCard(ctx *gin.Context) {
 	id, err := strconv.Atoi(ctx.Param("id"))
 	if err != nil {
-		httputil.Error400(ctx, http.StatusBadRequest, "", err)
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid card ID", err)
 		return
 	}
 
@@ -101,9 +100,9 @@ func (o *Controller) GetCard(ctx *gin.Context) {
 	if err != nil {
 		switch code {
 		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "", err)
+			httputil.Error404(ctx, http.StatusNotFound, "Card not found", err)
 		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "", err)
+			httputil.Error500(ctx, http.StatusInternalServerError, "Internal server error", err)
 		}
 		return
 	}
