@@ -32,7 +32,9 @@ func (o *Controller) NewOrder(ctx *gin.Context) {
 		httputil.Error400(ctx, http.StatusBadRequest, "Invalid parameter: payer_id", err)
 		return
 	}
+	auto, _ := strconv.ParseBool(ctx.Query("auto"))
 	var order model.Order
+	order.Auto = auto
 	if err := ctx.BindJSON(&order); err != nil {
 		httputil.Error400(ctx, http.StatusBadRequest, "Invalid request payload", err)
 		return

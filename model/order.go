@@ -61,6 +61,8 @@ func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 
 	o.OrderId = uuid.New().String()
 	o.CreatedAt = time.Now()
+	o.NextPayment = time.Now()
+
 	o.CurrentFee = 1
 	// Create Order
 	if err = db.Create(o).Error; err != nil {
