@@ -62,8 +62,8 @@ func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 	o.OrderId = uuid.New().String()
 	o.CreatedAt = time.Now()
 	o.NextPayment = time.Now()
-
 	o.CurrentFee = 1
+
 	// Create Order
 	if err = db.Create(o).Error; err != nil {
 		log.Error("QCreateOrder - ", err)
@@ -133,14 +133,38 @@ func (o *Order) QGetOrder(db *gorm.DB) (int, error) {
 func (o *Order) QUpdateOrder(db *gorm.DB) (int, error) {
 	var err error
 	if err = validator.Validate(o); err != nil {
-		log.Error("QGetOrder - ", err)
+		log.Error("QUpdateOrder - ", err)
 		return 400, err
 	}
 
 	o.UpdatedAt = time.Now()
 	if err = db.Model(&o).Updates(o).Error; err != nil {
-		log.Error("QGetOrder - ", err)
+		log.Error("QUpdateOrder - ", err)
 		return 500, err
 	}
 	return 200, nil
+}
+
+func (o *Order) GetOrderForPayment(db *gorm.DB) (int, error) {
+	if err := db.Table("order").Where("id=?", o.ID).Where("finished=?", false).First(&o).Error; err != nil {
+		log.Error("GetOrderForPayment - ", err)
+		switch err {
+		case gorm.ErrRecordNotFound:
+			return 404, err
+		default:
+			return 500, err
+		}
+	}
+	return 200, nil
+}
+
+func (o *Order) PaymentSuccessful(db *gorm.DB) (int, error) {
+	if o.CurrentFee == o.TotalFees {
+		o.Finished = true
+		o.Auto = false
+	} else {
+		o.CurrentFee++
+		_ = o.NextPayment.AddDate(0, 1, 0)
+	}
+	return o.QUpdateOrder(db)
 }
