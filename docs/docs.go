@@ -69,12 +69,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputil.HTTPError400"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -117,12 +111,6 @@ const docTemplate = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError400"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
                         }
                     },
                     "500": {
@@ -186,12 +174,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputil.HTTPError400"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -234,8 +216,8 @@ const docTemplate = `{
                     {
                         "type": "integer",
                         "example": 1,
-                        "description": "payerId example",
-                        "name": "payerId",
+                        "description": "payer_id example",
+                        "name": "payer_id",
                         "in": "query"
                     }
                 ],
@@ -285,12 +267,6 @@ const docTemplate = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError400"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
                         }
                     },
                     "500": {
@@ -370,12 +346,6 @@ const docTemplate = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError400"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
                         }
                     },
                     "500": {
@@ -470,12 +440,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputil.HTTPError400"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -529,12 +493,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputil.HTTPError400"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -574,12 +532,6 @@ const docTemplate = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError400"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
                         }
                     },
                     "500": {
@@ -632,12 +584,6 @@ const docTemplate = `{
                         "description": "Bad Request",
                         "schema": {
                             "$ref": "#/definitions/httputil.HTTPError400"
-                        }
-                    },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
                         }
                     },
                     "500": {
@@ -734,12 +680,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputil.HTTPError400"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -834,12 +774,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputil.HTTPError400"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -881,12 +815,6 @@ const docTemplate = `{
                             "$ref": "#/definitions/httputil.HTTPError400"
                         }
                     },
-                    "404": {
-                        "description": "Not Found",
-                        "schema": {
-                            "$ref": "#/definitions/httputil.HTTPError404"
-                        }
-                    },
                     "500": {
                         "description": "Internal Server Error",
                         "schema": {
@@ -907,23 +835,7 @@ const docTemplate = `{
                 },
                 "error": {
                     "type": "string",
-                    "example": "Invalid request body or query parameters"
-                },
-                "message": {
-                    "type": "string"
-                }
-            }
-        },
-        "httputil.HTTPError404": {
-            "type": "object",
-            "properties": {
-                "code": {
-                    "type": "integer",
-                    "example": 404
-                },
-                "error": {
-                    "type": "string",
-                    "example": "Page not found"
+                    "example": "Invalid request payload or query params"
                 },
                 "message": {
                     "type": "string"
