@@ -24,7 +24,6 @@ import (
 //	@Produce		json
 //	@Success		200	{object}	model.PaymentResponse
 //	@Failure		400	{object}	httputil.HTTPError400
-//	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
 //	@Router			/card/save-card [post]
 func (c *Controller) SaveCard(ctx *gin.Context) {
@@ -39,13 +38,8 @@ func (c *Controller) SaveCard(ctx *gin.Context) {
 		return
 	}
 	var payer = model.Payer{ID: payer_id}
-	if code, err := payer.QGetPayer(database.DB); err != nil {
-		switch code {
-		case 404:
-			httputil.Error400(ctx, http.StatusBadRequest, "Payer not found", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "An error occurred while fetching the payer", err)
-		}
+	if code, err := payer.QGetPayer(database.DB); code != 200 {
+		httputil.Error400(ctx, http.StatusBadRequest, "Payer not found", err)
 		return
 	}
 
@@ -60,13 +54,8 @@ func (c *Controller) SaveCard(ctx *gin.Context) {
 
 	var card = model.Card{PayerID: payer.ID}
 	code, err = card.SaveCardFromResponse(database.DB, response)
-	if err != nil {
-		switch code {
-		case 400:
-			httputil.Error400(ctx, http.StatusBadRequest, "Card validation failed", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Could not save new Card", err)
-		}
+	if code != 200 {
+		httputil.Error400(ctx, http.StatusBadRequest, "Card validation failed", err)
 		return
 	}
 
@@ -85,7 +74,6 @@ func (c *Controller) SaveCard(ctx *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	model.CardResponse
 //	@Failure		400	{object}	httputil.HTTPError400
-//	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
 //	@Router			/card/{id} [get]
 func (o *Controller) GetCard(ctx *gin.Context) {
@@ -96,16 +84,10 @@ func (o *Controller) GetCard(ctx *gin.Context) {
 	}
 
 	card := model.Card{ID: id}
-	code, err := card.QGetCard(database.DB)
-	if err != nil {
-		switch code {
-		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "Card not found", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Internal server error", err)
-		}
+	code, _ := card.QGetCard(database.DB)
+	if code != 200 {
+		httputil.Error400(ctx, http.StatusBadRequest, "Card not found", err)
 		return
 	}
-
 	ctx.JSON(200, card)
 }

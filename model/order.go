@@ -40,7 +40,7 @@ func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 	var err error
 	if t, err := PayerExists(db, o.PayerID); !t {
 		log.Error("QCreateOrder - ", err)
-		return 404, err
+		return 400, err
 	}
 
 	var o_req = OrderRequest{
@@ -67,7 +67,7 @@ func (o *Order) QCreateOrder(db *gorm.DB) (int, error) {
 	// Create Order
 	if err = db.Create(o).Error; err != nil {
 		log.Error("QCreateOrder - ", err)
-		return 500, err
+		return 400, err
 	}
 
 	return 200, nil
@@ -79,23 +79,13 @@ func (o *Order) QGetOrders(db *gorm.DB, start int, count int, payer_id int) ([]O
 		if err := db.Model(&Order{}).Where("payer_id=?", payer_id).Preload("Product").Limit(count).
 			Offset(start).Find(&orders).Error; err != nil {
 			log.Error("QGetOrders - ", err)
-			switch err {
-			case gorm.ErrRecordNotFound:
-				return orders, 404, err
-			default:
-				return orders, 500, err
-			}
+			return orders, 400, err
 		}
 	} else {
 		if err := db.Model(&Order{}).Preload("Product").Limit(count).Offset(start).
 			Find(&orders).Error; err != nil {
 			log.Error("QGetOrders - ", err)
-			switch err {
-			case gorm.ErrRecordNotFound:
-				return orders, 404, err
-			default:
-				return orders, 500, err
-			}
+			return orders, 400, err
 		}
 	}
 
@@ -114,12 +104,7 @@ func (o *Order) QGetOrders(db *gorm.DB, start int, count int, payer_id int) ([]O
 func (o *Order) QGetOrder(db *gorm.DB) (int, error) {
 	if err := db.Table("order").Preload("Product").Where("id=?", o.ID).First(&o).Error; err != nil {
 		log.Error("QGetOrder - ", err)
-		switch err {
-		case gorm.ErrRecordNotFound:
-			return 404, err
-		default:
-			return 500, err
-		}
+		return 400, err
 	}
 	p := Payment{OrderID: o.ID}
 	payments, code, err := p.QGetPayments(db)
@@ -140,24 +125,21 @@ func (o *Order) QUpdateOrder(db *gorm.DB) (int, error) {
 	o.UpdatedAt = time.Now()
 	if err = db.Model(&o).Updates(o).Error; err != nil {
 		log.Error("QUpdateOrder - ", err)
-		return 500, err
+		return 400, err
 	}
 	return 200, nil
 }
 
+// Fetches one order by ID only with the necessary data for making a payment
 func (o *Order) GetOrderForPayment(db *gorm.DB) (int, error) {
 	if err := db.Table("order").Where("id=?", o.ID).Where("finished=?", false).First(&o).Error; err != nil {
 		log.Error("GetOrderForPayment - ", err)
-		switch err {
-		case gorm.ErrRecordNotFound:
-			return 404, err
-		default:
-			return 500, err
-		}
+		return 400, err
 	}
 	return 200, nil
 }
 
+// Handles order after successful payment
 func (o *Order) PaymentSuccessful(db *gorm.DB) (int, error) {
 	if o.CurrentFee == o.TotalFees {
 		o.Finished = true

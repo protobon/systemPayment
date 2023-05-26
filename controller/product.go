@@ -21,7 +21,6 @@ import (
 //		@Produce		json
 //		@Success		200	{object}	model.ProductResponse
 //		@Failure		400	{object}	httputil.HTTPError400
-//		@Failure		404	{object}	httputil.HTTPError404
 //		@Failure		500	{object}	httputil.HTTPError500
 //		@Router			/product/new [post]
 func (c *Controller) NewProduct(ctx *gin.Context) {
@@ -31,13 +30,8 @@ func (c *Controller) NewProduct(ctx *gin.Context) {
 		return
 	}
 
-	if code, err := product.QCreateProduct(database.DB); err != nil {
-		switch code {
-		case 400:
-			httputil.Error400(ctx, http.StatusBadRequest, "Body validation failed", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Could not create Product", err)
-		}
+	if _, err := product.QCreateProduct(database.DB); err != nil {
+		httputil.Error400(ctx, http.StatusBadRequest, "Body validation failed", err)
 		return
 	}
 
@@ -75,14 +69,9 @@ func (c *Controller) Products(ctx *gin.Context) {
 		start = 0
 	}
 	var product = model.Product{}
-	products, code, err := product.QGetProducts(database.DB, start, count)
+	products, _, err := product.QGetProducts(database.DB, start, count)
 	if err != nil {
-		switch code {
-		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "Query returned 0 records", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Error fetching Products", err)
-		}
+		httputil.Error400(ctx, http.StatusBadRequest, "Query returned 0 records", err)
 		return
 	}
 
@@ -100,7 +89,6 @@ func (c *Controller) Products(ctx *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	model.ProductResponse
 //	@Failure		400	{object}	httputil.HTTPError400
-//	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
 //	@Router			/product/{id} [get]
 func (c *Controller) GetProduct(ctx *gin.Context) {
@@ -111,13 +99,8 @@ func (c *Controller) GetProduct(ctx *gin.Context) {
 	}
 
 	product := model.Product{ID: id}
-	if code, err := product.QGetProduct(database.DB); err != nil {
-		switch code {
-		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "Product not found", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Error fetching Product", err)
-		}
+	if _, err := product.QGetProduct(database.DB); err != nil {
+		httputil.Error400(ctx, http.StatusBadRequest, "Product not found", err)
 		return
 	}
 
@@ -138,7 +121,6 @@ func (c *Controller) GetProduct(ctx *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	model.ProductResponse
 //	@Failure		400	{object}	httputil.HTTPError400
-//	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
 //	@Router			/product/update/{id} [put]
 func (c *Controller) UpdateProduct(ctx *gin.Context) {
@@ -154,15 +136,8 @@ func (c *Controller) UpdateProduct(ctx *gin.Context) {
 		return
 	}
 
-	if code, err := product.QUpdateProduct(database.DB); err != nil {
-		switch code {
-		case 400:
-			httputil.Error400(ctx, http.StatusBadRequest, "Body validation failed", err)
-		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "Product not found", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Error updating Product", err)
-		}
+	if _, err := product.QUpdateProduct(database.DB); err != nil {
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid request payload or query params", err)
 		return
 	}
 

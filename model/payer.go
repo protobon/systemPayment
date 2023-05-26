@@ -98,7 +98,7 @@ func (p *Payer) QCreatePayer(db *gorm.DB) (int, error) {
 	VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING id`, p.Name, p.Email, p.Country, p.BirthDate, p.Phone,
 		p.Document, p.CreatedAt).Scan(&p.ID).Error; err != nil {
 		log.Error("QCreatePayer - ", err)
-		return 500, err
+		return 400, err
 	}
 	str_payer_id := strconv.Itoa(p.ID)
 	p.UserReference = fmt.Sprintf("%05s", str_payer_id)
@@ -118,7 +118,7 @@ func (a *Address) QCreateAddress(db *gorm.DB, p *Payer) (int, error) {
 	VALUES(?, ?, ?, ?, ?, ?, ?) RETURNING id`,
 		a.PayerID, a.State, a.City, a.ZipCode, a.Street, a.Number, a.CreatedAt).Scan(&a.ID).Error; err != nil {
 		log.Error("QCreateAddress - ", err)
-		return 500, err
+		return 400, err
 	}
 	p.AddressID = a.ID
 	return p.QUpdatePayer(db)
@@ -131,7 +131,7 @@ func (p *Payer) QGetPayers(db *gorm.DB, start int, count int) ([]Payer, int, err
 		log.Error("QGetPayers - ", err)
 		switch err {
 		case gorm.ErrRecordNotFound:
-			return payers, 404, err
+			return payers, 200, err
 		default:
 			return payers, 500, err
 		}
@@ -143,12 +143,7 @@ func (p *Payer) QGetPayers(db *gorm.DB, start int, count int) ([]Payer, int, err
 func (p *Payer) QGetPayer(db *gorm.DB) (int, error) {
 	if err := db.Preload("Address").Where("payer.id=?", p.ID).First(&p).Error; err != nil {
 		log.Error("QGetPayer - ", err)
-		switch err {
-		case gorm.ErrRecordNotFound:
-			return 404, err
-		default:
-			return 500, err
-		}
+		return 400, err
 	}
 	return 200, nil
 }
@@ -168,12 +163,7 @@ func (p *Payer) QUpdatePayer(db *gorm.DB) (int, error) {
 	p.UpdatedAt = time.Now()
 	if err = db.Model(&p).Updates(p).Error; err != nil {
 		log.Error("QUpdatePayer - ", err)
-		switch err {
-		case gorm.ErrRecordNotFound:
-			return 404, err
-		default:
-			return 500, err
-		}
+		return 400, err
 	}
 	return 200, nil
 }
@@ -181,20 +171,15 @@ func (p *Payer) QUpdatePayer(db *gorm.DB) (int, error) {
 func (p *Payer) QPrimaryCard(db *gorm.DB, card_id int) (int, error) {
 	var err error
 	card := Card{ID: card_id}
-	if code, err := card.QGetCard(db); err != nil {
-		return code, err
+	if code, _ := card.QGetCard(db); code != 200 {
+		return code, errors.New("card not found")
 	}
 	if card.PayerID != p.ID {
 		return 400, errors.New("invalid card id")
 	}
 	if err = db.Model(&p).Update("card_id", card_id).Error; err != nil {
 		log.Error("QPrimaryCard - ", err)
-		switch err {
-		case gorm.ErrRecordNotFound:
-			return 404, err
-		default:
-			return 500, err
-		}
+		return 400, err
 	}
 	return 200, nil
 }

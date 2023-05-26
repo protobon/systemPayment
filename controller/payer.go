@@ -20,7 +20,6 @@ import (
 //		@Produce		json
 //		@Success		200	{object}	model.PayerResponse
 //		@Failure		400	{object}	httputil.HTTPError400
-//		@Failure		404	{object}	httputil.HTTPError404
 //		@Failure		500	{object}	httputil.HTTPError500
 //		@Router			/payer/new [post]
 func (c *Controller) NewPayer(ctx *gin.Context) {
@@ -30,13 +29,8 @@ func (c *Controller) NewPayer(ctx *gin.Context) {
 		return
 	}
 
-	if code, err := payer.QCreatePayer(database.DB); err != nil {
-		switch code {
-		case 400:
-			httputil.Error400(ctx, http.StatusBadRequest, "Body validation failed", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Error creating Payer", err)
-		}
+	if _, err := payer.QCreatePayer(database.DB); err != nil {
+		httputil.Error400(ctx, http.StatusBadRequest, "Body validation failed", err)
 		return
 	}
 
@@ -77,8 +71,8 @@ func (c *Controller) Payers(ctx *gin.Context) {
 	payers, code, err := payer.QGetPayers(database.DB, start, count)
 	if err != nil {
 		switch code {
-		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "Query returned 0 records", err)
+		case 400:
+			httputil.Error400(ctx, http.StatusBadRequest, "Query returned 0 records", err)
 		default:
 			httputil.Error500(ctx, http.StatusInternalServerError, "Error fetching Payers", err)
 		}
@@ -99,7 +93,6 @@ func (c *Controller) Payers(ctx *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	model.PayerResponse
 //	@Failure		400	{object}	httputil.HTTPError400
-//	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
 //	@Router			/payer/{id} [get]
 func (c *Controller) GetPayer(ctx *gin.Context) {
@@ -111,15 +104,9 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 
 	payer := model.Payer{ID: id}
 	// var payer_out model.PayerResponse
-	var code int
-	code, err = payer.QGetPayer(database.DB)
+	_, err = payer.QGetPayer(database.DB)
 	if err != nil {
-		switch code {
-		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "Payer not found", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Error fetching Payer", err)
-		}
+		httputil.Error400(ctx, http.StatusBadRequest, "Payer not found", err)
 		return
 	}
 
@@ -139,7 +126,6 @@ func (c *Controller) GetPayer(ctx *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	model.PayerResponse
 //	@Failure		400	{object}	httputil.HTTPError400
-//	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
 //	@Router			/payer/update/{id} [put]
 func (c *Controller) UpdatePayer(ctx *gin.Context) {
@@ -155,15 +141,8 @@ func (c *Controller) UpdatePayer(ctx *gin.Context) {
 		return
 	}
 
-	if code, err := payer.QUpdatePayer(database.DB); err != nil {
-		switch code {
-		case 400:
-			httputil.Error400(ctx, http.StatusBadRequest, "Body validation failed", err)
-		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "Payer not found", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Error updating Payer", err)
-		}
+	if _, err := payer.QUpdatePayer(database.DB); err != nil {
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid request payload or query params", err)
 		return
 	}
 
@@ -183,7 +162,6 @@ func (c *Controller) UpdatePayer(ctx *gin.Context) {
 //	@Produce		json
 //	@Success		200	{object}	model.PayerResponse
 //	@Failure		400	{object}	httputil.HTTPError400
-//	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
 //	@Router			/payer/primary-card [put]
 func (c *Controller) PrimaryCard(ctx *gin.Context) {
@@ -199,24 +177,12 @@ func (c *Controller) PrimaryCard(ctx *gin.Context) {
 	}
 
 	payer := model.Payer{ID: payer_id}
-	if code, err := payer.QGetPayer(database.DB); err != nil {
-		switch code {
-		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "Payer not found", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Error updating Payer", err)
-		}
+	if _, err := payer.QGetPayer(database.DB); err != nil {
+		httputil.Error400(ctx, http.StatusBadRequest, "Payer not found", err)
 	}
 
-	if code, err := payer.QPrimaryCard(database.DB, card_id); err != nil {
-		switch code {
-		case 400:
-			httputil.Error400(ctx, http.StatusNotFound, "Invalid card ID", err)
-		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "Card not found", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Error updating Payer", err)
-		}
+	if _, err := payer.QPrimaryCard(database.DB, card_id); err != nil {
+		httputil.Error400(ctx, http.StatusBadRequest, "Invalid request payload or query params", err)
 		return
 	}
 
@@ -245,8 +211,8 @@ func (c *Controller) PayerCards(ctx *gin.Context) {
 	cards, code, err := card.QGetCards(database.DB, payer_id)
 	if err != nil {
 		switch code {
-		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "Query returned 0 records", err)
+		case 400:
+			httputil.Error400(ctx, http.StatusBadRequest, "Query returned 0 records", err)
 		default:
 			httputil.Error500(ctx, http.StatusInternalServerError, "Error fetching cards", err)
 		}

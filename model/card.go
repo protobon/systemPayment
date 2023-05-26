@@ -70,7 +70,7 @@ func (c *Card) QGetCards(db *gorm.DB, payer_id int) ([]Card, int, error) {
 		log.Error("QGetCards - ", err)
 		switch err {
 		case gorm.ErrRecordNotFound:
-			return cards, 404, err
+			return cards, 200, err
 		default:
 			return cards, 500, err
 		}
@@ -84,13 +84,8 @@ func (c *Card) QGetCards(db *gorm.DB, payer_id int) ([]Card, int, error) {
 // Get one Card from Card.ID and Card.PayerID
 func (c *Card) QGetCard(db *gorm.DB) (int, error) {
 	if err := db.Where("id = ?", c.ID).First(&c).Error; err != nil {
-		log.Error("QGetCard - ", err)
-		switch err {
-		case gorm.ErrRecordNotFound:
-			return 404, err
-		default:
-			return 500, err
-		}
+		log.Error("Get Card - " + err.Error())
+		return 400, err
 	}
 	return 200, nil
 }

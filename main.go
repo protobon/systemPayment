@@ -120,7 +120,7 @@ func main() {
 		}
 		card := v1.Group("/card")
 		{
-			payment.POST("/save", c.SaveCard)
+			card.POST("/save-card", c.SaveCard)
 			card.GET(":id", c.GetCard)
 		}
 	}
