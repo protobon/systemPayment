@@ -24,7 +24,6 @@ import (
 //	@Produce		json
 //	@Success		200	{object}	model.PaymentResponse
 //	@Failure		400	{object}	httputil.HTTPError400
-//	@Failure		404	{object}	httputil.HTTPError404
 //	@Failure		500	{object}	httputil.HTTPError500
 //	@Router			/payment/new [post]
 func (c *Controller) NewPayment(ctx *gin.Context) {
@@ -34,13 +33,8 @@ func (c *Controller) NewPayment(ctx *gin.Context) {
 		return
 	}
 	var order = model.Order{ID: order_id}
-	if code, err := order.GetOrderForPayment(database.DB); err != nil {
-		switch code {
-		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "Order not found or already finished", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "An error occurred while fetching the order", err)
-		}
+	if _, err := order.GetOrderForPayment(database.DB); err != nil {
+		httputil.Error400(ctx, http.StatusBadRequest, "Order not found or already finished", err)
 		return
 	}
 	auto, _ := strconv.ParseBool(ctx.Query("auto"))
@@ -51,7 +45,7 @@ func (c *Controller) NewPayment(ctx *gin.Context) {
 	var payer = model.Payer{ID: order.PayerID}
 	if code, err := payer.QGetPayer(database.DB); err != nil {
 		switch code {
-		case 404:
+		case 400:
 			httputil.Error400(ctx, http.StatusBadRequest, "Payer not found", err)
 		default:
 			httputil.Error500(ctx, http.StatusInternalServerError, "An error occurred while fetching the payer", err)
@@ -60,13 +54,8 @@ func (c *Controller) NewPayment(ctx *gin.Context) {
 	}
 
 	var card = model.Card{ID: payer.CardID}
-	if code, err := card.QGetCard(database.DB); err != nil {
-		switch code {
-		case 404:
-			httputil.Error400(ctx, http.StatusBadRequest, "Card not found", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "An error occurred while fetching the card", err)
-		}
+	if _, err := card.QGetCard(database.DB); err != nil {
+		httputil.Error400(ctx, http.StatusBadRequest, "Card not found", err)
 		return
 	}
 
@@ -93,14 +82,9 @@ func (c *Controller) NewPayment(ctx *gin.Context) {
 		OrderID: order.ID,
 		CardID:  card.ID,
 	}
-	code, err = payment.SavePaymentFromResponse(database.DB, response)
+	_, err = payment.SavePaymentFromResponse(database.DB, response)
 	if err != nil {
-		switch code {
-		case 400:
-			httputil.Error400(ctx, http.StatusBadRequest, "Payment validation failed", err)
-		default:
-			httputil.Error500(ctx, http.StatusInternalServerError, "Could not save new Payment", err)
-		}
+		httputil.Error400(ctx, http.StatusBadRequest, "Payment validation failed", err)
 		return
 	}
 
@@ -144,8 +128,8 @@ func (c *Controller) GetPayments(ctx *gin.Context) {
 	payments, code, err := payment.QGetAllPayments(database.DB, start, count, order_id)
 	if err != nil {
 		switch code {
-		case 404:
-			httputil.Error404(ctx, http.StatusNotFound, "Query returned 0 records", err)
+		case 400:
+			httputil.Error400(ctx, http.StatusBadRequest, "Query returned 0 records", err)
 		default:
 			httputil.Error500(ctx, http.StatusInternalServerError, "Error fetching Payments", err)
 		}

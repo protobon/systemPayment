@@ -47,7 +47,7 @@ func (p *Product) QCreateProduct(db *gorm.DB) (int, error) {
 	// Create product
 	if err = db.Create(p).Error; err != nil {
 		log.Error("QCreateProduct - ", err)
-		return 500, err
+		return 400, err
 	}
 
 	return 200, nil
@@ -57,12 +57,7 @@ func (p *Product) QGetProducts(db *gorm.DB, start int, count int) ([]Product, in
 	var products []Product
 	if err := db.Table("product").Select("*").Limit(count).Offset(start).Scan(&products).Error; err != nil {
 		log.Error("QGetProducts - ", err)
-		switch err {
-		case gorm.ErrRecordNotFound:
-			return products, 404, err
-		default:
-			return products, 500, err
-		}
+		return products, 400, err
 	}
 
 	return products, 200, nil
@@ -71,12 +66,7 @@ func (p *Product) QGetProducts(db *gorm.DB, start int, count int) ([]Product, in
 func (p *Product) QGetProduct(db *gorm.DB) (int, error) {
 	if err := db.Where("id = ?", p.ID).First(&p).Error; err != nil {
 		log.Error("QGetProduct - ", err)
-		switch err {
-		case gorm.ErrRecordNotFound:
-			return 404, err
-		default:
-			return 500, err
-		}
+		return 400, err
 	}
 	return 200, nil
 }
@@ -91,7 +81,7 @@ func (p *Product) QUpdateProduct(db *gorm.DB) (int, error) {
 	p.UpdatedAt = time.Now()
 	if err = db.Model(&p).Updates(p).Error; err != nil {
 		log.Error("QUpdateProduct - ", err)
-		return 500, err
+		return 400, err
 	}
 	return 200, nil
 }
