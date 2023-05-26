@@ -29,7 +29,7 @@ pull:
 
 # ------- levanta la aplicacion en maquina local --------------------
 run:
-	DLOCAL_URL=https://sandbox.dlocal.com DLOCAL_X_LOGIN=id9LdRTxgd DLOCAL_X_TRANS_KEY=MLYS0sI3qt DLOCAL_SECRET=b1pHjMu99d6Y7YLmgok9KEfQDt1d4KCuI POSTGRES_USER=spuser POSTGRES_PASSWORD=SPuser96 POSTGRES_DB=system_payment_test APPLICATION_PORT=:8080 DATABASE_HOST=localhost:5432 go run main.go
+	DLOCAL_URL=https://sandbox.dlocal.com DLOCAL_X_LOGIN=id9LdRTxgd DLOCAL_X_TRANS_KEY=MLYS0sI3qt DLOCAL_SECRET=b1pHjMu99d6Y7YLmgok9KEfQDt1d4KCuI POSTGRES_USER=spuser POSTGRES_PASSWORD=SPuser96 POSTGRES_DB=system_payment_test APPLICATION_PORT=:8081 DATABASE_HOST=localhost:5432 go run main.go
 
 # ------- Build ----------------------------------------------------
 build:
